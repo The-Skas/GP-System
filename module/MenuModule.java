@@ -1,6 +1,6 @@
-package gpsis.modules;
+package module;
 
-import gpsis.framework.GPSISModule;
+import framework.GPSISModule;
 
 public class MenuModule extends GPSISModule {
 
