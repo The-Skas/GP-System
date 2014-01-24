@@ -2,11 +2,13 @@ package mapper;
 
 import framework.GPSISDataMapper;
 import object.Room;
+import object.StaffMember;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class RoomDMO extends GPSISDataMapper<Room> {
@@ -67,16 +69,6 @@ public class RoomDMO extends GPSISDataMapper<Room> {
 		return null;
 	}
 
-	public Room getByProperty(String p, String v) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Set<Room> getAllByProperty(String p, String v) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public void removeById(int id) {
 		// TODO Auto-generated method stub
@@ -87,6 +79,19 @@ public class RoomDMO extends GPSISDataMapper<Room> {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public Set<Room> getAllByProperties(Map<String, String> a) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Room getByProperties(Map<String, String> p) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
 
 /**

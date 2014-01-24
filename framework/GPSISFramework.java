@@ -6,6 +6,8 @@ package framework;
  * @version 2
  */
 
+import module.*;
+
 public class GPSISFramework {
 
 	private static final GPSIS instance = new GPSIS(); // Singleton implementation
@@ -37,6 +39,9 @@ public class GPSISFramework {
 			System.out.println("\t\tSuccess.");
 		else
 			System.out.println("\t\tFailed.");
+		
+		LoginModule m = new LoginModule();
+		m.run();
 		
 		
 	}

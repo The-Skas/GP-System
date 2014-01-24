@@ -6,10 +6,13 @@ package framework;
  * @author Vijendra Patel
  * @version 2
  */
+import java.util.Map;
 import java.util.Set;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import object.StaffMember;
 
 
 public abstract class GPSISDataMapper<T> {
@@ -64,13 +67,25 @@ public abstract class GPSISDataMapper<T> {
 	 */
 	public abstract T getById(int id);
 	
-	/** getByProperty
+	/** getByProperties
 	 * return the first Object in the table that matches the given criteria
-	 * @param p the Property to check
-	 * @param v the Value of the Property to match
+	 * A Map where its Keys represent columns of the table (properties, fields whatever you want to call them) and the Value of that Key is the filter.
+	 * E.G:
+	 * A Map that looks like this:
+	 * 	{	
+	 * 		"first_name" => "VJ",
+	 * 		"last_name" => "Patel"
+	 * 	}
+	 * 
+	 * will generate an SQL WHERE clause like this: WHERE first_name = 'VJ' AND last_name = 'Patel'
+	 * 
+	 * For ease, copy the code that i've written in mapper/StaffMemberDMO, Salman's going to look a bit more at Abstraction this weekend in the hope of 
+	 * actually abstracting these nicely so code doesn't get repeated.
+	 * 
+	 * @param p  the Map with the filter parameters in
 	 * @return a single Object which matches the Property and Value
 	 */
-	public abstract T getByProperty(String p, String v);
+	public abstract T getByProperties(Map<String, String> p);
 	
 	
 	/** getAllByProperty
@@ -79,7 +94,7 @@ public abstract class GPSISDataMapper<T> {
 	 * @param v the Value of the Property to match
 	 * @return a Set containing all of the Objects that match the Property and Value
 	 */
-	public abstract Set<T> getAllByProperty(String p, String v);
+	public abstract Set<T> getAllByProperties(Map<String, String> p);
 	
 	/** removeById
 	 * remove a Row from the table matched by a given id
