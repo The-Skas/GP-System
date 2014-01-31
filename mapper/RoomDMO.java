@@ -12,7 +12,20 @@ import java.util.Map;
 import java.util.Set;
 
 public class RoomDMO extends GPSISDataMapper<Room> {
-	
+    
+        
+        private RoomDMO(){};
+    
+        private static RoomDMO instance;
+
+        public static RoomDMO getInstance() 
+        {
+            if(instance == null)
+            {
+                instance = new RoomDMO();
+            }
+            return instance;
+        }
 	public Set<Room> getAll() {
 		try 
 		{
@@ -75,22 +88,18 @@ public class RoomDMO extends GPSISDataMapper<Room> {
 		
 	}
 
-	public void removeByProperty(String p, String v) {
-		// TODO Auto-generated method stub
-		
-	}
+        @Override
+        public Room getByProperties(SQLBuilder query) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
 
-	@Override
-	public Set<Room> getAllByProperties(Map<String, String> a) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        @Override
+        public Set<Room> getAllByProperties(SQLBuilder query) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
 
-	@Override
-	public Room getByProperties(Map<String, String> p) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   
+
 
 }
 

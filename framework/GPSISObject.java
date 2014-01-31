@@ -11,8 +11,9 @@ import mapper.*;
 public abstract class GPSISObject {
 	protected int id;
 	
-	protected static RoomDMO roomTbl;
-	protected static CareProgrammeDMO careProgrammeTbl;
+	protected static RoomDMO roomTbl = RoomDMO.getInstance();
+	protected static CareProgrammeDMO careProgrammeTbl = CareProgrammeDMO.getInstance();
+        protected static StaffMemberDMO staffMemberTbl = StaffMemberDMO.getInstance();
 //  protected static PatientDMO patientTbl;
 //	protected static AppointmentDMO appointmentTbl
 //	etc.

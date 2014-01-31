@@ -5,7 +5,9 @@ import mapper.RoomDMO;
 
 public class Room extends GPSISObject {
 	private String description;
-	protected static RoomDMO tbl = new RoomDMO();
+        
+        //Skas: Another Call Replaced to Singleton Pattern.
+	protected static RoomDMO tbl = RoomDMO.getInstance();
 	
 	// get DMO
 	// put using DMO

@@ -1,5 +1,6 @@
 package module;
 import framework.GPSISModule;
+import mapper.SQLBuilder;
 
 import java.util.*;
 import object.StaffMember;
@@ -30,12 +31,17 @@ public class LoginModule extends GPSISModule {
 	
 	private boolean doLogin(String username, String password)
 	{
-		StaffMemberDMO dmo = new StaffMemberDMO();
+            
+                //Skas: Rather then create a new table everytime you login,
+                //why not just create a singleton?
+		StaffMemberDMO dmo = StaffMemberDMO.getInstance();
 		HashMap<String, String> filter = new HashMap<String, String>();
 		
-		filter.put("username", username);
-		filter.put("full_time", "1");
-		StaffMember sM = dmo.getByProperties(filter);
+		
+		StaffMember sM = dmo.getByProperties(
+                        new SQLBuilder("username","=", "vj")
+                        .AND("first_name", "=", "VJ")
+                );
 		
 		String pwd = new String(sM.getEncryptedPassword());
 		String testPwd = new String(StaffMember.encrypt(password));
@@ -50,4 +56,11 @@ public class LoginModule extends GPSISModule {
 		System.out.println(pwd.trim() + " != " + testPwd.trim());
 		return false;
 	}
+        
+        public static void main(String [] args)
+        {
+            StaffMemberDMO.connectToDatabase();
+            LoginModule login = new LoginModule();
+            login.doLogin("vj", "king");
+        }
 }

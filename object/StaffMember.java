@@ -62,7 +62,6 @@ public class StaffMember extends GPSISObject {
 		this.firstName = fN;
 		this.lastName = lN;
 		this.fullTime = fT;
-		
 		staffMemberTbl.put(this);
 	}
 	
