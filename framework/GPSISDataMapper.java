@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import object.StaffMember;
 
 
-public abstract class GPSISDataMapper<T> {
+public abstract class GPSISDataMapper<T> extends GPSISFramework {
 	protected String tableName;
         
 	protected static Connection dbConnection; // store database connection. Only child elements can use this.
