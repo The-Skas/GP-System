@@ -20,7 +20,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     private StaffMemberDMO(String tableName)
     {
         this.tableName = tableName;
-    };
+    }
     
     private static StaffMemberDMO instance;
     
