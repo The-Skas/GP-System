@@ -6,11 +6,19 @@ package framework;
  * @version 2
  */
 
+import mapper.*;
 import module.*;
 
 public class GPSISFramework {
 
 	private static final GPSIS instance = new GPSIS(); // Singleton implementation
+	
+	protected static RoomDMO roomDMO;
+	protected static CareProgrammeDMO careProgrammeDMO;
+	protected static StaffMemberDMO staffMemberDMO = StaffMemberDMO.getInstance();
+//  protected static PatientDMO patientDMO;
+//	protected static AppointmentDMO appointmentDMO
+//	etc.
 	
 	/** getInstance() 
 	 * returns the ONLY instance of GPSIS
@@ -32,19 +40,25 @@ public class GPSISFramework {
 	 *  - Load Menu Module
 	 */
 	public void initialise()
-	{		
+	{
+		
 		System.out.println("GPSIS Main Framework");
+		System.out.println("Running Tests:");
 		System.out.print("\t- Connecting to Database");
 		if ((GPSISDataMapper.connectToDatabase()))
 			System.out.println("\t\tSuccess.");
 		else
+		{
 			System.out.println("\t\tFailed.");
+			System.exit(0);
+		}
 		
 		LoginModule m = new LoginModule();
-		m.run();
-		
-		
+		m.showLogin();
+	
 	}
+	
+	
 	
 }
 

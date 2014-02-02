@@ -25,18 +25,19 @@ public abstract class GPSISDataMapper<T> {
 	protected static Connection dbConnection; // store database connection. Only child elements can use this.
 	
         
-        protected static String SQLSelect = "SELECT * FROM ";
-        protected static String SQLDelete = "DELETE FROM ";
-        protected static String SQLUpdate = "";
-	/** connectToDatabase
+    protected static String SQLSelect = "SELECT * FROM ";
+    protected static String SQLDelete = "DELETE FROM ";
+    protected static String SQLUpdate = "";
+    	
+    public static Connection getDbConnection()
+    {
+        return dbConnection;
+    }
+    
+    /** connectToDatabase
 	 * Initiate a connection to the database and store that connection so all subclasses can use it.
 	 */
-        
-        public static Connection getDbConnection()
-        {
-            return dbConnection;
-        }
-	public static boolean connectToDatabase()
+    public static boolean connectToDatabase()
 	{
 		//String username = "SEGJ";
 		//String password = "sv1e022g";
@@ -66,90 +67,89 @@ public abstract class GPSISDataMapper<T> {
 		}
 		return false;		
 	}
+	
+    /** getResultSet
+     * returns a ResultSet Object by parsing the SQLBuilder, and 
+     * executing it by using prepared statements. This is to avoid SQL Injections.
+     * @param sqlQ
+     * @param tableName
+     * @return
+     * @throws SQLException 
+     */
+    public static ResultSet getResultSet(SQLBuilder sqlQ, String tableName ) throws SQLException
+    {
+        String sql = "SELECT * FROM "+tableName + " WHERE ";
+
         
-        /** getResultSet
-         * returns a ResultSet Object by parsing the SQLBuilder, and 
-         * executing it by using prepared statements. This is to avoid SQL Injections.
-         * @param sqlQ
-         * @param tableName
-         * @return
-         * @throws SQLException 
-         */
-        public static ResultSet getResultSet(SQLBuilder sqlQ, String tableName ) throws SQLException
+        return sqlQ.prepareAndExecute(dbConnection, sql);
+
+        
+    }
+    public static void updateByPropertiesHelper(SQLBuilder set, SQLBuilder where, String tableName) throws SQLException
+    {
+        String query = "UPDATE "+tableName+" SET ";
+        query=set.toPreparedStatement(query);
+        query += " WHERE ";
+        query=where.toPreparedStatement(query);
+
+        PreparedStatement pS = GPSISDataMapper.dbConnection.prepareStatement(query);
+
+        int i = 1;
+        for(String [] block: set.qBlocks)
         {
-            String sql = "SELECT * FROM "+tableName + " WHERE ";
-
-            
-            return sqlQ.prepareAndExecute(dbConnection, sql);
-
-            
+            pS.setString(i, block[3]);
+            i++;
         }
-        public static void updateByPropertiesHelper(SQLBuilder set, SQLBuilder where, String tableName) throws SQLException
+
+        for(String [] block: where.qBlocks)
         {
-            String query = "UPDATE "+tableName+" SET ";
-            query=set.toPreparedStatement(query);
-            query += " WHERE ";
-            query=where.toPreparedStatement(query);
-
-            PreparedStatement pS = GPSISDataMapper.dbConnection.prepareStatement(query);
-
-            int i = 1;
-            for(String [] block: set.qBlocks)
-            {
-                pS.setString(i, block[3]);
-                i++;
-            }
-
-            for(String [] block: where.qBlocks)
-            {
-                pS.setString(i, block[3]);
-                i++;
-            }
-            pS.executeUpdate();
+            pS.setString(i, block[3]);
+            i++;
         }
-        public static void putHelper(SQLBuilder setQ,String tableName) throws SQLException
+        pS.executeUpdate();
+    }
+    public static void putHelper(SQLBuilder setQ,String tableName) throws SQLException
+    {
+        String query = "INSERT INTO "+tableName+" SET ";
+        //set query
+        query = setQ.toPreparedStatement(query)+" ON DUPLICATE KEY UPDATE "+setQ.toPreparedStatement("");
+         
+        PreparedStatement pS =dbConnection.prepareStatement(query);
+        int i = 1;
+        for(String[] qBlock : setQ.qBlocks)
         {
-            String query = "INSERT INTO "+tableName+" SET ";
-            //set query
-            query = setQ.toPreparedStatement(query)+" ON DUPLICATE KEY UPDATE "+setQ.toPreparedStatement("");
-             
-            PreparedStatement pS =dbConnection.prepareStatement(query);
-            int i = 1;
-            for(String[] qBlock : setQ.qBlocks)
-            {
-                pS.setString(i, qBlock[VALUE]);
-                i++;
-            }
-            for(String[] qBlock : setQ.qBlocks)
-            {
-                pS.setString(i, qBlock[VALUE]);
-                i++;
-            }
-            System.out.println(pS);
-
-            pS.executeUpdate();
+            pS.setString(i, qBlock[VALUE]);
+            i++;
         }
-        public static void removeByPropertyHelper(SQLBuilder sqlQ, String tableName) throws SQLException
+        for(String[] qBlock : setQ.qBlocks)
         {
-            String sql = "DELETE FROM "+tableName + " WHERE ";
-            
-            sql=sqlQ.toPreparedStatement(sql);
-            
-            PreparedStatement pS =dbConnection.prepareStatement(sql);
-            sqlQ.prepare(pS);
-            pS.executeUpdate();
-            
+            pS.setString(i, qBlock[VALUE]);
+            i++;
         }
-	/** getAll
+        System.out.println(pS);
+
+        pS.executeUpdate();
+    }
+    public static void removeByPropertyHelper(SQLBuilder sqlQ, String tableName) throws SQLException
+    {
+        String sql = "DELETE FROM "+tableName + " WHERE ";
+        
+        sql=sqlQ.toPreparedStatement(sql);
+        
+        PreparedStatement pS =dbConnection.prepareStatement(sql);
+        sqlQ.prepare(pS);
+        pS.executeUpdate();
+        
+    }
+
+    /** getAll
 	 * return a set containing all of the elements in the table for the child element
 	 * @return a Set of elements from the table in their Object form.
 	 * @throws SQLException 
 	 */
 	public abstract Set<T> getAll();
-        {
-            
-        }
-	/** getById
+	
+    /** getById
 	 * return a single Object of this table type
 	 * @param id the numerical identifier for the row in the table
 	 * @return a single Object which has the given id.
@@ -158,18 +158,7 @@ public abstract class GPSISDataMapper<T> {
 	
 	/** getByProperties
 	 * return the first Object in the table that matches the given criteria
-	 * A Map where its Keys represent columns of the table (properties, fields whatever you want to call them) and the Value of that Key is the filter.
-	 * E.G:
-	 * A Map that looks like this:
-	 * 	{	
-	 * 		"first_name" => "VJ",
-	 * 		"last_name" => "Patel"
-	 * 	}
-	 * 
-	 * will generate an SQL WHERE clause like this: WHERE first_name = 'VJ' AND last_name = 'Patel'
-	 * 
-	 * For ease, copy the code that i've written in mapper/StaffMemberDMO, Salman's going to look a bit more at Abstraction this weekend in the hope of 
-	 * actually abstracting these nicely so code doesn't get repeated.
+	 * See StaffMemberDMO for demonstration of implementation
 	 * 
 	 * @param p  the Map with the filter parameters in
 	 * @return a single Object which matches the Property and Value

@@ -6,17 +6,9 @@ package framework;
  * @version 2
  *
  */
-import mapper.*;
 
-public abstract class GPSISObject {
+public abstract class GPSISObject extends GPSISFramework {
 	protected int id;
-	
-	protected static RoomDMO roomTbl = RoomDMO.getInstance();
-	protected static CareProgrammeDMO careProgrammeTbl = CareProgrammeDMO.getInstance();
-        protected static StaffMemberDMO staffMemberTbl = StaffMemberDMO.getInstance();
-//  protected static PatientDMO patientTbl;
-//	protected static AppointmentDMO appointmentTbl
-//	etc.
 	
 	public int getId()
 	{
