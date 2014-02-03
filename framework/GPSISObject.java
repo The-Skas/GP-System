@@ -19,4 +19,5 @@ public abstract class GPSISObject extends GPSISFramework {
 /**
  * End of File: GPSISObject.java
  * Location: gpsis/framework
+ * Peekabo! :D
  */
