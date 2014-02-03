@@ -1,6 +1,5 @@
 package mapper;
 
-import java.util.Map;
 import java.util.Set;
 
 import framework.GPSISDataMapper;

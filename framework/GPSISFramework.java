@@ -10,8 +10,6 @@ import mapper.*;
 import module.*;
 
 public class GPSISFramework {
-
-	private static final GPSIS instance = new GPSIS(); // Singleton implementation
 	
 	protected static RoomDMO roomDMO;
 	protected static CareProgrammeDMO careProgrammeDMO;
@@ -20,14 +18,6 @@ public class GPSISFramework {
 //	protected static AppointmentDMO appointmentDMO
 //	etc.
 	
-	/** getInstance() 
-	 * returns the ONLY instance of GPSIS
-	 * @return the instance of GPSIS
-	 */
-	public static GPSIS getInstance()
-	{
-		return instance;
-	}
 	
 	/** initialise
 	 * Initialises the Framework

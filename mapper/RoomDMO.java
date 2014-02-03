@@ -2,13 +2,10 @@ package mapper;
 
 import framework.GPSISDataMapper;
 import object.Room;
-import object.StaffMember;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class RoomDMO extends GPSISDataMapper<Room> {

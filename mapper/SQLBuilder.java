@@ -7,7 +7,6 @@
 package mapper;
 import java.util.ArrayList;
 
-import mapper.StaffMemberDMO;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -176,12 +175,5 @@ public class SQLBuilder {
         query = PreparedStatementWhere(query);
         
         return executeStatement(dbConn, query);
-    }
-    public static void main(String [] args) throws SQLException
-    {
-        SQLBuilder query= new SQLBuilder("username","=","vj")
-            .OR( "username", "=","salman")
-            .AND( "age",">=","18");
-        
     }
 }
