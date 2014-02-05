@@ -121,7 +121,7 @@ public class LoginModule extends GPSISModule implements ActionListener {
 		String inputPassword = new String(StaffMember.encrypt(new String(this.passwordFld.getPassword())));
 		
 		// execute login		
-		StaffMember sM = staffMemberDMO.getByProperties(new SQLBuilder("username","=", username));
+		StaffMember sM = staffMemberDMO.getByProperties(new SQLBuilder("username", "=", username));
 		
 		String password = new String(sM.getEncryptedPassword());
 		

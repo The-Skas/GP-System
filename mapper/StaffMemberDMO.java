@@ -74,7 +74,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
             
             if (res.next()) // if found, create a the StaffMember object 
             {
-            	this.buildStaffMember(res);
+            	return this.buildStaffMember(res);
             }
 
         } 
