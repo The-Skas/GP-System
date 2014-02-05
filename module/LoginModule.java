@@ -85,6 +85,7 @@ public class LoginModule extends GPSISModule implements ActionListener {
 				gbC.gridx = 1;
 				gbC.gridy = 1;
 				gbC.gridwidth = 2;
+				this.passwordFld.addActionListener(this);
 			loginForm.add(this.passwordFld, gbC);
 			
 			JButton loginBtn = new JButton("Login!");

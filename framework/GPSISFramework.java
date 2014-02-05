@@ -14,6 +14,7 @@ public class GPSISFramework {
 	protected static RoomDMO roomDMO;
 	protected static CareProgrammeDMO careProgrammeDMO;
 	protected static StaffMemberDMO staffMemberDMO = StaffMemberDMO.getInstance();
+	protected static TaxOfficeDMO taxOfficeDMO = TaxOfficeDMO.getInstance();
 //  protected static PatientDMO patientDMO;
 //	protected static AppointmentDMO appointmentDMO
 //	etc.
@@ -25,6 +26,7 @@ public class GPSISFramework {
 	 *  - Database Connection
 	 *  	- Check tables
 	 *  		- If not, initialise tables
+	 *  	- Check if Current Day is in StaffMember Register, otherwise create entry
 	 *  	- Check StaffMembers (if none, fresh installation, execute installation)
 	 *  - Load Login Module
 	 *  - Load Menu Module
