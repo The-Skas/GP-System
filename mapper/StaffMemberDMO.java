@@ -3,6 +3,7 @@ package mapper;
  * This Data Mapper contains all of the methods concerned with the Staff Member Table.
  * There are many-to-many relations with other Entities and therefore there are more complex methods in here.
  */
+import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 import object.MedicalStaffMember;
 import object.Receptionist;
@@ -41,32 +42,13 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
             instance = new StaffMemberDMO("StaffMember");
         return instance;
     }
-        
-    /** getAll
-     * return a Set of all StaffMembers
-     */
-    public Set<StaffMember> getAll()
-    {
-        return getAllByProperties(new SQLBuilder());
-    }
-
-    
-    /** getById 
-     * @param id the id of the StaffMember to retrieve
-     * @return a StaffMember object that relates to the id
-     */
-    public StaffMember getById(int id)
-    {
-        return this.getByProperties(new SQLBuilder("id", "=", ""+id));
-        
-    }
     
     /** getByProperties
      * Returns the first StaffMember object matching the criteria
      * @param query an SQLBuilder query
      * @return the first StaffMember object in the ResultSet
      */
-    public StaffMember getByProperties(SQLBuilder query) 
+    public StaffMember getByProperties(SQLBuilder query) throws EmptyResultSetException
     {
         try 
         {
@@ -82,7 +64,8 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         {
             e.printStackTrace();
         }
-        return null;
+        // throw Exception because of empty result set
+        throw new EmptyResultSetException();
     }
         
     /** getAllByProperties
@@ -90,7 +73,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
      * @param query an SQLBuild query
      * @return a Set containing all of the StaffMembers that match the given criteria
      */
-    public Set<StaffMember> getAllByProperties(SQLBuilder query) 
+    public Set<StaffMember> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
     {
           Set<StaffMember> staffMembers = new HashSet<>();
           
@@ -112,12 +95,13 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     
     /** buildStaffMember
      * builds a Staff Member object from the given Result Set. Used as a helper method in retrieving StaffMembers from the Database
-     * Returns the correct object type (Receptionist or MedicalStaffMember) and includes their temp contract if needed
+     * Returns the correct object type (Receptionist or MedicalStaffMember) and includes their temporary contract if needed
      * @param res
      * @return a complete Staff Member
      * @throws SQLException
+     * @throws EmptyResultSetException 
      */
-    private StaffMember buildStaffMember(ResultSet res) throws SQLException
+    private StaffMember buildStaffMember(ResultSet res) throws SQLException, EmptyResultSetException
     {
     	if (res != null) // if found, create a the StaffMember object 
         {
@@ -149,7 +133,8 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         								startDate,
         								res.getBoolean("office_manager"),
         								res.getInt("holiday_allowance"));
-        		r.setContract(endDate);
+        		if (endDate != null)
+        			r.makeTemporary(endDate);
         		return r;
         	}
         	else // if the Staff Member is a MedicalStaffMember (Doctor or Nurse)
@@ -164,16 +149,17 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 											res.getBoolean("office_manager"),
 											res.getString("role"), 
 											res.getInt("holiday_allowance"));
-        		mSM.setContract(endDate);
+        		if (endDate != null)
+        			mSM.makeTemporary(endDate);
         		return mSM;
         	}
             
         }
         else 
         {
-            System.err.println("EMPTY SET - No Staff Member Found matching the criteria");
+        	// throw Exception because of Empty set
+        	throw new EmptyResultSetException();
         }
-		return null;
     }
     
     /** removeById
@@ -232,12 +218,14 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 
     }
     
-    /**
-     * 
+    /** getAllHolidays
+     * retrieves all of the Holidays for a Staff Member
+     * @param
      * @return
      */
-    public Set<Date> getAllHolidays(StaffMember o)
+    public Set<Date> getAllHolidays(StaffMember o) throws EmptyResultSetException
     {
+    	// TODO StaffMemberDMO:getAllHolidays
     	if (o.getAllHolidays() == null)
     	{
     		// retrieve holidays from database
@@ -250,30 +238,14 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	}
     }
     
-    public Set<Date> getCurrentYearHolidays(StaffMember o)
+    /** getAbsences
+     * 
+     * @param o
+     * @return
+     */
+    public Set<Date> getAbsences(StaffMember o) throws EmptyResultSetException
     {
-    	if (o.getCurrentYearHolidays() == null)
-    	{
-    		if (o.getAllHolidays() == null)
-    		{
-    			// retrieve holidays
-    			this.getAllHolidays(o);
-    			// recall function
-    			return this.getCurrentYearHolidays(o);
-    		}
-    		else
-    		{
-    			return null;
-    		}
-    	}
-    	else
-    	{
-    		return o.getCurrentYearHolidays();
-    	}
-    }
-    
-    public Set<Date> getAbsences(StaffMember o)
-    {
+    	// TODO StaffMemberDMO:getAbsences
     	if (o.getAbsences() == null)
     	{
     		// retrieve absences
@@ -288,12 +260,14 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     
     public Set<Date> getAvailables()
     {
+    	// TODO StaffMemberDMO:getAvailables
 		return null;
     	
     }
     
     public Set<TaxForm> getTaxForms()
     {
+    	// TODO StaffMemberDMO:getTaxForms
 		return null;
     	
     }
@@ -305,6 +279,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
      */
     public void addHoliday(StaffMember sM, Date dateOfHol)
     {
+    	// TODO StaffMemberDMO:addHoliday
     	
     	// INSERT INTO Register COLUMNS (date) VALUES (dateOfHol.date())
   
@@ -314,13 +289,18 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	
     }
     
+    public void registerStaffMember(StaffMember sM)
+    {
+    	// TODO StaffMemberDMO:registerStaffMember
+    }
+    
     public void addTaxForm()
     {
-    	
+    	// TODO StaffMemberDMO:addTaxForm
     }
     
     public void addAvailability()
     {
-    	
+    	// TODO StaffMemberDMO:addAvailability
     }
 }

@@ -15,6 +15,7 @@ import object.CareProgramme;
 import object.RoutineAppointment;
 import object.CareManagementAppointment;
 import object.StaffMember;
+import object.Patient;
 
 import java.sql.Statement;
 import java.util.HashSet;
@@ -67,7 +68,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
             		cal.add(Calendar.MINUTE, 15);
             		Date endTime = cal.getTime();
             		
-            		Patient p = patientDMO.getById(res.getInt("patient_id")); 
+            		Patient p = patientDMO.getById(res.getInt("patient_id"));
             		StaffMember sm = staffMemberDMO.getById(res.getInt("staff_member_id"));
             		
             		return new RoutineAppointment(startTime, endTime, p, sm, res.getString("summary"));

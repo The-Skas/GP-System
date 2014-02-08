@@ -14,7 +14,6 @@ public class Receptionist extends StaffMember {
 
 	public Receptionist(int id, String u, byte[] p, String fN, String lN, boolean fT, Calendar sD, boolean oM, int hA) {
 		super(id, u, p, fN, lN, fT, sD, oM, "Receptionist", hA);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public boolean isAvailable(Date c)

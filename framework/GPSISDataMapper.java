@@ -4,16 +4,18 @@ package framework;
  * NOTE: Every class that extends this model SHOULD be appended with DMO. e.g PatientDMO, CareProgrammeDMO etc.
  * 
  * @author Vijendra Patel
- * @version 2
  */
 import mapper.SQLBuilder;
 import static mapper.SQLBuilder.*;
+
 import java.util.Set;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import exception.EmptyResultSetException;
 
 
 public abstract class GPSISDataMapper<T> extends GPSISFramework {
@@ -142,16 +144,23 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
     /** getAll
 	 * return a set containing all of the elements in the table for the child element
 	 * @return a Set of elements from the table in their Object form.
-	 * @throws SQLException 
+	 * @throws EmptyResultSetException 
 	 */
-	public abstract Set<T> getAll();
+	public Set<T> getAll() throws EmptyResultSetException
+	{
+		return this.getAllByProperties(new SQLBuilder());
+	}
 	
     /** getById
 	 * return a single Object of this table type
 	 * @param id the numerical identifier for the row in the table
 	 * @return a single Object which has the given id.
+	 * @throws EmptyResultSetException
 	 */
-	public abstract T getById(int id);
+	public T getById(int id) throws EmptyResultSetException
+	{
+		return this.getByProperties(new SQLBuilder("id", "=", ""+id));
+	}
 	
 	/** getByProperties
 	 * return the first Object in the table that matches the given criteria
@@ -160,7 +169,7 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
 	 * @param p  the Map with the filter parameters in
 	 * @return a single Object which matches the Property and Value
 	 */
-	public abstract T getByProperties(SQLBuilder query);
+	public abstract T getByProperties(SQLBuilder query) throws EmptyResultSetException;
 	
 	
 	/** getAllByProperty
@@ -169,7 +178,7 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
 	 * @param v the Value of the Property to match
 	 * @return a Set containing all of the Objects that match the Property and Value
 	 */
-	public abstract Set<T> getAllByProperties(SQLBuilder query);
+	public abstract Set<T> getAllByProperties(SQLBuilder query) throws EmptyResultSetException;
 	
 	/** removeById
 	 * remove a Row from the table matched by a given id
@@ -187,37 +196,6 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
 	/** put
 	 * Saves a given object to the database. automatically chooses whether to UPDATE or INSERT into the table
 	 * @param o the object of given type to insert or update on the database
-	 * 
-	 * EXAMPLE in RoomDMO Class
-	 * public void put(Room o)
-	 * {
-	 * 		if (o.getId() != 0) // if the object already exists on the database, use UPDATE
-	 * 			try
-	 * 			{
-	 * 				PreparedStatement pS = dbConnection.prepareStatement("UPDATE room SET description = ? WHERE room.id = ?");
-	 * 				pS.setString(1, o.getDescription());
-	 * 				pS.setInt(2, o.getId());
-	 * 				pS.executeUpdate();
-	 * 			}
-	 * 			catch (SQLException e)
-	 * 			{
-	 * 				e.printStackTrace();
-	 * 			}
-	 * 		else // Use INSERT as the Object needs to be created on the database
-	 * 		{
-	 * 			try
-	 * 			{
-	 * 				PreparedStatement pS = dbConnection.prepareStatement("INSERT INTO room (description) VALUES (?)");
-	 * 				pS.setString(1, o.getDescription());
-	 * 				pS.executeUpdate();
-	 * 			}
-	 * 			catch (SQLException e)
-	 * 			{
-	 * 				e.printStackTrace();
-	 * 			}
-	 * 
-	 * 		}
-	 * 
 	 */
 	public abstract void put(T o);
 

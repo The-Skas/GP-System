@@ -1,27 +1,31 @@
-package module;
-/** WelcomeModule
- * The initial Module to show greeting a User to the application :)
- * @author VJ
+/**
+ * 
  */
+package module;
+
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 import framework.GPSISModuleMain;
 
-public class WelcomeModule extends GPSISModuleMain {
+public class PatientModule extends GPSISModuleMain {
 
+	@Override
 	public JPanel getModuleView() {
-		JPanel welcomeView = new JPanel(new GridBagLayout());
+		JPanel patientModuleView = new JPanel(new GridBagLayout());
 		
-		JLabel greeting = new JLabel("Welcome " + currentUser.getFirstName() + "!");
+		JLabel greeting = new JLabel("This is the Patient Module Main View in module/PatientModule.java!");
 			greeting.setFont(new Font("Serif", Font.BOLD, 24));
 			GridBagConstraints gbC = new GridBagConstraints();
 			gbC.anchor = GridBagConstraints.CENTER;
-		welcomeView.add(greeting, gbC);
+		patientModuleView.add(greeting, gbC);
 		
-		return welcomeView;
+		return patientModuleView;
 	}
+
+
 }

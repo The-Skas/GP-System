@@ -1,11 +1,12 @@
 package object;
 
-/**
- * 
+/** StaffMember Object
+ * An Abstract class defining and implementing the methods that are inherited by MedicalStaffMember and Receptionist
  * @author Vijendra Patel
  */
 
 
+import exception.EmptyResultSetException;
 import framework.GPSISObject;
 
 import javax.crypto.BadPaddingException;
@@ -45,8 +46,12 @@ public abstract class StaffMember extends GPSISObject {
 	protected Set<Date> unavailables;
 	protected Set<TaxForm> taxForms;
 	
+	public static final String RECEPTIONIST = "Receptionist";
+	public static final String DOCTOR = "Doctor";
+	public static final String NURSE = "Nurse";
+	
 	// already exists in Database
-	public StaffMember(int id, String u, byte[] p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
+	protected StaffMember(int id, String u, byte[] p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
 	{
 		this.id = id;
 		this.username = u;
@@ -61,7 +66,7 @@ public abstract class StaffMember extends GPSISObject {
 	}
 	
 	// insert into database
-	public StaffMember(String u, String p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
+	protected StaffMember(String u, String p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
 	{
 		this.username = u;
 		this.encryptedPassword = doHash(p);
@@ -143,57 +148,111 @@ public abstract class StaffMember extends GPSISObject {
 		return this.holidayAllowance - holidays.size();
 	}
 	
-	public Set<Date> getAllHolidays()
+	/** getAllHolidays
+	 * returns all of the Dates that this Staff Member has booked for a holiday
+	 * @return a Set of Dates that the Staff Member has booked as Holiday
+	 * @throws EmptyResultSetException 
+	 */
+	public Set<Date> getAllHolidays() throws EmptyResultSetException
 	{
-		return this.holidays;
+		if (this.holidays != null)
+			return this.holidays;
+		else
+		{
+			return staffMemberDMO.getAllHolidays(this);
+		}
 	}
-
+	
+	/** getCurrentYearHolidays
+	 * returns all of the Dates that this Staff Member has booked for a holiday this year
+	 * @return a Set of Dates that this Staff Member has booked for a holiday this year
+	 */
 	public Set<Date> getCurrentYearHolidays()
 	{
-		// TODO
-		return null;
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
+		Date oneYearAgo = c.getTime();
+		Set<Date> result = new HashSet<Date>();
+		for (Date d : this.holidays)
+		{
+			if (d.getTime() > oneYearAgo.getTime()) // if the date is between NOW and 1 Year Ago
+			{
+				result.add(d);
+			}
+		}
+		
+		// only return a Set if there are results inside
+		if (!result.isEmpty())
+			return result;
+		else
+			return null;
 	}
 	
-	public Set<Date> getAbsences()
+	/** getAbsences
+	 * returns all of the Dates that this Staff Member has been absent
+	 * @return a Set of Dates that this Staff Member has been absent for
+	 * @throws EmptyResultSetException 
+	 */
+	public Set<Date> getAbsences() throws EmptyResultSetException
 	{
-		return this.absences;
-	}
-	
-	public Set<Date> getUnavailables()
-	{
-		return null;
+		if (this.absences != null)
+			return this.absences;
+		else
+		{
+			return staffMemberDMO.getAbsences(this);
+		}
 	}
 
-	/**
-	 * 
-	 * @return
+	/** isOfficeManager
+	 * returns whether or not this Staff Member is an Office Manager or not
+	 * @return true if this Staff Member is an Office Manager, false otherwise
 	 */
 	public boolean isOfficeManager()
 	{
 		return this.officeManager;
 	}
 	
+	/** isDoctor
+	 * returns whether or not this Staff Member is a Doctor or not
+	 * @return true if this Staff Member is a Doctor, false otherwise
+	 */
 	public boolean isDoctor()
 	{
 		return this.role.equals("Doctor");
 	}
 	
+	/** isNurse
+	 * returns whether or not this Staff Member is a Nurse or not
+	 * @return true if this Staff Member is a Nurse, false otherwise
+	 */
 	public boolean isNurse()
 	{
 		return this.role.equals("Nurse");
 	}
 	
+	/** isReceptionist
+	 * returns whether or not this Staff Member is a Receptionist or not
+	 * @return true if this Staff Member is a Receptionist, false otherwise
+	 */
 	public boolean isReceptionist()
 	{
 		return this.role.equals("Receptionist");
 	}
 	
+	/** isTemporary
+	 * returns whether or not this Staff Member is a Temporary Staff Member
+	 * @return true if this Staff Member is a Temporary Staff Member, false otherwise
+	 */
 	public boolean isTemp()
 	{
 		return this.endDate != null;
 	}
 	
-	public void setContract(Calendar eD)
+	/** makeTemporary
+	 * makes this Staff Member temporary by giving them an End Date
+	 * @param eD the End Date of the Contract
+	 */
+	public void makeTemporary(Calendar eD)
 	{
 		this.endDate = eD;
 	}
@@ -205,6 +264,15 @@ public abstract class StaffMember extends GPSISObject {
 	public void setPassword(String p)
 	{
 		this.encryptedPassword = doHash(p);
+	}
+	
+	/** setRole
+	 * set the Role for the Staff Member given by a String. USE CONSTANT VALUES e.g StaffMember.RECEPTIONIST
+	 * @param r
+	 */
+	public void setRole(String r)
+	{
+		this.role = r;
 	}
 	
 	/** getEncryptedPassword
@@ -234,6 +302,23 @@ public abstract class StaffMember extends GPSISObject {
 		return !this.fullTime;
 	}
 	
+	/**
+	 * 
+	 */
+	public void register()
+	{
+		
+	}
+	
+	/**
+	 * 
+	 */
+	public void addHoliday()
+	{
+		
+	}
+	
+	
 	/** public accessor to do the private method in which we hash a String
 	 * 
 	 * @param p the String to hash
@@ -245,7 +330,7 @@ public abstract class StaffMember extends GPSISObject {
 	}
 	
 	/** doHash
-	 * this where all of the magic Hashing works. The String is hashed using a secret Passphrase with MD5 and DES
+	 * this where all of the magic Hashing works. The String is hashed using a secret Pass Phrase with MD5 and DES
 	 * @param p the String to hash
 	 * @return a byte array of the hashed string
 	 */
@@ -255,7 +340,7 @@ public abstract class StaffMember extends GPSISObject {
 		byte[] salt = { (byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c, (byte)0x7e, (byte)0xc8, (byte)0xee, (byte)0x99 };
 		PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 20);
 		
-		// generate key with passphrase
+		// generate key with pass phrase
 		PBEKeySpec pbeKeySpec = new PBEKeySpec(passphrase.toCharArray()); 
 		
 		try {
@@ -266,7 +351,7 @@ public abstract class StaffMember extends GPSISObject {
 			// Create the Cipher
 			Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
 			
-			// Initialise with key and params
+			// Initialise with key and parameters
 			pbeCipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
 			
 

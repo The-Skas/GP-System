@@ -1,4 +1,4 @@
-package module;
+package module.CalendarAppointments;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

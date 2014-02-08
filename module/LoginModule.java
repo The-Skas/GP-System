@@ -1,10 +1,15 @@
 package module;
+/** LoginModule
+ * Displays the Login Window and Sets the static currentUser variable
+ * @author VJ
+ */
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,8 +19,10 @@ import javax.swing.JTextField;
 
 import mapper.SQLBuilder;
 import object.StaffMember;
-import framework.GPSISModule;
-public class LoginModule extends GPSISModule implements ActionListener {
+import exception.EmptyResultSetException;
+import framework.GPSISFramework;
+
+public class LoginModule extends GPSISFramework implements ActionListener {
 	
 	private JFrame gpsisLogin = new JFrame(APPTITLE + " Login");
 	private JTextField usernameFld;
@@ -106,12 +113,13 @@ public class LoginModule extends GPSISModule implements ActionListener {
 			gbC.gridwidth = 3;
 		this.gpsisLogin.add(loginForm, gbC);
 		
+		this.gpsisLogin.setLocationRelativeTo(null); // center window
+		
 		this.gpsisLogin.setVisible(true);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		
 		System.out.println("Logging in...");
 		System.out.println("\tUsername: " + this.usernameFld.getText());
@@ -120,27 +128,33 @@ public class LoginModule extends GPSISModule implements ActionListener {
 		String username = this.usernameFld.getText();
 		String inputPassword = new String(StaffMember.encrypt(new String(this.passwordFld.getPassword())));
 		
-		// execute login		
-		StaffMember sM = staffMemberDMO.getByProperties(new SQLBuilder("username", "=", username));
-		
-		String password = new String(sM.getEncryptedPassword());
-		
-		if (password.trim().equals(inputPassword.trim()))
+		// execute login
+		StaffMember sM;
+		try 
 		{
-			System.out.println("Succesfully Logged In! :D");
-			gpsisLogin.dispose(); // close login window
-			currentUser = sM; // set the current user
-			
-			WelcomeModule wM = new WelcomeModule(); // load the welcome module
-			wM.createAndShowGUI(); // show the welcome module
-			
-			// close login window and open main window with StaffMember object in the parameter
-		}
-		else
+			sM = staffMemberDMO.getByProperties(new SQLBuilder("username", "=", username));
+			String password = new String(sM.getEncryptedPassword());
+			if (password.trim().equals(inputPassword.trim()))
+			{
+				System.out.println("Succesfully Logged In! :D");
+				gpsisLogin.dispose(); // close login window
+				currentUser = sM; // set the current user
+				
+				MainInterface wM = new MainInterface(); // load the welcome module
+				wM.createAndShowGUI(); // show the welcome module
+				
+				// close login window and open main window with StaffMember object in the parameter
+			}
+			else
+			{
+				System.out.println(password.trim() + " != " + inputPassword.trim());
+			}
+		} 
+		catch (EmptyResultSetException ex) 
 		{
-			System.out.println(password.trim() + " != " + inputPassword.trim());
+			System.out.println("Invalid User");
 		}
-		
+				
 	}
 	
 }
