@@ -17,7 +17,7 @@ public class GPSISFramework {
 	protected static StaffMemberDMO staffMemberDMO = StaffMemberDMO.getInstance();
 	protected static TaxOfficeDMO taxOfficeDMO = TaxOfficeDMO.getInstance();
 	protected static CalendarAppointmentDMO calendarAppointmentDMO = CalendarAppointmentDMO.getInstance();
-//  protected static PatientDMO patientDMO;
+    protected static PatientDMO patientDMO = PatientDMO.getInstance();
 //	protected static AppointmentDMO appointmentDMO
 //	etc.
 	

@@ -50,22 +50,12 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         return patient;
     }
     
-    @Override
-    public Set<Patient> getAll() {
-        return getAllByProperties( new SQLBuilder());
-    }
-
-    @Override
-    public Patient getById(int id) {
-        return this.getByProperties(new SQLBuilder("id", "=", ""+id));
-    }
 
     @Override
     public Patient getByProperties(SQLBuilder query) {
     try {
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
             
-            Patient patient;
             if (res.next()) { // if found, create a the StaffMember object
 
                 //I can make one query, and have a boolean that checks.
@@ -76,7 +66,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 //be a simple if. Hacky. Hm. From a design point. I still, need
                 //patient to be a super class. As the way the database has
                 //created it is to set that.
-                patient = new Patient( res.getInt("id"), 
+                Patient patient = new Patient( res.getInt("id"), 
                                     res.getString("first_name"), 
                                     res.getString("last_name"),
                                     res.getString("sex").charAt(0),
@@ -85,8 +75,8 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                                     res.getString("phone"),
                                     res.getDate("dob"));
                 
-                
-//                patient = PatientDMO.getPermenantPatientById(int id);
+                return patient;
+                ///patient = PatientDMO.getPermenantPatientById(int id);
                 
             } else {
                 System.err.println("EMPTY SET");

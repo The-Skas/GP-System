@@ -1,14 +1,17 @@
 package mapper;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
 
+import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 import object.CalendarAppointment;
 import object.CareProgramme;
@@ -24,7 +27,7 @@ import java.util.logging.Logger;
 
 public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment> {
 
-	Calendar cal = java.util.Calendar.getInstance(); 
+	static	Calendar cal = java.util.Calendar.getInstance(); 
     private CalendarAppointmentDMO(String tableName)
     {
         this.tableName = tableName;
@@ -40,21 +43,10 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         }
         return instance;
     }
-
-	@Override
-	public Set<CalendarAppointment> getAll() {
-		// TODO Auto-generated method stub
-		return getAllByProperties( new SQLBuilder());	
-	}
-
-	@Override
-	public CalendarAppointment getById(int id) {
-		// TODO Auto-generated method stub
-		return this.getByProperties(new SQLBuilder("id", "=", ""+id));
-	}
-
+	
 	@Override 
-	public CalendarAppointment getByProperties(SQLBuilder query) {
+	public CalendarAppointment getByProperties(SQLBuilder query) throws EmptyResultSetException
+	{
 		try {
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
               
@@ -71,16 +63,15 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
             		Patient p = patientDMO.getById(res.getInt("patient_id"));
             		StaffMember sm = staffMemberDMO.getById(res.getInt("staff_member_id"));
             		
-            		return new RoutineAppointment(startTime, endTime, p, sm, res.getString("summary"));
+            		return new RoutineAppointment(startTime, endTime, p, sm);
             		
             	} else { // return Care Programme Appointment
             		
-            		Date startTime; 
-            		Date endTime;
             		cal.setTime(res.getTime("start_time"));
+            		Date startTime = cal.getTime();
             		cal.setTime(res.getTime("end_time"));
+            		Date endTime = cal.getTime();
             	
-            	StaffMember sM = staffMemberDMO.getById(res.getInt("staff_member_id"));
             	CareProgramme cp = careProgrammeDMO.getById(res.getInt("care_programme_id"));
                 
                 return new CareManagementAppointment(startTime, endTime, cp);
@@ -89,11 +80,12 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new EmptyResultSetException();
 	}
 	
 	@Override
-	public Set<CalendarAppointment> getAllByProperties(SQLBuilder query) { // returns a Set with all the CalendarAppointment objects
+	public Set<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
+	{ // returns a Set with all the CalendarAppointment objects
 		  Set<CalendarAppointment> calendarAppointments = new HashSet<>(); // create a new HashSet with all the Calendar Appointments
           try {            
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);                                  
@@ -106,7 +98,10 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
+          if(calendarAppointments.isEmpty())
+        	  throw new EmptyResultSetException();
+          else
+        	  return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
@@ -125,30 +120,51 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 
 	@Override
 	public void put(CalendarAppointment o) {
+        SQLBuilder sql = null;
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
+        String startTime = format.format(o.getStartTime());
+        String endTime = format.format(o.getEndTime());
+        if(o.isRoutine())
+        {
+        sql = new SQLBuilder("id","=",""+o.getId())
+            .SET("start_time","=",""+startTime)
+            .SET("end_time", "=", ""+endTime)
+            .SET("patient_id","=",""+((RoutineAppointment) o).getPatient().getId())
+            .SET("staff_member_id", "=",""+((RoutineAppointment) o).getDoctor().getId());
+        }
+        else // it is not routine
+        {
+        	System.out.println("CalendarAppointment");
+             sql = new SQLBuilder("id","=",""+o.getId())
+            .SET("start_time","=",""+o.getStartTime())
+            .SET("end_time", "=", ""+o.getEndTime())
+            .SET("care_programme_id","=",""+((CareManagementAppointment) o).getCareProgramme().getId());
+        }
+           
+    try {
+        putHelper(sql, this.tableName);
+        } catch (SQLException ex) {
+        Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+	
+	public static void main (String[] args)
+	{
 		
-		if (o.getId() != 0) // if the object already exists on the database, use UPDATE
-			try
-			{
-				PreparedStatement pS = dbConnection.prepareStatement("UPDATE CalendarAppointment SET some_property = ? WHERE staff_member.id = ?");
-				//pS.setString(1, o.someCalendarAppointmentGetMethod());
-				pS.executeUpdate();
-			}
-			catch (SQLException e)
-			{
-				e.printStackTrace();
-			}
-		else // Use INSERT as the Object needs to be created on the database
+		GPSISDataMapper.connectToDatabase();
+		cal.set(2014, 5, 11, 9, 30);
+		Date d = cal.getTime();
+		
+		cal.set(2014, 5, 11, 9, 45);
+		Date d1 = cal.getTime();
+		
+		try 
 		{
-			try
-			{
-				PreparedStatement pS = dbConnection.prepareStatement("INSERT INTO CalendarAppointment (some_values) VALUES (?)");
-				//pS.setString(1, o.anotherCalendarAppointmentGetMethod());
-				pS.executeUpdate();
-  			}
-  			catch (SQLException e)
-  			{
-  				e.printStackTrace();
-  			}		  
-  		}		
+			CalendarAppointment ca = new RoutineAppointment(d, d1, patientDMO.getById(2), staffMemberDMO.getById(1));
+		} catch (EmptyResultSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -90,7 +90,10 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         {
             e.printStackTrace();
         }
-        return staffMembers;
+        if (staffMembers.isEmpty())
+        	throw new EmptyResultSetException();
+        else
+        	return staffMembers;
     }
     
     /** buildStaffMember
