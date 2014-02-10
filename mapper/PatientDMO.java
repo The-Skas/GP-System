@@ -6,7 +6,7 @@
 
 package mapper;
 import framework.GPSISDataMapper;
-import static framework.GPSISDataMapper.putHelper;
+import static framework.GPSISDataMapper.*;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -143,7 +143,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 .SET("postcode", "=", ""+o.getPostCode())
                 .SET("phone", "=", ""+ o.getPhone());
         try {
-            putHelper(sql, this.tableName);
+            putHelper(sql, this.tableName, o);
         } catch (SQLException ex) {
             Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -151,12 +151,18 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     
     public static void main(String [] args)
     {
+        GPSISDataMapper.connectToDatabase();
         PatientDMO tbl = PatientDMO.getInstance();
+        
         Patient patient;
         //Should return Patient whos ID is one.
 //        Patient patient = tbl.getById(1);
 
-        patient = new Patient(1, "cool", "beans", 'm', "n123fx", "London", "0737231313", new Date(1,3,4));
+        patient = new Patient(11,"jeezus", "beans", 'm', "n123fx", "London", "0737231313", new Date(1,3,4));
+        
+        tbl.put(patient);
+        
+        System.out.println(patient.getId());
     }
     
 

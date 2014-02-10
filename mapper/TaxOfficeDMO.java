@@ -171,7 +171,7 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
                 .SET("postcode_district", "=", o.getPostcodeDistrict());
         try 
         {
-            putHelper(sql, this.tableName);
+            putHelper(sql, this.tableName, o);
         } 
         catch (SQLException e) 
         {

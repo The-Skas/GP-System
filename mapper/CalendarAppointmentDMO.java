@@ -143,7 +143,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         }
            
     try {
-        putHelper(sql, this.tableName);
+        putHelper(sql, this.tableName, o);
         } catch (SQLException ex) {
         Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
         }

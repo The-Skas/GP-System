@@ -16,6 +16,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import exception.EmptyResultSetException;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 
 
 public abstract class GPSISDataMapper<T> extends GPSISFramework {
@@ -107,13 +109,19 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
         }
         pS.executeUpdate();
     }
-    public static void putHelper(SQLBuilder setQ,String tableName) throws SQLException
+    
+    /*
+     * The PutHelper takes a SQLBuilder Object, that should be in SET form
+     * and executes the query within the specified tableName, and sets the
+     * passed object id with the created id.
+     */
+    public static void putHelper(SQLBuilder setQ,String tableName, GPSISObject object) throws SQLException
     {
         String query = "INSERT INTO "+tableName+" SET ";
         //set query
         query = setQ.toPreparedStatement(query)+" ON DUPLICATE KEY UPDATE "+setQ.toPreparedStatement("");
          
-        PreparedStatement pS =dbConnection.prepareStatement(query);
+        PreparedStatement pS =dbConnection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         int i = 1;
         for(String[] qBlock : setQ.qBlocks)
         {
@@ -128,6 +136,12 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
         System.out.println(pS);
 
         pS.executeUpdate();
+        
+        ResultSet keyRs= pS.getGeneratedKeys();
+        if(keyRs.next())
+        {
+            object.setId(keyRs.getInt(1));
+        }
     }
     public static void removeByPropertyHelper(SQLBuilder sqlQ, String tableName) throws SQLException
     {

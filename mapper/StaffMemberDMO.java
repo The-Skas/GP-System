@@ -212,7 +212,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
                 .SET("full_time", "=", "1");
         try 
         {
-            putHelper(sql, this.tableName);
+            putHelper(sql, this.tableName, o);
         } 
         catch (SQLException e) 
         {
