@@ -125,20 +125,20 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         String startTime = format.format(o.getStartTime());
         String endTime = format.format(o.getEndTime());
-        if(o.isRoutine())
+
+	sql = new SQLBuilder("id","=",""+o.getId()) // create and add a CalendarAppointment
+		.SET("start_time","=",""+startTime)
+		.SET("end_time", "=", ""+endTime); 
+
+        if(o.isRoutine()) // create and add a RoutineAppointment
         {
-        sql = new SQLBuilder("id","=",""+o.getId())
-            .SET("start_time","=",""+startTime)
-            .SET("end_time", "=", ""+endTime)
+        sql = new SQLBuilder("id","=",""+o.getId()) // get the same CalendarAppointment id?
             .SET("patient_id","=",""+((RoutineAppointment) o).getPatient().getId())
             .SET("staff_member_id", "=",""+((RoutineAppointment) o).getDoctor().getId());
         }
-        else // it is not routine
+        else  		// create and add a CareManagementAppointment
         {
-        	System.out.println("CalendarAppointment");
              sql = new SQLBuilder("id","=",""+o.getId())
-            .SET("start_time","=",""+o.getStartTime())
-            .SET("end_time", "=", ""+o.getEndTime())
             .SET("care_programme_id","=",""+((CareManagementAppointment) o).getCareProgramme().getId());
         }
            
