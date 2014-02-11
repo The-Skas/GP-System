@@ -6,9 +6,14 @@ package framework;
  * @version 2
  */
 
+import mapper.CalendarAppointmentDMO;
+import mapper.CareProgrammeDMO;
+import mapper.PatientDMO;
+import mapper.RoomDMO;
+import mapper.StaffMemberDMO;
+import mapper.TaxOfficeDMO;
+import module.LoginModule;
 import object.StaffMember;
-import mapper.*;
-import module.*;
 
 public class GPSISFramework {
 	

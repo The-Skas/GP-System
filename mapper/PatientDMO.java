@@ -5,8 +5,6 @@
  */
 
 package mapper;
-import framework.GPSISDataMapper;
-import static framework.GPSISDataMapper.*;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,8 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import object.Patient;
-import object.StaffMember;
+import framework.GPSISDataMapper;
 /**
  *
  * @author skas

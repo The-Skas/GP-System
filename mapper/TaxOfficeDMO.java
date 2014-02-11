@@ -3,13 +3,13 @@ package mapper;
  * This Data Mapper contains all of the methods concerned with the Tax Office Table.
  * There are no many-to-many relations with other Entities.
  */
-import framework.GPSISDataMapper;
-import object.TaxOffice;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+
+import object.TaxOffice;
+import framework.GPSISDataMapper;
 
 public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice> 
 {   

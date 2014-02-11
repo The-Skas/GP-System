@@ -8,7 +8,6 @@ package object;
  * @author VJ
  *
  */
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -22,7 +21,7 @@ public class MedicalStaffMember extends StaffMember {
 	protected Set<Speciality> specialities;
 	
 	// retrieve from database
-	public MedicalStaffMember(int id, String u, byte[] p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
+	public MedicalStaffMember(int id, String u, byte[] p, String fN, String lN, boolean fT, Date sD, boolean oM, String r, int hA)
 	{
 		// TODO MedicalStaffMember:Constructor
 		super(id, u, p, fN, lN, fT, sD, oM, r, hA);
@@ -38,11 +37,11 @@ public class MedicalStaffMember extends StaffMember {
 	}
 	
 	// insert into database
-	public MedicalStaffMember(String u, String p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
+	public MedicalStaffMember(String u, String p, String fN, String lN, boolean fT, Date sD, boolean oM, String r, int hA)
 	{
 		super(u, p, fN, lN, fT, sD, oM, r, hA);
 	}
-	
+
 	public boolean hasSpeciality(Speciality s)
 	{
 		return this.specialities.contains(s);

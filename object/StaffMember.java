@@ -6,8 +6,14 @@ package object;
  */
 
 
-import exception.EmptyResultSetException;
-import framework.GPSISObject;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -18,14 +24,8 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Calendar;
+import exception.EmptyResultSetException;
+import framework.GPSISObject;
 
 public abstract class StaffMember extends GPSISObject {
 	protected String username;
@@ -38,8 +38,8 @@ public abstract class StaffMember extends GPSISObject {
 	protected String role;
 	protected int holidayAllowance;
 	
-	protected Calendar startDate;
-	protected Calendar endDate = null; // null if not temporary
+	protected Date startDate;
+	protected Date endDate = null; // null if not temporary
 
 	protected Set<Date> holidays;
 	protected Set<Date> absences;
@@ -51,7 +51,7 @@ public abstract class StaffMember extends GPSISObject {
 	public static final String NURSE = "Nurse";
 	
 	// already exists in Database
-	protected StaffMember(int id, String u, byte[] p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
+	protected StaffMember(int id, String u, byte[] p, String fN, String lN, boolean fT, Date sD, boolean oM, String r, int hA)
 	{
 		this.id = id;
 		this.username = u;
@@ -66,7 +66,7 @@ public abstract class StaffMember extends GPSISObject {
 	}
 	
 	// insert into database
-	protected StaffMember(String u, String p, String fN, String lN, boolean fT, Calendar sD, boolean oM, String r, int hA)
+	protected StaffMember(String u, String p, String fN, String lN, boolean fT, Date sD, boolean oM, String r, int hA)
 	{
 		this.username = u;
 		this.encryptedPassword = doHash(p);
@@ -117,7 +117,7 @@ public abstract class StaffMember extends GPSISObject {
 		return this.role;
 	}
 	
-	public Calendar getStartDate()
+	public Date getStartDate()
 	{
 		return this.startDate;
 	}
@@ -252,7 +252,7 @@ public abstract class StaffMember extends GPSISObject {
 	 * makes this Staff Member temporary by giving them an End Date
 	 * @param eD the End Date of the Contract
 	 */
-	public void makeTemporary(Calendar eD)
+	public void makeTemporary(Date eD)
 	{
 		this.endDate = eD;
 	}
@@ -379,6 +379,19 @@ public abstract class StaffMember extends GPSISObject {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void printDetails()
+	{
+		System.out.println("Username: " + this.username);
+		System.out.println("Encrypted Password: " + new String(this.encryptedPassword));
+		System.out.println("First Name: " + this.firstName);
+		System.out.println("Last Name: " + this.lastName);
+		System.out.println("Full Time: " + this.fullTime);
+		System.out.println("Office Manager: " + this.officeManager);
+		System.out.println("Role: " + this.role);
+		System.out.println("Holiday Allowance: " + this.holidayAllowance);
+		System.out.println("Start Date: " + this.startDate.getTime());
 	}
 	
 }

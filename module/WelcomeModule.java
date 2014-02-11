@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 import framework.GPSISModuleMain;
 
 public class WelcomeModule extends GPSISModuleMain {

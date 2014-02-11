@@ -3,20 +3,20 @@ package mapper;
  * This Data Mapper contains all of the methods concerned with the Staff Member Table.
  * There are many-to-many relations with other Entities and therefore there are more complex methods in here.
  */
-import exception.EmptyResultSetException;
-import framework.GPSISDataMapper;
-import object.MedicalStaffMember;
-import object.Receptionist;
-import object.StaffMember;
-import object.TaxForm;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+
+import object.MedicalStaffMember;
+import object.Receptionist;
+import object.StaffMember;
+import object.TaxForm;
+import exception.EmptyResultSetException;
+import framework.GPSISDataMapper;
 
 public class StaffMemberDMO extends GPSISDataMapper<StaffMember> 
 {   
@@ -111,20 +111,22 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         	boolean fullTime;
         	// check if temporary staff entry exists in database. SELECT * FROM TempStaffMember WHERE TempStaffMember.staff_member_id = res.getInt("id");
         	ResultSet tempCheckRes = GPSISDataMapper.getResultSet(new SQLBuilder("staff_member_id", "=", ""+res.getInt("id")), "TempStaffMember");
+        	Calendar cal = Calendar.getInstance();
         	
-        	Calendar endDate = null;
+        	Date endDate = null;
         	if (tempCheckRes.first())
         	{
+        		cal.setTime(tempCheckRes.getDate("end_date"));
         		// temp contract and on full time
-        		endDate = Calendar.getInstance();
-        		endDate.setTime(tempCheckRes.getDate("end_date"));
+        		endDate = cal.getTime();
         		fullTime = true;
         	}
         	else
         		fullTime = res.getBoolean("full_time");
         	
-        	Calendar startDate = Calendar.getInstance();
-        	startDate.setTime(res.getDate("start_date"));
+        	cal.setTime(res.getDate("start_date"));
+        	Date startDate = cal.getTime();
+        	
         	if (res.getString("role").equals("Receptionist")) // if the Staff Member is a Receptionist
         	{
         		Receptionist r = new Receptionist(res.getInt("id"),
@@ -201,15 +203,14 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	String sD = fm.format(o.getStartDate().getTime());
         SQLBuilder sql = new SQLBuilder("id","=",""+o.getId())
                 .SET("username","=",""+o.getUsername())
-                .SET("enc_password", "=",""+o.getEncryptedPassword())
+                .SET("enc_password", "=",new String(o.getEncryptedPassword()))
                 .SET("first_name", "=", ""+o.getFirstName())
                 .SET("last_name","=",""+o.getLastName())
                 .SET("full_time", "=","" + (o.isFullTime()? 1 :0))
                 .SET("start_date", "=", sD)
                 .SET("office_manager", "=", "" + (o.isOfficeManager()? 1 :0))
                 .SET("role", "=", o.getRole())
-                .SET("holiday_allowance", "=", "" + o.getHolidayAllowance())
-                .SET("full_time", "=", "1");
+                .SET("holiday_allowance", "=", "" + o.getHolidayAllowance());
         try 
         {
             putHelper(sql, this.tableName, o);

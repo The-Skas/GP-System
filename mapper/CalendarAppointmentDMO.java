@@ -1,29 +1,23 @@
 package mapper;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Map;
-import java.util.Set;
-
-import exception.EmptyResultSetException;
-import framework.GPSISDataMapper;
-import object.CalendarAppointment;
-import object.CareProgramme;
-import object.RoutineAppointment;
-import object.CareManagementAppointment;
-import object.StaffMember;
-import object.Patient;
-
-import java.sql.Statement;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import object.CalendarAppointment;
+import object.CareManagementAppointment;
+import object.CareProgramme;
+import object.Patient;
+import object.RoutineAppointment;
+import object.StaffMember;
+import exception.EmptyResultSetException;
+import framework.GPSISDataMapper;
 
 public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment> {
 

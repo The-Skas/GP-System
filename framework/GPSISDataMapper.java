@@ -5,19 +5,18 @@ package framework;
  * 
  * @author Vijendra Patel
  */
-import mapper.SQLBuilder;
-import static mapper.SQLBuilder.*;
+import static mapper.SQLBuilder.VALUE;
 
-import java.util.Set;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import exception.EmptyResultSetException;
-import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.Set;
+
+import mapper.SQLBuilder;
+import exception.EmptyResultSetException;
 
 
 public abstract class GPSISDataMapper<T> extends GPSISFramework {

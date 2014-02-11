@@ -5,8 +5,9 @@
  */
 
 package object;
-import framework.GPSISObject;
 import java.sql.Date;
+
+import framework.GPSISObject;
 /**
  *
  * @author skas

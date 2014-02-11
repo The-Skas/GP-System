@@ -1,7 +1,7 @@
 package object;
 
-import framework.GPSISObject;
 import mapper.RoomDMO;
+import framework.GPSISObject;
 
 public class Room extends GPSISObject {
 	private String description;

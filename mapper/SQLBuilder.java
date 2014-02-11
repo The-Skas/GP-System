@@ -5,12 +5,11 @@
  */
 
 package mapper;
-import java.util.ArrayList;
-
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 /**
  * The SQLBuilder class serves to abstract the unnecessary work in creating a 
  * SQL Statement. 

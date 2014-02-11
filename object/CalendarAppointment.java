@@ -1,10 +1,8 @@
 package object;
  
-import framework.GPSISObject;
-import mapper.CalendarAppointmentDMO;
- 
 import java.util.Date;
-import java.util.Calendar;
+
+import framework.GPSISObject;
  
  
 public class CalendarAppointment extends GPSISObject 
