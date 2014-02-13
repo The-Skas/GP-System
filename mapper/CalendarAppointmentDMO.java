@@ -22,13 +22,8 @@ import framework.GPSISDataMapper;
 public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment> {
 
 	static	Calendar cal = java.util.Calendar.getInstance(); 
-    private CalendarAppointmentDMO(String tableName)
-    {
-        this.tableName = tableName;
-    }
-    
     private static CalendarAppointmentDMO instance; // to make it a singleton 
-
+    
     public static CalendarAppointmentDMO getInstance() 
     {
         if(instance == null)
@@ -37,7 +32,52 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         }
         return instance;
     }
+
+    public static void main (String[] args)
+	{
+		
+		GPSISDataMapper.connectToDatabase();
+		cal.set(2014, 5, 11, 9, 30);
+		Date d = cal.getTime();
+		
+		cal.set(2014, 5, 11, 9, 45);
+		Date d1 = cal.getTime();
+		
+		try 
+		{
+			CalendarAppointment ca = new RoutineAppointment(d, d1, patientDMO.getById(2), staffMemberDMO.getById(1));
+		} catch (EmptyResultSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
+	private CalendarAppointmentDMO(String tableName)
+    {
+        this.tableName = tableName;
+    }
+	
+	@Override
+	public Set<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
+	{ // returns a Set with all the CalendarAppointment objects
+		  Set<CalendarAppointment> calendarAppointments = new HashSet<>(); // create a new HashSet with all the Calendar Appointments
+          try {            
+            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);                                  
+            while(res.next()) { // if found, create a CalendarAppointment object              
+               calendarAppointments.add(new CalendarAppointment( res.getInt("id"), 
+            		   										     res.getDate("startTime"),
+            		   										     res.getDate("endTime")) );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+          if(calendarAppointments.isEmpty())
+        	  throw new EmptyResultSetException();
+          else
+        	  return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
+	}
+
 	@Override 
 	public CalendarAppointment getByProperties(SQLBuilder query) throws EmptyResultSetException
 	{
@@ -77,42 +117,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         throw new EmptyResultSetException();
 	}
 	
-	@Override
-	public Set<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
-	{ // returns a Set with all the CalendarAppointment objects
-		  Set<CalendarAppointment> calendarAppointments = new HashSet<>(); // create a new HashSet with all the Calendar Appointments
-          try {            
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);                                  
-            while(res.next()) { // if found, create a CalendarAppointment object              
-               calendarAppointments.add(new CalendarAppointment( res.getInt("id"), 
-            		   										     res.getDate("startTime"),
-            		   										     res.getDate("endTime")) );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-          if(calendarAppointments.isEmpty())
-        	  throw new EmptyResultSetException();
-          else
-        	  return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void removeById(int id) { // used the same method as StaffMember
-        try {
-            removeByProperty(new SQLBuilder("id","=",""+id));
-        } catch (SQLException ex) {
-            Logger.getLogger(CalendarAppointmentDMO.class.getName()).log(Level.SEVERE, null, ex); 
-        }
-	}
-	
-	   public void removeByProperty(SQLBuilder query) throws SQLException 
-	    {
-	        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);   
-	    }
-
-	@Override
+	   @Override
 	public void put(CalendarAppointment o) {
         SQLBuilder sql = null;
         String pattern = "yyyy-MM-dd HH:mm:ss";
@@ -142,23 +147,18 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-	
-	public static void main (String[] args)
-	{
-		
-		GPSISDataMapper.connectToDatabase();
-		cal.set(2014, 5, 11, 9, 30);
-		Date d = cal.getTime();
-		
-		cal.set(2014, 5, 11, 9, 45);
-		Date d1 = cal.getTime();
-		
-		try 
-		{
-			CalendarAppointment ca = new RoutineAppointment(d, d1, patientDMO.getById(2), staffMemberDMO.getById(1));
-		} catch (EmptyResultSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+	@Override
+	public void removeById(int id) { // used the same method as StaffMember
+        try {
+            removeByProperty(new SQLBuilder("id","=",""+id));
+        } catch (SQLException ex) {
+            Logger.getLogger(CalendarAppointmentDMO.class.getName()).log(Level.SEVERE, null, ex); 
+        }
 	}
+	
+	public void removeByProperty(SQLBuilder query) throws SQLException 
+	    {
+	        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);   
+	    }
 }

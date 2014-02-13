@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -28,6 +29,49 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 	private JTextField usernameFld;
 	private JPasswordField passwordFld;
 	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		System.out.println("Logging in...");
+		System.out.println("\tUsername: " + this.usernameFld.getText());
+		System.out.println("\tPassword: " + new String(this.passwordFld.getPassword()));
+		
+		String username = this.usernameFld.getText();
+		String inputPassword = new String(StaffMember.encrypt(new String(this.passwordFld.getPassword())));
+		
+		// execute login
+		StaffMember sM;
+		try 
+		{
+			sM = staffMemberDMO.getByProperties(new SQLBuilder("username", "=", username));
+			String password = new String(sM.getEncryptedPassword());
+			if (password.trim().equals(inputPassword.trim()))
+			{
+				System.out.println("Succesfully Logged In! :D");
+				gpsisLogin.dispose(); // close login window
+				currentUser = sM; // set the current user
+				
+				System.out.println("Registering User");
+				staffMemberDMO.register(currentUser);
+				
+				MainInterface wM = new MainInterface(); // load the welcome module
+				wM.createAndShowGUI(); // show the welcome module
+				
+				// close login window and open main window with StaffMember object in the parameter
+			}
+			else
+			{
+				System.out.println(password.trim() + " != " + inputPassword.trim());
+				JOptionPane.showMessageDialog(gpsisLogin, "Invalid Password!", "ERROR", JOptionPane.ERROR_MESSAGE);
+			}
+		} 
+		catch (EmptyResultSetException ex) 
+		{
+			JOptionPane.showMessageDialog(gpsisLogin, "Invalid User!", "ERROR", JOptionPane.ERROR_MESSAGE);
+		}
+				
+	}
+
 	public void showLogin()
 	{
 		this.gpsisLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -116,45 +160,6 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 		this.gpsisLogin.setLocationRelativeTo(null); // center window
 		
 		this.gpsisLogin.setVisible(true);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		
-		System.out.println("Logging in...");
-		System.out.println("\tUsername: " + this.usernameFld.getText());
-		System.out.println("\tPassword: " + new String(this.passwordFld.getPassword()));
-		
-		String username = this.usernameFld.getText();
-		String inputPassword = new String(StaffMember.encrypt(new String(this.passwordFld.getPassword())));
-		
-		// execute login
-		StaffMember sM;
-		try 
-		{
-			sM = staffMemberDMO.getByProperties(new SQLBuilder("username", "=", username));
-			String password = new String(sM.getEncryptedPassword());
-			if (password.trim().equals(inputPassword.trim()))
-			{
-				System.out.println("Succesfully Logged In! :D");
-				gpsisLogin.dispose(); // close login window
-				currentUser = sM; // set the current user
-				
-				MainInterface wM = new MainInterface(); // load the welcome module
-				wM.createAndShowGUI(); // show the welcome module
-				
-				// close login window and open main window with StaffMember object in the parameter
-			}
-			else
-			{
-				System.out.println(password.trim() + " != " + inputPassword.trim());
-			}
-		} 
-		catch (EmptyResultSetException ex) 
-		{
-			System.out.println("Invalid User");
-		}
-				
 	}
 	
 }

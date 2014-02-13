@@ -68,13 +68,13 @@ public class Patient extends GPSISObject{
         this.doctor = null;
     }
     
-    public void setIsPermenant(boolean value)
+    public String getAddress()
     {
-        isPermanent = value;
+        return this.address;
     }
-    public boolean getIsPermenant()
+    public Date getDob()
     {
-        return isPermanent;
+        return this.dob;
     }
     
     public String getFirstName()
@@ -82,20 +82,20 @@ public class Patient extends GPSISObject{
         return this.firstName;
     }
     
+    public boolean getIsPermenant()
+    {
+        return isPermanent;
+    }
+    
     public String getLastName()
     {
         return this.lastName;
     }
     
-    public char getSex()
-    {
-        return this.sex;
-    }
-    
 
-    public Date getDob()
+    public String getPhone()
     {
-        return this.dob;
+        return this.phone;
     }
     
     public String getPostCode()
@@ -103,14 +103,14 @@ public class Patient extends GPSISObject{
         return this.postCode;
     }
     
-    public String getAddress()
+    public char getSex()
     {
-        return this.address;
+        return this.sex;
     }
     
-    public String getPhone()
+    public void setIsPermenant(boolean value)
     {
-        return this.phone;
+        isPermanent = value;
     }
     
     

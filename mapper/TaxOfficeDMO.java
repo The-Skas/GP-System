@@ -16,16 +16,7 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
 	// stores the only instance of this DataMapper
 	private static TaxOfficeDMO instance;
 	
-	/** TaxOfficeDMO Constructor 
-	 * This is Private as part of a Singleton implementation.
-	 * @param tableName
-	 */
-    private TaxOfficeDMO(String tableName)
-    {
-        this.tableName = tableName;
-    }    
-    
-    /** getInstance
+	/** getInstance
      * returns the only instance of the TaxOfficeDMO
      * @return
      */
@@ -34,76 +25,17 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
         if(instance == null)
             instance = new TaxOfficeDMO("TaxOffice");
         return instance;
+    }    
+    
+    /** TaxOfficeDMO Constructor 
+	 * This is Private as part of a Singleton implementation.
+	 * @param tableName
+	 */
+    private TaxOfficeDMO(String tableName)
+    {
+        this.tableName = tableName;
     }
         
-    /** getAll
-     * return a Set of all TaxOffices
-     */
-    public Set<TaxOffice> getAll()
-    {
-        return getAllByProperties(new SQLBuilder());
-    }
-
-    
-    /** getById 
-     * @param id the id of the TaxOffice to retrieve
-     * @return a TaxOffice object that relates to the id
-     */
-    public TaxOffice getById(int id)
-    {
-        return this.getByProperties(new SQLBuilder("id", "=", ""+id));
-        
-    }
-    
-    /** getByProperties
-     * Returns the first TaxOffice object matching the criteria
-     * @param query an SQLBuilder query
-     * @return the first TaxOffice object in the ResultSet
-     */
-    public TaxOffice getByProperties(SQLBuilder query) 
-    {
-        try 
-        {
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);            
-            
-            if (res.next()) // if found, create a the TaxOffice object 
-            {
-            	this.buildTaxOffice(res);
-            }
-
-        } 
-        catch (SQLException e) 
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-        
-    /** getAllByProperties
-     * returns a Set of TaxOffices that match the given criteria
-     * @param query an SQLBuild query
-     * @return a Set containing all of the TaxOffices that match the given criteria
-     */
-    public Set<TaxOffice> getAllByProperties(SQLBuilder query) 
-    {
-          Set<TaxOffice> staffMembers = new HashSet<>();
-          
-          try 
-          {            
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);            
-            while(res.next()) // While there's a TaxOffice, create a the TaxOffice object and add it to a Set
-            {
-                staffMembers.add(this.buildTaxOffice(res));
-            }
-
-        } 
-        catch (SQLException e) 
-        {
-            e.printStackTrace();
-        }
-        return staffMembers;
-    }
-    
     /** buildTaxOffice
      * builds a Staff Member object from the given Result Set. Used as a helper method in retrieving TaxOffices from the Database
      * Returns the correct object type (Receptionist or MedicalTaxOffice) and includes their temp contract if needed
@@ -129,38 +61,85 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
         }
 		return null;
     }
+
     
-    /** removeById
-     * Remove a TaxOffice from the database given its Id
-     * @param id the id of the TaxOffice to remove     * 
+    /** getAll
+     * return a Set of all TaxOffices
      */
-    public void removeById(int id) 
+    @Override
+	public Set<TaxOffice> getAll()
     {
-        try 
-        {
-            removeByProperty(new SQLBuilder("id","=",""+id));
+        return getAllByProperties(new SQLBuilder());
+    }
+    
+    /** getAllByProperties
+     * returns a Set of TaxOffices that match the given criteria
+     * @param query an SQLBuild query
+     * @return a Set containing all of the TaxOffices that match the given criteria
+     */
+    @Override
+	public Set<TaxOffice> getAllByProperties(SQLBuilder query) 
+    {
+          Set<TaxOffice> staffMembers = new HashSet<>();
+          
+          try 
+          {            
+            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);            
+            while(res.next()) // While there's a TaxOffice, create a the TaxOffice object and add it to a Set
+            {
+                staffMembers.add(this.buildTaxOffice(res));
+            }
+
         } 
         catch (SQLException e) 
         {
-        	System.err.println(e.getMessage());
+            e.printStackTrace();
         }
+        return staffMembers;
+    }
+        
+    /** getById 
+     * @param id the id of the TaxOffice to retrieve
+     * @return a TaxOffice object that relates to the id
+     */
+    @Override
+	public TaxOffice getById(int id)
+    {
+        return this.getByProperties(new SQLBuilder("id", "=", ""+id));
+        
     }
     
-    /** removeByProperty
-     * WARNING: Removes all TaxOffices from the database that match the given criteria
-     * @param query the criteria to match
-     * @throws SQLException
+    /** getByProperties
+     * Returns the first TaxOffice object matching the criteria
+     * @param query an SQLBuilder query
+     * @return the first TaxOffice object in the ResultSet
      */
-    public void removeByProperty(SQLBuilder query) throws SQLException 
+    @Override
+	public TaxOffice getByProperties(SQLBuilder query) 
     {
-        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);        
-    }
+        try 
+        {
+            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);            
+            
+            if (res.next()) // if found, create a the TaxOffice object 
+            {
+            	this.buildTaxOffice(res);
+            }
 
+        } 
+        catch (SQLException e) 
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     /** put
      * Put a given TaxOffice object onto the Database. Similar to the put method in a Map data structure. Used for INSERT and UPDATE
      * @param o The TaxOffice object
      */
-    public void put(TaxOffice o) 
+    @Override
+	public void put(TaxOffice o) 
     {
         SQLBuilder sql = new SQLBuilder("id","=",""+o.getId())
                 .SET("name","=",""+o.getName())
@@ -178,5 +157,32 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
         	System.err.println(e.getMessage());
         }
 
+    }
+    
+    /** removeById
+     * Remove a TaxOffice from the database given its Id
+     * @param id the id of the TaxOffice to remove     * 
+     */
+    @Override
+	public void removeById(int id) 
+    {
+        try 
+        {
+            removeByProperty(new SQLBuilder("id","=",""+id));
+        } 
+        catch (SQLException e) 
+        {
+        	System.err.println(e.getMessage());
+        }
+    }
+
+    /** removeByProperty
+     * WARNING: Removes all TaxOffices from the database that match the given criteria
+     * @param query the criteria to match
+     * @throws SQLException
+     */
+    public void removeByProperty(SQLBuilder query) throws SQLException 
+    {
+        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);        
     }
 }

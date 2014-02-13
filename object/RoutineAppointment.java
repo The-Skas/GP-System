@@ -24,17 +24,6 @@ public class RoutineAppointment extends CalendarAppointment{
         this.summary = s;
     }
      
-    public void setSummary(String s)
-    {
-     this.summary = s;
-     calendarAppointmentDMO.put(this);
-    }
- 
-    public Patient getPatient()
-    {
-        return this.patient;
-    }
-     
     public StaffMember getDoctor()
     {
         return this.doctor;
@@ -63,4 +52,15 @@ public class RoutineAppointment extends CalendarAppointment{
          
         RoutineAppointment ra = new RoutineAppointment(sT, eT, d, s);
         return ra; */
+ 
+    public Patient getPatient()
+    {
+        return this.patient;
+    }
+     
+    public void setSummary(String s)
+    {
+     this.summary = s;
+     calendarAppointmentDMO.put(this);
+    }
     } 

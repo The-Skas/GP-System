@@ -1,5 +1,7 @@
 package framework;
 
+import java.util.Locale;
+
 /** GPSIS
  * Initial loading Class.
  * 
@@ -14,6 +16,7 @@ public class GPSIS {
 	 */
 	public static void main(String[] args)
 	{
+		System.out.println(Locale.getDefault().getDisplayCountry());
 		GPSISFramework GPSIS = new GPSISFramework();		
 		GPSIS.initialise();
 	}

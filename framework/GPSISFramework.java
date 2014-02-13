@@ -3,7 +3,6 @@ package framework;
  * Superclass for the GPSIS Framework. The GPSIS System resides under this Root Node.
  * 
  * @author Vijendra Patel
- * @version 2
  */
 
 import mapper.CalendarAppointmentDMO;
@@ -22,8 +21,7 @@ public class GPSISFramework {
 	protected static StaffMemberDMO staffMemberDMO = StaffMemberDMO.getInstance();
 	protected static TaxOfficeDMO taxOfficeDMO = TaxOfficeDMO.getInstance();
 	protected static CalendarAppointmentDMO calendarAppointmentDMO = CalendarAppointmentDMO.getInstance();
-        protected static PatientDMO patientDMO = PatientDMO.getInstance();
-//	protected static AppointmentDMO appointmentDMO
+    protected static PatientDMO patientDMO = PatientDMO.getInstance();
 //	etc.
 	
 	protected static final String APPTITLE = "General Practitioner's Surgery Information System";
@@ -36,10 +34,9 @@ public class GPSISFramework {
 	 *  - Database Connection
 	 *  	- Check tables
 	 *  		- If not, initialise tables
-	 *  	- Check if Current Day is in StaffMember Register, otherwise create entry
 	 *  	- Check StaffMembers (if none, fresh installation, execute installation)
 	 *  - Load Login Module
-	 *  - Load Menu Module
+	 *  - Load Main Module
 	 */
 	public void initialise()
 	{
@@ -56,8 +53,7 @@ public class GPSISFramework {
 		}
 		
 		LoginModule m = new LoginModule();
-		m.showLogin();
-	
+		m.showLogin();	
 	}
 	
 	

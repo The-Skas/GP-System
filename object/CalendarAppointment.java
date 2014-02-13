@@ -24,27 +24,7 @@ public class CalendarAppointment extends GPSISObject
         }
          
          
-        public Date getStartTime()
-        {
-            return this.startTime;
-        }
-         
-         
-        public Date getEndTime()
-        {
-            return this.endTime;
-        }
-         
-        public boolean isRoutine()
-        {
-            if((this.endTime.getTime() - this.startTime.getTime()) == 15*60*1000)
-                return true;
-            else
-                return false;
-        }
-         
- 
-/*
+        /*
  * 
  * Actually, it makes more sense to create new RoutineAppointments and new CareManagementAppointments
  * than creating a CalendarAppointment...
@@ -62,6 +42,26 @@ public class CalendarAppointment extends GPSISObject
         public void determineTrainingDays(){ //this method should only be available for Office Managers
             // check if the logged in user is an Office Manager
  
+        }
+         
+         
+        public Date getEndTime()
+        {
+            return this.endTime;
+        }
+         
+        public Date getStartTime()
+        {
+            return this.startTime;
+        }
+         
+ 
+public boolean isRoutine()
+        {
+            if(this instanceof RoutineAppointment)
+                return true;
+            else
+                return false;
         }
  
         public void WriteAppointmentSummary(){ // doctors are supposed to write a summary of an appointment so that appointment history is available for each patient

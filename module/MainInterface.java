@@ -29,6 +29,46 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	private static CardLayout cl = new CardLayout();
 	private static JPanel view = new JPanel(cl);
 	
+	/** actionPerformed
+	 *  Switch through the Card Layout given by the Action Command
+	 */
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		cl.show(view, ae.getActionCommand());
+	}
+	
+	private JPanel buildFooter()
+	{
+		// set Footer
+		JPanel f = new JPanel(new GridBagLayout());
+		
+			// add footer title
+			GridBagConstraints gbC = new GridBagConstraints();
+			gbC.anchor = GridBagConstraints.FIRST_LINE_START;
+			gbC.weightx = 1;
+			gbC.weighty = 1;
+			gbC.gridx = 0;
+			gbC.gridy = 0;
+			gbC.gridwidth = 9;
+			JLabel fTitle = new JLabel("Logged in as " + currentUser.getUsername());
+		f.add(fTitle, gbC);
+				
+			// add credits
+			gbC = new GridBagConstraints();
+			gbC.anchor = GridBagConstraints.FIRST_LINE_END;
+			gbC.gridx = 9;
+			gbC.gridy = 0;
+			gbC.weightx = 1;
+			gbC.weighty = 1;
+			gbC.gridwidth = 3;
+			JLabel fCredits = new JLabel("Created by: VJ, Salman, Milka, Oshan, Matt and Seun");
+				fCredits.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		f.add(fCredits, gbC);
+		
+		f.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+		return f;
+	}
+	
 	private JPanel buildHeader()
 	{
 		// set Header
@@ -140,39 +180,7 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 		n.setForeground(new Color(235, 235, 235));
 		return n;
 	}
-	
-	private JPanel buildFooter()
-	{
-		// set Footer
-		JPanel f = new JPanel(new GridBagLayout());
-		
-			// add footer title
-			GridBagConstraints gbC = new GridBagConstraints();
-			gbC.anchor = GridBagConstraints.FIRST_LINE_START;
-			gbC.weightx = 1;
-			gbC.weighty = 1;
-			gbC.gridx = 0;
-			gbC.gridy = 0;
-			gbC.gridwidth = 9;
-			JLabel fTitle = new JLabel("Logged in as " + currentUser.getUsername());
-		f.add(fTitle, gbC);
-				
-			// add credits
-			gbC = new GridBagConstraints();
-			gbC.anchor = GridBagConstraints.FIRST_LINE_END;
-			gbC.gridx = 9;
-			gbC.gridy = 0;
-			gbC.weightx = 1;
-			gbC.weighty = 1;
-			gbC.gridwidth = 3;
-			JLabel fCredits = new JLabel("Created by: VJ, Salman, Milka, Oshan, Matt and Seun");
-				fCredits.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		f.add(fCredits, gbC);
-		
-		f.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-		return f;
-	}
-	
+
 	public void createAndShowGUI()
 	{
 		JFrame gpsisMainFrame = new JFrame("General Practitioner's Surgery Information System");
@@ -227,13 +235,5 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 		gpsisMainFrame.setLocationRelativeTo(null); // center on screen
 		gpsisMainFrame.setVisible(true);
 		
-	}
-
-	/** actionPerformed
-	 *  Switch through the Card Layout given by the Action Command
-	 */
-	@Override
-	public void actionPerformed(ActionEvent ae) {
-		cl.show(view, ae.getActionCommand());
 	}
 }

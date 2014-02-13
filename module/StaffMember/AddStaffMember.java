@@ -16,19 +16,20 @@ import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.WindowConstants;
 
 import net.sourceforge.jdatepicker.JDateComponentFactory;
 import net.sourceforge.jdatepicker.JDatePicker;
 import object.MedicalStaffMember;
 import object.Receptionist;
-import object.StaffMember;
+import exception.DuplicateEntryException;
 import framework.GPSISPopup;
 
 public class AddStaffMember extends GPSISPopup implements ActionListener {
@@ -49,7 +50,7 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 	public AddStaffMember() {
 		super("Add Staff Member"); // Set the JFrame Title
 		
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLayout(new GridBagLayout());
 		this.setBackground(new Color(240, 240, 240));
 		this.setSize(400, 450);
@@ -66,7 +67,7 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 			gbC.gridx = 0;
 			gbC.gridy = 0;
 			gbC.weightx = 1;
-			gbC.weighty = 1;
+			gbC.weighty = 0.3;
 			gbC.gridwidth = 3;
 			gbC.ipady = 0;
 		this.add(h, gbC);
@@ -278,7 +279,7 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 			gbC.anchor = GridBagConstraints.CENTER;
 			gbC.gridx = 0;
 			gbC.weightx = 1;
-			gbC.weighty = 1;
+			gbC.weighty = 0.7;
 			gbC.gridwidth = 3;
 		this.add(addStaffMemberForm, gbC);
 		
@@ -289,7 +290,6 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO AddStaffMember:actionPerformed
 		// GET ALL THE VALUES
 		String username = this.usernameFld.getText().trim();
 		String password = new String (this.passwordFld.getPassword());
@@ -301,20 +301,26 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 		String role = (String) this.roleFld.getSelectedItem();
 		int holidayAllowance = (int)this.holidayAllowanceFld.getValue();
 		
-		if (role.equals("Receptionist"))
+		try
 		{
-			StaffMember o = new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
-			o.printDetails();
+			if (role.equals("Receptionist"))
+			{
+					new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
+			}
+			else
+			{
+				new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
+			}
+			System.out.println("Created Staff Member! :D");
+			JOptionPane.showMessageDialog(this, "Created a New Staff Member :)");
+			dispose();
 		}
-		else
+		catch (DuplicateEntryException e)
 		{
-			StaffMember o = new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
-			o.printDetails();
+			JOptionPane.showMessageDialog(this, "Username is already taken!", "Username Taken!", JOptionPane.WARNING_MESSAGE);
 		}
 		
-		System.out.println("Created Staff Member! :D");
 		
-		dispose();
 		
 		
 	}

@@ -38,7 +38,8 @@ import javax.swing.JTextField;
                  button[x].setBackground(Color.white);
                  if (x > 6)
                          button[x].addActionListener(new ActionListener() {
-                                 public void actionPerformed(ActionEvent ae) {
+                                 @Override
+								public void actionPerformed(ActionEvent ae) {
                                          day = button[selection].getActionCommand();
                                          d.dispose();
                                  }
@@ -55,7 +56,8 @@ import javax.swing.JTextField;
          JPanel p2 = new JPanel(new GridLayout(1, 3));
          JButton previous = new JButton("<< Previous");
          previous.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent ae) {
+                 @Override
+				public void actionPerformed(ActionEvent ae) {
                          month--;
                          displayDate();
                  }
@@ -64,7 +66,8 @@ import javax.swing.JTextField;
          p2.add(l);
          JButton next = new JButton("Next >>");
          next.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent ae) {
+                 @Override
+				public void actionPerformed(ActionEvent ae) {
                          month++;
                          displayDate();
                  }
@@ -118,7 +121,8 @@ import javax.swing.JTextField;
          f.pack();
          f.setVisible(true);
          b.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent ae) {
+                 @Override
+				public void actionPerformed(ActionEvent ae) {
                          text.setText(new DatePicker(f).setPickedDate());
                  }
          });

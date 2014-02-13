@@ -14,6 +14,7 @@ import framework.GPSISModuleMain;
 
 public class WelcomeModule extends GPSISModuleMain {
 
+	@Override
 	public JPanel getModuleView() {
 		JPanel welcomeView = new JPanel(new GridBagLayout());
 		

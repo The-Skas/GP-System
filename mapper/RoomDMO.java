@@ -12,10 +12,8 @@ import framework.GPSISDataMapper;
 public class RoomDMO extends GPSISDataMapper<Room> {
     
         
-        private RoomDMO(){};
+        private static RoomDMO instance;;
     
-        private static RoomDMO instance;
-
         public static RoomDMO getInstance() 
         {
             if(instance == null)
@@ -24,6 +22,9 @@ public class RoomDMO extends GPSISDataMapper<Room> {
             }
             return instance;
         }
+
+        private RoomDMO(){}
+	@Override
 	public Set<Room> getAll() {
 		try 
 		{
@@ -46,55 +47,57 @@ public class RoomDMO extends GPSISDataMapper<Room> {
 		return null;
 	}
 	
-	public void put(Room o)	{
-		if (o.getId() != 0) // if the object already exists on the database, use UPDATE
-			try
-			{
-				PreparedStatement pS = dbConnection.prepareStatement("UPDATE room SET description = ? WHERE room.id = ?");
-				pS.setString(1, o.getDescription());
-				pS.setInt(2, o.getId());
-				pS.executeUpdate();
-			}
-			catch (SQLException e)
-			{
-				e.printStackTrace();
-			}
-		else // Use INSERT as the Object needs to be created on the database
-		{
-			try
-			{
-				PreparedStatement pS = dbConnection.prepareStatement("INSERT INTO room (description) VALUES (?)");
-  				pS.setString(1, o.getDescription());
-  				pS.executeUpdate();
-  			}
-  			catch (SQLException e)
-  			{
-  				e.printStackTrace();
-  			}
-		  
-  		}
+	@Override
+	public Set<Room> getAllByProperties(SQLBuilder query) {
+	    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
 	public Room getById(int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void removeById(int id) {
-		// TODO Auto-generated method stub
-		
+	public Room getByProperties(SQLBuilder query) {
+	    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
         @Override
-        public Room getByProperties(SQLBuilder query) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+		public void put(Room o)	{
+			if (o.getId() != 0) // if the object already exists on the database, use UPDATE
+				try
+				{
+					PreparedStatement pS = dbConnection.prepareStatement("UPDATE room SET description = ? WHERE room.id = ?");
+					pS.setString(1, o.getDescription());
+					pS.setInt(2, o.getId());
+					pS.executeUpdate();
+				}
+				catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			else // Use INSERT as the Object needs to be created on the database
+			{
+				try
+				{
+					PreparedStatement pS = dbConnection.prepareStatement("INSERT INTO room (description) VALUES (?)");
+					pS.setString(1, o.getDescription());
+					pS.executeUpdate();
+				}
+				catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			  
+			}
+		}
 
         @Override
-        public Set<Room> getAllByProperties(SQLBuilder query) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+		public void removeById(int id) {
+			// TODO Auto-generated method stub
+			
+		}
 
    
 

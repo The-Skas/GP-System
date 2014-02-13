@@ -74,6 +74,74 @@ public class SQLBuilder {
        qBlocks.add(block);
     }
     
+    public SQLBuilder AND(String column, String compr, String value)
+    {
+        String [] block = new String[SIZE];
+        
+        block[LOGIC]  = "AND";
+        block[COLUMN] = column;
+        block[COMPR]  = compr;
+        block[VALUE]  = value;
+        
+        qBlocks.add(block);
+        return this;
+    }
+    
+    //Executes A statement, returning a result set. Check JDBC Documentation for
+    //what a result Set is :)
+    public ResultSet executeStatement(Connection dbConn, String preparedQuery) throws SQLException
+    {
+       PreparedStatement pS = dbConn.prepareStatement(preparedQuery);
+       int i = 1;
+        for(String[] qBlock : this.qBlocks)
+        {
+            pS.setString(i, qBlock[VALUE]);
+            i++;
+        }
+        System.out.println(pS);
+        return pS.executeQuery();
+        
+    } 
+    public SQLBuilder OR(String column, String compr, String value)
+    {
+        String [] block = new String[SIZE];
+        
+        block[LOGIC]  = "OR";
+        block[COLUMN] = column;
+        block[COMPR]  = compr;
+        block[VALUE]  = value;
+        
+        qBlocks.add(block);
+        return this;
+    } 
+    
+    public void prepare(PreparedStatement pS) throws SQLException
+    {
+        int i = 1;
+        for(String[] qBlock : this.qBlocks)
+        {
+            pS.setString(i, qBlock[VALUE]);
+            i++;
+        }
+    }
+    //Combines both functions into one. ONLY WORKS ON SELECT
+    public ResultSet prepareAndExecute(Connection dbConn, String query) throws SQLException
+    {
+        query = PreparedStatementWhere(query);
+        
+        return executeStatement(dbConn, query);
+    }
+    
+    //Formats Query, Taking into account the passed, SELECT * from table
+    public String PreparedStatementWhere(String query)
+    {
+        for(String[] qBlock : this.qBlocks)
+        {
+            query +=" "+qBlock[LOGIC]+" "+qBlock[COLUMN]+" "+qBlock[COMPR]+" "+"?";
+        }
+        return query;
+    }
+    
     /**
      * The 'Q' function is used to construct logical queries, taking into account
      * logical operators.
@@ -100,41 +168,6 @@ public class SQLBuilder {
         qBlocks.add(block);
         return this;
     }
-    
-    public SQLBuilder AND(String column, String compr, String value)
-    {
-        String [] block = new String[SIZE];
-        
-        block[LOGIC]  = "AND";
-        block[COLUMN] = column;
-        block[COMPR]  = compr;
-        block[VALUE]  = value;
-        
-        qBlocks.add(block);
-        return this;
-    } 
-    public SQLBuilder OR(String column, String compr, String value)
-    {
-        String [] block = new String[SIZE];
-        
-        block[LOGIC]  = "OR";
-        block[COLUMN] = column;
-        block[COMPR]  = compr;
-        block[VALUE]  = value;
-        
-        qBlocks.add(block);
-        return this;
-    } 
-    
-    //Formats Query, Taking into account the passed, SELECT * from table
-    public String PreparedStatementWhere(String query)
-    {
-        for(String[] qBlock : this.qBlocks)
-        {
-            query +=" "+qBlock[LOGIC]+" "+qBlock[COLUMN]+" "+qBlock[COMPR]+" "+"?";
-        }
-        return query;
-    }
     public String toPreparedStatement(String query)
     {
       for(String[] qBlock : this.qBlocks)
@@ -142,38 +175,5 @@ public class SQLBuilder {
             query +=" "+qBlock[LOGIC]+" "+qBlock[COLUMN]+" "+qBlock[COMPR]+" "+"?";
         }  
       return query;
-    }
-    
-    //Executes A statement, returning a result set. Check JDBC Documentation for
-    //what a result Set is :)
-    public ResultSet executeStatement(Connection dbConn, String preparedQuery) throws SQLException
-    {
-       PreparedStatement pS = dbConn.prepareStatement(preparedQuery);
-       int i = 1;
-        for(String[] qBlock : this.qBlocks)
-        {
-            pS.setString(i, qBlock[VALUE]);
-            i++;
-        }
-        System.out.println(pS);
-        return pS.executeQuery();
-        
-    }
-    
-    public void prepare(PreparedStatement pS) throws SQLException
-    {
-        int i = 1;
-        for(String[] qBlock : this.qBlocks)
-        {
-            pS.setString(i, qBlock[VALUE]);
-            i++;
-        }
-    }
-    //Combines both functions into one. ONLY WORKS ON SELECT
-    public ResultSet prepareAndExecute(Connection dbConn, String query) throws SQLException
-    {
-        query = PreparedStatementWhere(query);
-        
-        return executeStatement(dbConn, query);
     }
 }
