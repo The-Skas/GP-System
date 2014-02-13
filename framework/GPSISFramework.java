@@ -7,7 +7,9 @@ package framework;
 
 import mapper.CalendarAppointmentDMO;
 import mapper.CareProgrammeDMO;
+import mapper.MedicineDMO;
 import mapper.PatientDMO;
+import mapper.PrescriptionDMO;
 import mapper.RoomDMO;
 import mapper.StaffMemberDMO;
 import mapper.TaxOfficeDMO;
@@ -21,7 +23,9 @@ public class GPSISFramework {
 	protected static StaffMemberDMO staffMemberDMO = StaffMemberDMO.getInstance();
 	protected static TaxOfficeDMO taxOfficeDMO = TaxOfficeDMO.getInstance();
 	protected static CalendarAppointmentDMO calendarAppointmentDMO = CalendarAppointmentDMO.getInstance();
-    protected static PatientDMO patientDMO = PatientDMO.getInstance();
+        protected static PatientDMO patientDMO = PatientDMO.getInstance();
+        protected static MedicineDMO medicineDMO = MedicineDMO.getInstance();
+        protected static PrescriptionDMO prescriptionDMO = PrescriptionDMO.getInstance();
 //	etc.
 	
 	protected static final String APPTITLE = "General Practitioner's Surgery Information System";

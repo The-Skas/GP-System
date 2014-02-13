@@ -4,7 +4,6 @@ package module;
  * Uses a CardLayout for the Navigation between Modules
  * @author VJ
  */
-
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GraphicsDevice;
