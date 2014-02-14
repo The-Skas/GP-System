@@ -15,10 +15,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/*
     class DatePicker {
     	Calendar cal = java.util.Calendar.getInstance(); 
  int month = cal.get(java.util.Calendar.MONTH);
- int year = cal.get(java.util.Calendar.YEAR);;
+ int year = cal.get(java.util.Calendar.YEAR);
  JLabel l = new JLabel("", JLabel.CENTER);
  String day = "";
  JDialog d;
@@ -106,6 +107,7 @@ import javax.swing.JTextField;
          return sdf.format(cal.getTime());
  }
 }
+*/
 
   class Picker {
  public static void main(String[] args) {
