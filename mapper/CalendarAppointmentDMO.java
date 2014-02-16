@@ -19,12 +19,24 @@ import object.StaffMember;
 import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 
+// a class to connect to the DB and pull/push data from/to there
+
 public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment> {
+	
+	// table names used by put and getter methods
+	private static String tblRoutine = "RoutineAppointment";
+	private static String tblCareManagement = "CareManagementAppointment";
 
 	static	Calendar cal = java.util.Calendar.getInstance(); 
-    private static CalendarAppointmentDMO instance; // to make it a singleton 
+	
+    private CalendarAppointmentDMO(String tableName)
+    {
+        this.tableName = tableName;
+    }
     
-    public static CalendarAppointmentDMO getInstance() 
+    private static CalendarAppointmentDMO instance; // singleton 
+
+    public static CalendarAppointmentDMO getInstance() // make it a singleton
     {
         if(instance == null)
         {
@@ -32,62 +44,60 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         }
         return instance;
     }
-
-    public static void main (String[] args)
+	
+	 // getter method for RoutineAppointment
+	public RoutineAppointment getRoutineAppointmentById(int id) throws EmptyResultSetException, SQLException
 	{
+		CalendarAppointment ca = this.getById(id);
 		
-		GPSISDataMapper.connectToDatabase();
-		cal.set(2014, 5, 11, 9, 30);
-		Date d = cal.getTime();
-		
-		cal.set(2014, 5, 11, 9, 45);
-		Date d1 = cal.getTime();
-		
-		try 
-		{
-			CalendarAppointment ca = new RoutineAppointment(d, d1, patientDMO.getById(2), staffMemberDMO.getById(1));
-		} catch (EmptyResultSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private CalendarAppointmentDMO(String tableName)
-    {
-        this.tableName = tableName;
-    }
-	
-	@Override
-	public Set<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
-	{ // returns a Set with all the CalendarAppointment objects
-		  Set<CalendarAppointment> calendarAppointments = new HashSet<>(); // create a new HashSet with all the Calendar Appointments
-          try {            
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);                                  
-            while(res.next()) { // if found, create a CalendarAppointment object              
-               calendarAppointments.add(new CalendarAppointment( res.getInt("id"), 
-            		   										     res.getDate("startTime"),
-            		   										     res.getDate("endTime")) );
-            }
+		ResultSet rs = GPSISDataMapper.getResultSet
+                (
+                        new SQLBuilder("ca_id","=",""+id),CalendarAppointmentDMO.tblRoutine
+                );
+        
+        //Returns a RoutineAppointment if found
+        if(rs.next())
+        {
+        	Patient p = PatientDMO.getInstance().getById(rs.getInt("patient_id"));
+        	StaffMember d = StaffMemberDMO.getInstance().getById(rs.getInt("doctor_id"));
+        	
+    		return new RoutineAppointment(id, ca.getStartTime(), ca.getEndTime(), p, d, rs.getString("summary"));
 
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-          if(calendarAppointments.isEmpty())
-        	  throw new EmptyResultSetException();
-          else
-        	  return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
+		return null;
 	}
+	
+	 // getter method for CareManagementAppointment
+	public CareManagementAppointment getCareManagementAppointmentById(int id) throws EmptyResultSetException, SQLException
+	{
+		CalendarAppointment ca= this.getById(id);
+		
+		ResultSet rs = 
+               GPSISDataMapper.getResultSet
+               (
+                       new SQLBuilder("ca_id","=",""+id),CalendarAppointmentDMO.tblCareManagement
+               );
+       
+       //Returns a tblCareManagementAppointment if found
+       if(rs.next())
+       {
+       	CareProgramme cp = CareProgrammeDMO.getInstance().getById(rs.getInt("id"));
+       	
+   		return new CareManagementAppointment(id, ca.getStartTime(), ca.getEndTime(), cp);
 
-	@Override 
+       }
+		return null;
+	}
+	
 	public CalendarAppointment getByProperties(SQLBuilder query) throws EmptyResultSetException
 	{
 		try {
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
-              
+			
+			ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblRoutine + " ON " + this.tableName + ".id = " + tblRoutine + ".ca_id");
+			ResultSet res1 = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblCareManagement + " ON " + this.tableName + ".id = " + tblCareManagement + ".ca_id");  
+			
             if (res.next()) 
-            { // if found, create a new CalendarAppointment object
-            	if (res.getInt("care_programme_id") == 0) // return Routine Appointment
-            	{
+            { 
             		Date startTime; 
             		cal.setTime(res.getTime("start_time"));
             		startTime = cal.getTime();
@@ -98,55 +108,67 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
             		StaffMember sm = staffMemberDMO.getById(res.getInt("staff_member_id"));
             		
             		return new RoutineAppointment(startTime, endTime, p, sm);
-            		
-            	} else { // return Care Programme Appointment
-            		
+            }
+            	
+            	else if (res1.next())
+            {             			      		
             		cal.setTime(res.getTime("start_time"));
             		Date startTime = cal.getTime();
             		cal.setTime(res.getTime("end_time"));
             		Date endTime = cal.getTime();
             	
-            	CareProgramme cp = careProgrammeDMO.getById(res.getInt("care_programme_id"));
+            		CareProgramme cp = careProgrammeDMO.getById(res.getInt("care_programme_id"));
                 
-                return new CareManagementAppointment(startTime, endTime, cp);
-            	} 
-            } else System.err.println("EMPTY SET");       
+            		return new CareManagementAppointment(startTime, endTime, cp);
+            } 
+            		else System.err.println("EMPTY SET");       
         } catch (SQLException e) {
             e.printStackTrace();
         }
         throw new EmptyResultSetException();
 	}
 	
-	   @Override
-	public void put(CalendarAppointment o) {
-        SQLBuilder sql = null;
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat format = new SimpleDateFormat(pattern);
-        String startTime = format.format(o.getStartTime());
-        String endTime = format.format(o.getEndTime());
-
-	sql = new SQLBuilder("id","=",""+o.getId()) // create and add a CalendarAppointment
-		.SET("start_time","=",""+startTime)
-		.SET("end_time", "=", ""+endTime); 
-
-        if(o.isRoutine()) // create and add a RoutineAppointment
-        {
-        sql = new SQLBuilder("id","=",""+o.getId()) // get the same CalendarAppointment id?
-            .SET("patient_id","=",""+((RoutineAppointment) o).getPatient().getId())
-            .SET("staff_member_id", "=",""+((RoutineAppointment) o).getDoctor().getId());
-        }
-        else  		// create and add a CareManagementAppointment
-        {
-             sql = new SQLBuilder("id","=",""+o.getId())
-            .SET("care_programme_id","=",""+((CareManagementAppointment) o).getCareProgramme().getId());
-        }
+	@Override
+	public Set<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
+	{ // returns a Set with all the CalendarAppointment objects
+		  Set<CalendarAppointment> calendarAppointments = new HashSet<>(); // create a new HashSet with all the Calendar Appointments
+          try {
+            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblRoutine + " ON " + this.tableName + ".id = " + tblRoutine + ".ca_id");                                  
+            while(res.next()) { // if found, create a CalendarAppointment object  
+            	// return all Routine Appointments
+          		Date startTime; 
+          		cal.setTime(res.getTimestamp("start_time"));
+          		startTime = cal.getTime();
+          		cal.add(Calendar.MINUTE, 15);
+          		Date endTime = cal.getTime();
+          		
+          		Patient p = patientDMO.getById(res.getInt("patient_id"));
+          		StaffMember sm = staffMemberDMO.getById(res.getInt("staff_member_id"));
+          		
+          		calendarAppointments.add(new RoutineAppointment(res.getInt("id"),startTime, endTime, p, sm, res.getString("summary")));
+            }
            
-    try {
-        putHelper(sql, this.tableName, o);
-        } catch (SQLException ex) {
-        Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
+            ResultSet res1 = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblCareManagement + " ON " + this.tableName + ".id = " + tblCareManagement + ".ca_id");
+            while(res1.next()) { 
+          		
+          		cal.setTime(res1.getTimestamp("start_time"));
+          		Date startTime = cal.getTime();
+          		cal.setTime(res1.getTimestamp("end_time"));
+          		Date endTime = cal.getTime();
+          	
+          	    CareProgramme cp = careProgrammeDMO.getById(res1.getInt("care_programme_id"));
+              
+          		calendarAppointments.add(new CareManagementAppointment(res1.getInt("id"), startTime, endTime, cp));
+          	} 
+        	
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    }
+          if(calendarAppointments.isEmpty())
+        	  throw new EmptyResultSetException();
+          else
+        	  return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
+	}
 
 	@Override
 	public void removeById(int id) { // used the same method as StaffMember
@@ -157,8 +179,50 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         }
 	}
 	
-	public void removeByProperty(SQLBuilder query) throws SQLException 
+	   public void removeByProperty(SQLBuilder query) throws SQLException 
 	    {
 	        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);   
 	    }
+
+
+	@Override
+	public void put(CalendarAppointment o) {
+        SQLBuilder sql = null;
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
+        String startTime = format.format(o.getStartTime());
+        String endTime = format.format(o.getEndTime());
+
+        sql = new SQLBuilder("id","=",""+o.getId()) // create and add a CalendarAppointment
+			.SET("start_time","=",""+startTime)
+			.SET("end_time", "=", ""+endTime); 
+        try {
+        	putHelper(sql, this.tableName, o);
+        } catch (SQLException ex) {
+        	Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(o instanceof RoutineAppointment) // create and add a RoutineAppointment
+        {        	
+            String summary = ((RoutineAppointment) o).getSummary();
+        	sql = new SQLBuilder("ca_id","=",""+o.getId()) // get the same CalendarAppointment id?
+            	.SET("patient_id","=",""+((RoutineAppointment) o).getPatient().getId())
+            	.SET("staff_member_id", "=",""+((RoutineAppointment) o).getDoctor().getId())
+        	    .SET("summary", "=",""+summary);
+        	try {
+                putHelper(sql, tblRoutine, o);
+            } catch (SQLException ex) {
+                Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else  		// create and add a CareManagementAppointment
+        {
+             sql = new SQLBuilder("ca_id","=",""+o.getId())
+             	.SET("care_programme_id","=",""+((CareManagementAppointment) o).getCareProgramme().getId());
+             try {
+                 putHelper(sql, tblCareManagement, o);
+             } catch (SQLException ex) {
+                 Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
+             }
+        }
+    }
 }

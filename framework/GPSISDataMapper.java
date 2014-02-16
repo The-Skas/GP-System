@@ -81,10 +81,9 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
         String sql = "SELECT * FROM "+tableName + " WHERE ";
 
         
-        return sqlQ.prepareAndExecute(dbConnection, sql);
-
-        
+        return sqlQ.prepareAndExecute(dbConnection, sql); 
     }
+    
     /*
      * The PutHelper takes a SQLBuilder Object, that should be in SET form
      * and executes the query within the specified tableName, and sets the

@@ -1,5 +1,7 @@
 package object;
  
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import framework.GPSISObject;
@@ -12,7 +14,9 @@ public class CalendarAppointment extends GPSISObject
  
         public CalendarAppointment(int id, java.util.Date sT, java.util.Date eT) // constructor 1 - already exists in database
         { 
-            this.id = id;         
+            this.id = id;    
+            this.startTime = sT;
+            this.endTime = eT;
         }
  
         public CalendarAppointment(java.util.Date sT, java.util.Date eT) // constructor 2 - insert into database
@@ -49,6 +53,7 @@ public class CalendarAppointment extends GPSISObject
         {
             return this.endTime;
         }
+
          
         public Date getStartTime()
         {
@@ -56,7 +61,7 @@ public class CalendarAppointment extends GPSISObject
         }
          
  
-public boolean isRoutine()
+        public boolean isRoutine()
         {
             if(this instanceof RoutineAppointment)
                 return true;
