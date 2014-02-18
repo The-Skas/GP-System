@@ -21,7 +21,7 @@ public class CareProgrammeManagementModule extends GPSISModuleMain {
 	public JPanel getModuleView() {
 		JPanel careProgrammeManagementModuleView = new JPanel(new GridBagLayout());
 		
-		JLabel greeting = new JLabel("This is the Care Programme Management Module Main View in module/CareProgrammeManagementModule.java!");
+		JLabel greeting = new JLabel("This is module/CareProgrammeManagementModule.java!");
 			greeting.setFont(new Font("Serif", Font.BOLD, 24));
 			GridBagConstraints gbC = new GridBagConstraints();
 			gbC.anchor = GridBagConstraints.CENTER;

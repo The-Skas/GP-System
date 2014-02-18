@@ -21,7 +21,7 @@ public class SpecialistReferralsModule extends GPSISModuleMain {
 	public JPanel getModuleView() {
 		JPanel specialistReferralsModuleView = new JPanel(new GridBagLayout());
 		
-		JLabel greeting = new JLabel("This is the Specialist Referrals Module Main View in module/SpecialistReferralsModule.java!");
+		JLabel greeting = new JLabel("This is module/SpecialistReferralsModule.java!");
 			greeting.setFont(new Font("Serif", Font.BOLD, 24));
 			GridBagConstraints gbC = new GridBagConstraints();
 			gbC.anchor = GridBagConstraints.CENTER;

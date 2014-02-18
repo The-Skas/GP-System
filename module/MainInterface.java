@@ -11,7 +11,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -43,15 +42,16 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	{
 		// set Footer
 		JPanel f = new JPanel(new MigLayout(
-								new LC().wrapAfter(12),
+								new LC(),
 								new AC().grow(),
-								new AC().grow()
+								new AC().shrink()
 							));
 			JLabel fTitle = new JLabel("Logged in as " + currentUser.getUsername());
+				fTitle.setFont(fonts.get("Roboto").deriveFont(12f));
 			f.add(fTitle, new CC().dockWest());
 		
 			JLabel fCredits = new JLabel("Created by: VJ, Salman, Milka, Oshan, Matt and Seun");
-			fCredits.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+				fCredits.setFont(fonts.get("Roboto").deriveFont(10f));
 			f.add(fCredits, new CC().dockEast());
 		
 		f.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
@@ -62,7 +62,7 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	{
 		// set Header
 		JPanel h = new JPanel(new MigLayout(
-								new LC().wrapAfter(12),
+								new LC(),
 								new AC().grow(),
 								new AC().shrink()
 							));
@@ -73,12 +73,15 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 				hLogo.setForeground(new Color(235, 235, 235));
 			h.add(hLogo, new CC().span(2));
 			
+			
+			
 			JLabel hTitle = new JLabel("Header");
+				hTitle.setFont(fonts.get("Roboto").deriveFont(24f));
 				hTitle.setForeground(new Color(235, 235, 235));
-			h.add(hTitle, new CC().span(10));
+			h.add(hTitle, new CC().span(8));
 		
 			
-			h.add(this.buildNavigation(), new CC().span(12).growX());
+			h.add(this.buildNavigation(), new CC().dockSouth());
 			
 		return h;
 	}
@@ -87,8 +90,8 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	{
 		// Set Navigation
 		JPanel n = new JPanel(new MigLayout(
-								new LC().wrapAfter(12),
-								new AC().grow(),
+								new LC().gridGap("0px", "0px").insetsAll("0px"),
+								new AC().shrink(),
 								new AC().shrink()
 							));
 		// Create JButtons and add to Navigation Panel
@@ -143,7 +146,7 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 		view.add(mM.getModuleView(), "Care Programme Management");
 		
 				
-		//n.setBackground(new Color(51, 51, 51));
+		n.setBackground(new Color(51, 51, 51));
 		n.setForeground(new Color(235, 235, 235));
 		return n;
 	}

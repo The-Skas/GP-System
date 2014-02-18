@@ -415,5 +415,33 @@ public abstract class StaffMember extends GPSISObject {
 		this.endDate = eD;
 		staffMemberDMO.setTemporary(this);
 	}
+
+	/** setFirstName
+	 * @param firstName
+	 */
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	/** setLastName
+	 * @param lastName
+	 */
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	/** setOfficeManager
+	 * @param officeManager the officeManager to set
+	 */
+	public void setOfficeManager(boolean officeManager) {
+		this.officeManager = officeManager;
+	}
+
+	/** setHolidayAllowance
+	 * @param holidayAllowance the holidayAllowance to set
+	 */
+	public void setHolidayAllowance(int holidayAllowance) {
+		this.holidayAllowance = holidayAllowance;
+	}
 	
 }
