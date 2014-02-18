@@ -3,6 +3,7 @@
  */
 package mapper;
 
+import java.util.List;
 import java.util.Set;
 
 import object.Speciality;
@@ -19,8 +20,7 @@ public class SpecialityDMO extends GPSISDataMapper<Speciality> {
 	 * @see framework.GPSISDataMapper#getAllByProperties(mapper.SQLBuilder)
 	 */
 	@Override
-	public Set<Speciality> getAllByProperties(SQLBuilder query)
-			throws EmptyResultSetException {
+	public List<Speciality> getAllByProperties(SQLBuilder query) throws EmptyResultSetException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -29,8 +29,7 @@ public class SpecialityDMO extends GPSISDataMapper<Speciality> {
 	 * @see framework.GPSISDataMapper#getByProperties(mapper.SQLBuilder)
 	 */
 	@Override
-	public Speciality getByProperties(SQLBuilder query)
-			throws EmptyResultSetException {
+	public Speciality getByProperties(SQLBuilder query) throws EmptyResultSetException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -40,15 +39,6 @@ public class SpecialityDMO extends GPSISDataMapper<Speciality> {
 	 */
 	@Override
 	public void put(Speciality o) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see framework.GPSISDataMapper#removeById(int)
-	 */
-	@Override
-	public void removeById(int id) {
 		// TODO Auto-generated method stub
 
 	}

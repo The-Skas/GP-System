@@ -4,18 +4,10 @@ package object;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-import static framework.GPSISDataMapper.putHelper;
 import framework.GPSISObject;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import mapper.PrescriptionDMO;
-import mapper.SQLBuilder;
 /**
  *
  * @author oa305
@@ -104,7 +96,7 @@ public class Prescription extends GPSISObject
         endDate = input;
     }   
     
-    public List getlistofMedicine()
+    public List<Medicine> getlistofMedicine()
     {
         
         return listofMedicine;

@@ -3,10 +3,10 @@ package mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +50,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 	{
 		CalendarAppointment ca = this.getById(id);
 		
-		ResultSet rs = GPSISDataMapper.getResultSet
+		ResultSet rs = getResultSet
                 (
                         new SQLBuilder("ca_id","=",""+id),CalendarAppointmentDMO.tblRoutine
                 );
@@ -129,9 +129,9 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 	}
 	
 	@Override
-	public Set<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
+	public List<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
 	{ // returns a Set with all the CalendarAppointment objects
-		  Set<CalendarAppointment> calendarAppointments = new HashSet<>(); // create a new HashSet with all the Calendar Appointments
+		  List<CalendarAppointment> calendarAppointments = new ArrayList<>(); // create a new HashSet with all the Calendar Appointments
           try {
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblRoutine + " ON " + this.tableName + ".id = " + tblRoutine + ".ca_id");                                  
             while(res.next()) { // if found, create a CalendarAppointment object  
@@ -169,20 +169,6 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
           else
         	  return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
 	}
-
-	@Override
-	public void removeById(int id) { // used the same method as StaffMember
-        try {
-            removeByProperty(new SQLBuilder("id","=",""+id));
-        } catch (SQLException ex) {
-            Logger.getLogger(CalendarAppointmentDMO.class.getName()).log(Level.SEVERE, null, ex); 
-        }
-	}
-	
-	   public void removeByProperty(SQLBuilder query) throws SQLException 
-	    {
-	        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);   
-	    }
 
 
 	@Override

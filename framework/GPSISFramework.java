@@ -22,7 +22,7 @@ public class GPSISFramework {
 	protected static CareProgrammeDMO careProgrammeDMO = CareProgrammeDMO.getInstance();
 	protected static StaffMemberDMO staffMemberDMO = StaffMemberDMO.getInstance();
 	protected static TaxOfficeDMO taxOfficeDMO = TaxOfficeDMO.getInstance();
-	protected static CalendarAppointmentDMO calendarAppointmentDMO= CalendarAppointmentDMO.getInstance();
+	protected static CalendarAppointmentDMO calendarAppointmentDMO = CalendarAppointmentDMO.getInstance();
         protected static PatientDMO patientDMO = PatientDMO.getInstance();
         protected static MedicineDMO medicineDMO = MedicineDMO.getInstance();
         protected static PrescriptionDMO prescriptionDMO = PrescriptionDMO.getInstance();

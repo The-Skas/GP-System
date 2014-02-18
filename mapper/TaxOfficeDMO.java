@@ -5,7 +5,9 @@ package mapper;
  */
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import object.TaxOffice;
@@ -63,24 +65,15 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
     }
 
     
-    /** getAll
-     * return a Set of all TaxOffices
-     */
-    @Override
-	public Set<TaxOffice> getAll()
-    {
-        return getAllByProperties(new SQLBuilder());
-    }
-    
     /** getAllByProperties
      * returns a Set of TaxOffices that match the given criteria
      * @param query an SQLBuild query
      * @return a Set containing all of the TaxOffices that match the given criteria
      */
     @Override
-	public Set<TaxOffice> getAllByProperties(SQLBuilder query) 
+	public List<TaxOffice> getAllByProperties(SQLBuilder query) 
     {
-          Set<TaxOffice> staffMembers = new HashSet<>();
+          List<TaxOffice> staffMembers = new ArrayList<TaxOffice>();
           
           try 
           {            
@@ -96,17 +89,6 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
             e.printStackTrace();
         }
         return staffMembers;
-    }
-        
-    /** getById 
-     * @param id the id of the TaxOffice to retrieve
-     * @return a TaxOffice object that relates to the id
-     */
-    @Override
-	public TaxOffice getById(int id)
-    {
-        return this.getByProperties(new SQLBuilder("id", "=", ""+id));
-        
     }
     
     /** getByProperties
@@ -157,32 +139,5 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
         	System.err.println(e.getMessage());
         }
 
-    }
-    
-    /** removeById
-     * Remove a TaxOffice from the database given its Id
-     * @param id the id of the TaxOffice to remove     * 
-     */
-    @Override
-	public void removeById(int id) 
-    {
-        try 
-        {
-            removeByProperty(new SQLBuilder("id","=",""+id));
-        } 
-        catch (SQLException e) 
-        {
-        	System.err.println(e.getMessage());
-        }
-    }
-
-    /** removeByProperty
-     * WARNING: Removes all TaxOffices from the database that match the given criteria
-     * @param query the criteria to match
-     * @throws SQLException
-     */
-    public void removeByProperty(SQLBuilder query) throws SQLException 
-    {
-        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);        
     }
 }

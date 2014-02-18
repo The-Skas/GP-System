@@ -4,11 +4,15 @@
  */
 package mapper;
 import java.util.Date;
+
+import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
-import static framework.GPSISDataMapper.putHelper;
+
 import java.sql.ResultSet;
 import java.util.Set;
+
 import object.Prescription;
+
 import java.sql.Statement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -18,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import object.Medicine;
 import object.StaffMember;
 /**
@@ -45,62 +50,6 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
         return instance;
     }
     
-    
-    
-    @Override
-    public Set<Prescription> getAll() {
-        
-        return getAllByProperties(new SQLBuilder());
-    }
-
-    @Override
-    public Prescription getById(int id) {
-          try {
-            SQLBuilder query = new SQLBuilder("id","=",""+id);
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
-            
-            
-            if (res.next()) { // if found, create 
-               return new Prescription(res.getInt("id"),
-                                 res.getInt("p_id"),
-                                 res.getInt("d_id"), 
-                                  new Date(), 
-                                getMedicinesByPrescriptionById(id),
-                                res.getInt("frequency"));
-                
-                
-            } else {
-                System.err.println("EMPTY SET");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    
-        
-    }
-        
-    public void removeByProperty(SQLBuilder query) throws SQLException 
-    {
-        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);        
-    }
-    
-    @Override
-    public void removeById(int id) 
-    {
-       try 
-        {
-            removeByProperty(new SQLBuilder("id","=",""+id));
-        } 
-        catch (SQLException e) 
-        {
-        	System.err.println(e.getMessage());
-        }
-   }
-
-   
-
     @Override
     public void put(Prescription o) {
         SQLBuilder sql;
@@ -167,7 +116,7 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
                                  res.getInt("p_id"),
                                  res.getInt("d_id"), 
                                   new Date(), 
-                                new ArrayList(),
+                                new ArrayList<Medicine>(),
                                 res.getInt("frequency"));
                 
                 
@@ -182,9 +131,9 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
     }
 
     @Override
-    public Set<Prescription> getAllByProperties(SQLBuilder query) {
-        Set<Prescription> prescriptions;
-        prescriptions = new HashSet<>();
+    public List<Prescription> getAllByProperties(SQLBuilder query) {
+        List<Prescription> prescriptions;
+        prescriptions = new ArrayList<Prescription>();
         try {
             //SELECT * FROM Prescription + QUERY;
                                             //where id = 1 or blah
@@ -197,7 +146,7 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
                                  res.getInt("p_id"),
                                  res.getInt("d_id"), 
                                   new Date(), 
-                                new ArrayList(),
+                                new ArrayList<Medicine>(),
                                 res.getInt("frequency")));
                 
                 
@@ -224,7 +173,10 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
             }
         } catch (SQLException ex) {
             Logger.getLogger(PrescriptionDMO.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (EmptyResultSetException e) {
+			System.out.println("Medicine Doesn't exist in Medicine Table :S");
+			e.printStackTrace();
+		}
         
         
         
@@ -235,7 +187,7 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
     
     public static void main(String [] args)
     {
-        GPSISDataMapper.connectToDatabase();
+       /* GPSISDataMapper.connectToDatabase();
         PrescriptionDMO presTbl = PrescriptionDMO.getInstance();
         Prescription presc = presTbl.getByProperties(new SQLBuilder("id","=","1")
                                 .OR("p_id","=","1"));
@@ -249,7 +201,7 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
           System.out.println(presTbl.getById(1));
          presTbl.removeById(1);
          System.out.println(presTbl.getAll());
-         
+         */
     }
 
 }

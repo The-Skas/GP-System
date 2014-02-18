@@ -8,7 +8,9 @@ import java.awt.GridBagLayout;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
@@ -30,11 +32,12 @@ import exception.EmptyResultSetException;
 
 
 public class AppointmentsView {
-
 	
-	private Set<CalendarAppointment> getAllAppointments(){
+	List<CalendarAppointment> appointments = new ArrayList<CalendarAppointment>();
+	
+	private List<CalendarAppointment> getAllAppointments(){
 	try {
-		Set<CalendarAppointment> ca = (Set<CalendarAppointment>)CalendarAppointmentDMO.getInstance().getAll();
+		List<CalendarAppointment> ca = CalendarAppointmentDMO.getInstance().getAll();
 		// HashSet<StaffMember> staffMembers = (HashSet<StaffMember>)staffMemberDMO.getAll(); // why use HashSet instead of Set?
 		return ca;
 	} catch (EmptyResultSetException e) {
@@ -50,7 +53,7 @@ public class AppointmentsView {
 				
 		//get a set of all appointments
 		//once this is done, filter the results by doctor, day, patients
-		Set<CalendarAppointment> allAppointments = getAllAppointments();
+		List<CalendarAppointment> allAppointments = getAllAppointments();
 
         // The data used as the titles for the table.
         String[] title = {"Appointment ID", "Type", "Doctor", "Start Time", "End Time", "Patients"};
@@ -58,7 +61,7 @@ public class AppointmentsView {
         // The data used in the table, placed as a multidimensional array.
         Object[][] data = new Object[allAppointments.size()][6];
         
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         
         int i = 0;
         

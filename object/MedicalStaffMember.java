@@ -73,11 +73,11 @@ public class MedicalStaffMember extends StaffMember {
 		return this.specialities.contains(s);
 	}
 	
-	/*public Set<Prescription> getPrescriptions()
+	public Set<Prescription> getPrescriptions()
 	{
 		// TODO MedicalStaffMember.getPrescriptions
 		return null;
-	}*/
+	}
 	
 	@Override
 	public boolean isAvailable(Date c)

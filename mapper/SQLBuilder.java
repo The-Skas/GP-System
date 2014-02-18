@@ -1,15 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package mapper;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+
 /**
  * The SQLBuilder class serves to abstract the unnecessary work in creating a 
  * SQL Statement. 
@@ -31,9 +21,13 @@ import java.util.ArrayList;
  * 
  * Look at the main function for examples of uses.
  * 
- * @author skas
- * @version 1.0
+ * @author Salman Khalifa
  */
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 public class SQLBuilder {
     public static final byte LOGIC  = 0;
     public static final byte COLUMN = 1;

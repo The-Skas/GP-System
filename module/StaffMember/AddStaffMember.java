@@ -301,27 +301,33 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 		String role = (String) this.roleFld.getSelectedItem();
 		int holidayAllowance = (int)this.holidayAllowanceFld.getValue();
 		
-		try
+		// check if fields are not blank
+		if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty())
 		{
-			if (role.equals("Receptionist"))
-			{
-					new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
-			}
-			else
-			{
-				new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
-			}
-			System.out.println("Created Staff Member! :D");
-			JOptionPane.showMessageDialog(this, "Created a New Staff Member :)");
-			dispose();
+			JOptionPane.showMessageDialog(this, "Some fields are blank! Staff Member not created!", "Blank Input", JOptionPane.WARNING_MESSAGE);
 		}
-		catch (DuplicateEntryException e)
+		else 
 		{
-			JOptionPane.showMessageDialog(this, "Username is already taken!", "Username Taken!", JOptionPane.WARNING_MESSAGE);
-		}
 		
-		
-		
+			try
+			{
+				if (role.equals("Receptionist"))
+				{
+						new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
+				}
+				else
+				{
+					new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
+				}
+				System.out.println("Created Staff Member! :D");
+				JOptionPane.showMessageDialog(this, "Created a New Staff Member :)");
+				dispose();
+			}
+			catch (DuplicateEntryException e)
+			{
+				JOptionPane.showMessageDialog(this, "Username is already taken!", "Username Taken!", JOptionPane.WARNING_MESSAGE);
+			}
+		}	
 		
 	}
 	

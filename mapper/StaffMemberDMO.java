@@ -7,9 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import object.MedicalStaffMember;
@@ -220,9 +222,9 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
      * @return a Set containing all of the StaffMembers that match the given criteria
      */
     @Override
-	public Set<StaffMember> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
+	public List<StaffMember> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
     {
-          Set<StaffMember> staffMembers = new HashSet<>();
+          List<StaffMember> staffMembers = new ArrayList<>();
           
           try 
           {            
@@ -375,32 +377,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	
     }
     
-    /** removeById
-     * Remove a StaffMember from the database given its Id
-     * @param id the id of the StaffMember to remove     * 
-     */
-    @Override
-	public void removeById(int id) 
-    {
-        try 
-        {
-            removeByProperty(new SQLBuilder("id","=",""+id));
-        } 
-        catch (SQLException e) 
-        {
-        	System.err.println(e.getMessage());
-        }
-    }
     
-    /** removeByProperty
-     * WARNING: Removes all StaffMembers from the database that match the given criteria
-     * @param query the criteria to match
-     * @throws SQLException
-     */
-    public void removeByProperty(SQLBuilder query) throws SQLException 
-    {
-        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);        
-    }
     
     /** makeTemporary
      * 

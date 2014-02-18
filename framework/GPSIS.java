@@ -6,7 +6,6 @@ import java.util.Locale;
  * Initial loading Class.
  * 
  * @author Vijendra Patel
- * @date 16/01/2014
  */
 
 public class GPSIS {

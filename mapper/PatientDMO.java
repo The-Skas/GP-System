@@ -8,7 +8,9 @@ package mapper;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,8 +57,8 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     
 
     @Override
-    public Set<Patient> getAllByProperties(SQLBuilder query) {
-        Set<Patient> patients = new HashSet<>();
+    public List<Patient> getAllByProperties(SQLBuilder query) {
+        List<Patient> patients = new ArrayList<>();
         
         try {
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
@@ -148,22 +150,5 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    @Override
-    public void removeById(int id) {
-        try {
-            removeByProperty(new SQLBuilder("id","=",""+id));
-        } catch (SQLException ex) {
-            Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    public void removeByProperty(SQLBuilder query) throws SQLException 
-    {
-        GPSISDataMapper.removeByPropertyHelper(query, this.tableName);
-        
-    }
-    
-
-    
+     
 }

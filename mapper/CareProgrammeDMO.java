@@ -1,6 +1,8 @@
 package mapper;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import object.CareProgramme;
@@ -23,9 +25,9 @@ public class CareProgrammeDMO extends GPSISDataMapper<CareProgramme> {
         }
 
 	@Override
-	public Set<CareProgramme> getAllByProperties(SQLBuilder query) {
+	public List<CareProgramme> getAllByProperties(SQLBuilder query) {
 		// TODO Auto-generated method stub
-		Set<CareProgramme> cps = new HashSet<CareProgramme>();
+		List<CareProgramme> cps = new ArrayList<CareProgramme>();
 		cps.add(new CareProgramme());
 		return cps;
 	}
@@ -39,12 +41,6 @@ public class CareProgrammeDMO extends GPSISDataMapper<CareProgramme> {
 
 	@Override
 	public void put(CareProgramme o) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeById(int id) {
 		// TODO Auto-generated method stub
 		
 	}
