@@ -95,6 +95,8 @@ public class GPSISFramework {
 	
 	public void loadFonts()
 	{
+            System.out.println(new File(".").getAbsoluteFile());
+
 
 		File robotoFile = new File("font/Roboto-Regular.ttf");
 		try {
