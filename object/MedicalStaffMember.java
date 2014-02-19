@@ -15,9 +15,8 @@ import exception.DuplicateEntryException;
 
 public class MedicalStaffMember extends StaffMember {
 	
-	protected Set<CalendarAppointment> appointments;
 	//protected Set<Referral> referrals;
-	//protected Set<Prescription> prescriptions;
+	protected Set<Prescription> prescriptions;
 	protected Set<Patient> patients;
 	protected Set<CareProgramme> careProgrammes;
 	protected Set<Speciality> specialities;
@@ -79,10 +78,4 @@ public class MedicalStaffMember extends StaffMember {
 		return null;
 	}
 	
-	@Override
-	public boolean isAvailable(Date c)
-	{
-		// IS THIS NECESSARY?
-		return !this.unavailables.contains(c) && !this.appointments.contains(c) && !this.holidays.contains(c);
-	}
 }

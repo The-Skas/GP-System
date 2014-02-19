@@ -26,6 +26,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 	// table names used by put and getter methods
 	private static String tblRoutine = "RoutineAppointment";
 	private static String tblCareManagement = "CareManagementAppointment";
+	private static String tblCareProgramme = "CareProgramme";
 
 	static	Calendar cal = java.util.Calendar.getInstance(); 
 	
@@ -148,7 +149,11 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
           		calendarAppointments.add(new RoutineAppointment(res.getInt("id"),startTime, endTime, p, sm, res.getString("summary")));
             }
            
-            ResultSet res1 = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblCareManagement + " ON " + this.tableName + ".id = " + tblCareManagement + ".ca_id");
+            ResultSet res1 = GPSISDataMapper.getResultSet(query, 
+            									this.tableName + " JOIN " + tblCareManagement + 
+            													" ON " + this.tableName + ".id = " + tblCareManagement + ".ca_id" +
+            													" JOIN " + tblCareProgramme +
+            													" ON " + tblCareManagement + ".care_programme_id = " + tblCareProgramme + ".id");
             while(res1.next()) { 
           		
           		cal.setTime(res1.getTimestamp("start_time"));

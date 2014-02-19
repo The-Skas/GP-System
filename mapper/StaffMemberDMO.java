@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import object.CalendarAppointment;
 import object.MedicalStaffMember;
 import object.Receptionist;
 import object.Register;
@@ -110,10 +111,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         	cal.setTime(res.getDate("start_date"));
         	Date startDate = cal.getTime();
         	
-        	System.err.println("Username: "+ res.getString("username"));
-        	System.err.println("String:\t" + res.getString("enc_password"));
-        	System.err.println("Bytes:\t" + new String(res.getBytes("enc_password")));
-        	//System.err.println("Decrypted Password:\t" + StaffMember.decrypt(res.getBytes("enc_password")));
         	if (res.getString("role").equals("Receptionist")) // if the Staff Member is a Receptionist
         	{
         		Receptionist r = new Receptionist(res.getInt("id"),
@@ -155,22 +152,26 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     }
 
     /** getAbsences
-     * 
+     * Returns a List of Dates that the Staff Member has been Absent in the past year
      * @param o
      * @return
      */
-    public Set<Date> getAbsences(StaffMember o) throws EmptyResultSetException
+    public List<Date> getAbsences(StaffMember o) throws EmptyResultSetException
     {
-    	String sql = "SELECT * FROM Register WHERE staff_member_id = ?";
+    	String sql = "SELECT * FROM Register WHERE staff_member_id = ? AND date > ?";
     	
     	
    		HashSet<Date> registered = new HashSet<Date>();
-   		HashSet<Date> absences = new HashSet<Date>();
+   		List<Date> absences = new ArrayList<Date>();
 		Calendar cal = Calendar.getInstance();
 		try 
 		{
+			Calendar start = Calendar.getInstance();
+			start.add(Calendar.MONTH, -12); // the last 12 months
+			Date oneYearAgo = start.getTime();
 			PreparedStatement pS = dbConnection.prepareStatement(sql);
 	    	pS.setInt(1, o.getId());
+	    	pS.setDate(2, new java.sql.Date(oneYearAgo.getTime()));
 			ResultSet resRegistered = pS.executeQuery();
 			while (resRegistered.next())
 			{
@@ -180,23 +181,25 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 			}
 			
 			
-			Calendar start = Calendar.getInstance();
-			start.set(2014, 01, 01);
+			if (o.getStartDate().before(oneYearAgo))
+			{
+				start.setTime(oneYearAgo);
+			}
+			else
+			{
+				start.setTime(o.getStartDate());
+			}
+			
 			Calendar end = Calendar.getInstance();
-			end.set(2014, 01, 19);
+			end.setTime(new Date());
 			
 			for (Date registeredDate : registered)
 			{
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
 					SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
-					if (fm.format(registeredDate.getTime()).equals(fm.format(date.getTime())))
-					{
-						System.out.println("PRESENT ON: " +  fm.format(date.getTime()));
-					}
-					else
+					if (!fm.format(registeredDate.getTime()).equals(fm.format(date.getTime())))
 					{
 						absences.add(date);
-						System.out.println("ABSENT ON: " +  fm.format(date.getTime()));
 					}
 				}
 			}
@@ -214,6 +217,11 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         else
         	return absences;
     	
+    }
+    
+    public List<CalendarAppointment> getAppointments(StaffMember o) throws EmptyResultSetException
+    {
+    	return calendarAppointmentDMO.getAllByProperties(new SQLBuilder("staff_member_id", "=",""+ o.getId()));
     }
     
     /** getAllByProperties
@@ -244,15 +252,15 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         else
         	return staffMembers;
     }
-    /** getAllHolidays
-     * retrieves all of the Holidays for a Staff Member
+    /** getHolidays
+     * retrieves all of the Holidays for a Staff Member in the past year
      * @param
      * @return
      */
-    public Set<Date> getAllHolidays(StaffMember o) throws EmptyResultSetException
+    public List<Date> getHolidays(StaffMember o) throws EmptyResultSetException
     {
 		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+o.getId()).AND("availability", "=", "0");
-		HashSet<Date> holidays = new HashSet<Date>();
+		List<Date> holidays = new ArrayList<Date>();
 		Calendar cal = Calendar.getInstance();
 		try 
 		{

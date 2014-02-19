@@ -21,11 +21,4 @@ public class Receptionist extends StaffMember {
 		super(u, p, fN, lN, fT, sD, oM, "Receptionist", hA);
 	}
 	
-	@Override
-	public boolean isAvailable(Date c)
-	{
-		// IS THIS NECESSARY?
-		return !this.unavailables.contains(c) && !this.holidays.contains(c);
-	}
-
 }

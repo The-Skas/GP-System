@@ -30,12 +30,7 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 	private JPasswordField passwordFld;
 	
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		
-		System.out.println("Logging in...");
-		System.out.println("\tUsername: " + this.usernameFld.getText());
-		System.out.println("\tPassword: " + new String(this.passwordFld.getPassword()));
-		
+	public void actionPerformed(ActionEvent e) {		
 		String username = this.usernameFld.getText();
 		String inputPassword = new String(StaffMember.encrypt(new String(this.passwordFld.getPassword())));
 		
@@ -47,11 +42,9 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 			String password = new String(sM.getEncryptedPassword());
 			if (password.trim().equals(inputPassword.trim()))
 			{
-				System.out.println("Succesfully Logged In! :D");
 				gpsisLogin.dispose(); // close login window
 				currentUser = sM; // set the current user
 				
-				System.out.println("Registering User");
 				staffMemberDMO.register(currentUser);
 				
 				MainInterface wM = new MainInterface(); // load the welcome module
@@ -61,7 +54,6 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 			}
 			else
 			{
-				System.out.println(password.trim() + " != " + inputPassword.trim());
 				JOptionPane.showMessageDialog(gpsisLogin, "Invalid Password!", "ERROR", JOptionPane.ERROR_MESSAGE);
 			}
 		} 

@@ -4,14 +4,10 @@
  */
 package module;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,10 +26,10 @@ import framework.GPSISModuleMain;
 
 public class StaffMemberModule extends GPSISModuleMain implements ActionListener, ListSelectionListener{
 	
-	private List<StaffMember> staffMembers;
-	private JTable staffMemberTable;
-	private StaffMemberATM sMM;
-	private JButton modifyStaffMemberBtn; 
+	private static List<StaffMember> staffMembers;
+	private static JTable staffMemberTable;
+	private static StaffMemberATM sMM;
+	private static JButton modifyStaffMemberBtn; 
 	/* (non-Javadoc)
 	 * @see framework.GPSISModuleMain#getModuleView()
 	 */
@@ -45,8 +41,8 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 			
 			// List View
 			JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-				this.staffMemberTable = this.buildStaffMemberTable();
-				this.staffMemberTable.getSelectionModel().addListSelectionListener(this);
+				staffMemberTable = this.buildStaffMemberTable();
+				staffMemberTable.getSelectionModel().addListSelectionListener(this);
 			leftPanel.add(new JScrollPane(staffMemberTable), new CC().span().grow());
 		staffMemberModuleView.add(leftPanel, new CC().span().grow());
 			
@@ -59,16 +55,25 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 					addStaffMemberBtn.setActionCommand("Add Staff Member");
 				rightPanel.add(addStaffMemberBtn, new CC().wrap());
 				
-				this.modifyStaffMemberBtn = new JButton("View/Edit Profile");
-					this.modifyStaffMemberBtn.addActionListener(this);
-					this.modifyStaffMemberBtn.setActionCommand("View/Edit Profile");
-					this.modifyStaffMemberBtn.setVisible(false);
+					modifyStaffMemberBtn = new JButton("View/Edit Profile");
+					modifyStaffMemberBtn.addActionListener(this);
+					modifyStaffMemberBtn.setActionCommand("View/Edit Profile");
+					modifyStaffMemberBtn.setVisible(false);
 				rightPanel.add(modifyStaffMemberBtn);
 				
 			staffMemberModuleView.add(rightPanel, new CC().dockEast());
-			//staffMemberModuleView.setBackground(Color.red);
 		
 		return staffMemberModuleView;
+	}
+	
+	public static List<StaffMember> getStaffMembers()
+	{
+		return staffMembers;
+	}
+	
+	public static JTable getStaffMemberTable()
+	{
+		return StaffMemberModule.staffMemberTable;
 	}
 
 	@Override
@@ -79,7 +84,7 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 				new AddStaffMember();
 				break;
 			case "View/Edit Profile":
-				StaffMember sM = this.staffMembers.get(staffMemberTable.getSelectedRow());				
+				StaffMember sM = staffMembers.get(staffMemberTable.getSelectedRow());				
 				new ViewStaffMember(sM);
 				break;
 		}
@@ -88,9 +93,9 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 	private JTable buildStaffMemberTable()
 	{
 		try {
-			this.staffMembers = staffMemberDMO.getAll();
+			staffMembers = staffMemberDMO.getAll();
 						
-			sMM = new StaffMemberATM(this.staffMembers);
+			sMM = new StaffMemberATM(staffMembers);
 			JTable sMT = new JTable (sMM);
 			return sMT;
 		} catch (EmptyResultSetException e) {
@@ -102,6 +107,6 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 
 	@Override
 	public void valueChanged(ListSelectionEvent arg0) {
-		this.modifyStaffMemberBtn.setVisible(true);
+		modifyStaffMemberBtn.setVisible(true);
 	}
 }

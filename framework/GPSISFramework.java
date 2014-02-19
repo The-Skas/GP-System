@@ -10,6 +10,7 @@ import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import mapper.CalendarAppointmentDMO;
 import mapper.CareProgrammeDMO;
@@ -36,9 +37,19 @@ public class GPSISFramework {
 	
 	protected static final String APPTITLE = "General Practitioner's Surgery Information System";
 	protected static StaffMember currentUser;
+	private static final GPSISFramework instance = new GPSISFramework();
 	
-	protected static HashMap<String, Font> fonts = new HashMap<String, Font>();
+	protected static Map<String, Font> fonts = new HashMap<String, Font>();
 	
+	public static GPSISFramework getInstance()
+	{
+		return instance;
+	}
+	
+	public static Map<String, Font> getFonts()
+	{
+		return fonts;
+	}
 	/** initialise
 	 * Initialises the Framework
 	 * Initialisation List: 

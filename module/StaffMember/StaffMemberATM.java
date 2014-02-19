@@ -60,15 +60,30 @@ public class StaffMemberATM extends AbstractTableModel {
         }
         return null;
     }
-	 
-    /**
-	 * JTable uses this method to determine the default renderer/
-	 * editor for each cell.  If we didn't implement this method,
-	 * then the last column would contain text ("true"/"false"),
-	 * rather than a check box.
-	 */
+    
 	public Class<?> getColumnClass(int c) {
 	    return getValueAt(0, c).getClass();
-	}	 
+	}	
+	
+	
+	/** addRow
+	 * add a Staff Member Object to the Table and refresh the Table
+	 * @param o
+	 */
+	public void addRow(StaffMember o)
+	{
+		this.data.add(o);
+		this.fireTableChanged(null);
+	}
+	
+	/** removeRow
+	 * remove a Staff Member Object from the Table and refresh the Table
+	 * @param o
+	 */
+	public void removeRow(StaffMember o)
+	{
+		this.data.remove(o);
+		this.fireTableChanged(null);
+	}
 
 }

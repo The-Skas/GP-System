@@ -6,9 +6,8 @@ package object;
  */
 
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.crypto.Cipher;
@@ -24,44 +23,18 @@ import exception.EmptyResultSetException;
 import framework.GPSISObject;
 
 public abstract class StaffMember extends GPSISObject {
-	/** decrypt 
-	 * This method should never be used in Practice. 
-	 * and only compare encrypted passwords.
-	 * @param eP a pre-hashed String to be de-hashed.
-	 * @return
-	 */
-	public static String decrypt(String eP) {
-		try 
-		{
-			SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-			Cipher c = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-			c.init(Cipher.DECRYPT_MODE, skeySpec, salt);
-			byte[] dP = c.doFinal(Base64.decodeBase64(eP));
-			return new String(dP);
-		}
-		catch (Exception ex)
-		{
-		    ex.printStackTrace();
-		}
-		return null;
-	}
-	protected String username;
-		
+	private String username;
 	private String encryptedPassword;
-	protected String firstName;
-	protected String lastName;
-	protected boolean fullTime;
-	protected boolean officeManager;
-	protected String role;
+	private String firstName;
+	private String lastName;
+	private boolean fullTime;
+	private boolean officeManager;
+	private String role;
 	
-	protected int holidayAllowance;
-	protected Date startDate;
+	private int holidayAllowance;
+	private Date startDate;
 
-	protected Date endDate = null; // null if not temporary
-	protected Set<Date> holidays;
-	protected Set<Date> absences;
-	protected Set<Date> unavailables;
-	
+	private Date endDate = null; // null if not temporary	
 	protected Set<TaxForm> taxForms;
 	
 	// the Key to use when Encrypting and Decrypting
@@ -183,14 +156,10 @@ public abstract class StaffMember extends GPSISObject {
 	 * @return a Set of Dates that this Staff Member has been absent for
 	 * @throws EmptyResultSetException 
 	 */
-	public Set<Date> getAbsences() throws EmptyResultSetException
+	public List<Date> getAbsences() throws EmptyResultSetException
 	{
-		if (this.absences != null)
-			return this.absences;
-		else
-		{
-			return staffMemberDMO.getAbsences(this);
-		}
+
+		return staffMemberDMO.getAbsences(this);
 	}
 	
 	/** getAllHolidays
@@ -198,40 +167,9 @@ public abstract class StaffMember extends GPSISObject {
 	 * @return a Set of Dates that the Staff Member has booked as Holiday
 	 * @throws EmptyResultSetException 
 	 */
-	public Set<Date> getAllHolidays() throws EmptyResultSetException
+	public List<Date> getHolidays() throws EmptyResultSetException
 	{
-		if (this.holidays != null)
-			return this.holidays;
-		else
-		{
-			return staffMemberDMO.getAllHolidays(this);
-		}
-	}
-	
-	
-	/** getCurrentYearHolidays
-	 * returns all of the Dates that this Staff Member has booked for a holiday this year
-	 * @return a Set of Dates that this Staff Member has booked for a holiday this year
-	 */
-	public Set<Date> getCurrentYearHolidays()
-	{
-		Calendar c = Calendar.getInstance();
-		c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
-		Date oneYearAgo = c.getTime();
-		Set<Date> result = new HashSet<Date>();
-		for (Date d : this.holidays)
-		{
-			if (d.getTime() > oneYearAgo.getTime()) // if the date is between NOW and 1 Year Ago
-			{
-				result.add(d);
-			}
-		}
-		
-		// only return a Set if there are results inside the Set
-		if (!result.isEmpty())
-			return result;
-		else
-			return null;
+		return staffMemberDMO.getHolidays(this);
 	}
 	
 	/** getEncryptedPassword
@@ -275,7 +213,11 @@ public abstract class StaffMember extends GPSISObject {
 	 */
 	public int getHolidayLeft()
 	{
-		return this.holidayAllowance - holidays.size();
+		try {
+			return this.holidayAllowance - this.getHolidays().size();
+		} catch (EmptyResultSetException e) {
+			return this.holidayAllowance;
+		}
 	}
 	
 	/** getLastName
@@ -315,7 +257,7 @@ public abstract class StaffMember extends GPSISObject {
 	 * @param c
 	 * @return
 	 */
-	public abstract boolean isAvailable(Date c);
+	//public abstract boolean isAvailable(Date c);
 	
 	/** isDoctor
 	 * returns whether or not this Staff Member is a Doctor or not
@@ -443,5 +385,27 @@ public abstract class StaffMember extends GPSISObject {
 	public void setHolidayAllowance(int holidayAllowance) {
 		this.holidayAllowance = holidayAllowance;
 	}
+	
+	/** decrypt 
+	 * This method should never be used in Practice. 
+	 * and only compare encrypted passwords.
+	 * @param eP a pre-hashed String to be de-hashed.
+	 * @return
+	 *
+	public static String decrypt(String eP) {
+		try 
+		{
+			SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+			Cipher c = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+			c.init(Cipher.DECRYPT_MODE, skeySpec, salt);
+			byte[] dP = c.doFinal(Base64.decodeBase64(eP));
+			return new String(dP);
+		}
+		catch (Exception ex)
+		{
+		    ex.printStackTrace();
+		}
+		return null;
+	}*/
 	
 }

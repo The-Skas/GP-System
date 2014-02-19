@@ -6,9 +6,6 @@ package module.StaffMember;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -25,11 +22,16 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
 
+import module.StaffMemberModule;
+import net.miginfocom.layout.CC;
+import net.miginfocom.swing.MigLayout;
 import net.sourceforge.jdatepicker.JDateComponentFactory;
 import net.sourceforge.jdatepicker.JDatePicker;
 import object.MedicalStaffMember;
 import object.Receptionist;
+import object.StaffMember;
 import exception.DuplicateEntryException;
+import framework.GPSISFramework;
 import framework.GPSISPopup;
 
 public class AddStaffMember extends GPSISPopup implements ActionListener {
@@ -51,240 +53,93 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 		super("Add Staff Member"); // Set the JFrame Title
 		
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		this.setLayout(new GridBagLayout());
+		this.setLayout(new MigLayout());
 		this.setBackground(new Color(240, 240, 240));
-		this.setSize(400, 450);
+		//this.setSize(400, 450);
 		
-		JPanel h = new JPanel(new GridBagLayout());	
+		JPanel h = new JPanel(new MigLayout());	
 			JLabel hTitle = new JLabel("Add Staff Member");
-				hTitle.setFont(new Font("Serif", Font.BOLD, 24));
-				GridBagConstraints gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-			h.add(hTitle, gbC);
+				GPSISFramework.getInstance();
+				hTitle.setFont(GPSISFramework.getFonts().get("Roboto").deriveFont(24f));
+			h.add(hTitle, new CC().wrap());
 			
-			gbC = new GridBagConstraints();
-			gbC.anchor = GridBagConstraints.PAGE_START;
-			gbC.gridx = 0;
-			gbC.gridy = 0;
-			gbC.weightx = 1;
-			gbC.weighty = 0.3;
-			gbC.gridwidth = 3;
-			gbC.ipady = 0;
-		this.add(h, gbC);
+		this.add(h, new CC().wrap());
 		
-		JPanel addStaffMemberForm = new JPanel(new GridBagLayout());
+		JPanel addStaffMemberForm = new JPanel(new MigLayout());
 			// Username Label
 			JLabel usernameLbl = new JLabel("Username: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 0;
-			addStaffMemberForm.add(usernameLbl, gbC);
+			addStaffMemberForm.add(usernameLbl);
 			// Username Component
 			this.usernameFld = new JTextField(20);
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 0;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.usernameFld, gbC);
+			addStaffMemberForm.add(this.usernameFld, new CC().wrap());
 			
 			// Password Label
 			JLabel passwordLbl = new JLabel("Password: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 1;
-			addStaffMemberForm.add(passwordLbl, gbC);
+			addStaffMemberForm.add(passwordLbl);
 			// Password Component
 			this.passwordFld = new JPasswordField(20);
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 1;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.passwordFld, gbC);
+			addStaffMemberForm.add(this.passwordFld, new CC().wrap());
 			
 			// First Name Label
 			JLabel firstNameLbl = new JLabel("First Name: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 2;
-			addStaffMemberForm.add(firstNameLbl, gbC);
+			addStaffMemberForm.add(firstNameLbl);
 			// First Name Component
 			this.firstNameFld = new JTextField(20);
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 2;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.firstNameFld, gbC);
+			addStaffMemberForm.add(this.firstNameFld, new CC().wrap());
 			
 			// Last Name Label
 			JLabel lastNameLbl = new JLabel("Last Name: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 3;
-			addStaffMemberForm.add(lastNameLbl, gbC);
+			addStaffMemberForm.add(lastNameLbl);
 			// Last Name Component
 			this.lastNameFld = new JTextField(20);
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 3;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.lastNameFld, gbC);
+			addStaffMemberForm.add(this.lastNameFld, new CC().wrap());
 			
 			// Is Full Time Label
 			JLabel isFullTimeLbl = new JLabel("Full Time");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 4;
-			addStaffMemberForm.add(isFullTimeLbl, gbC);
+			addStaffMemberForm.add(isFullTimeLbl);
 			// Is Full Time Component
 			this.isFullTimeFld = new JCheckBox();
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 4;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.isFullTimeFld, gbC);
+			addStaffMemberForm.add(this.isFullTimeFld, new CC().wrap());
 			
 			// Start Date Label
 			JLabel startDateLbl = new JLabel("Start Date: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 5;
-			addStaffMemberForm.add(startDateLbl, gbC);
+			addStaffMemberForm.add(startDateLbl);
 			// Start Date Component
 			this.startDateFld = JDateComponentFactory.createJDatePicker(JDateComponentFactory.createDateModel(new Date()));
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 5;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add((Component) this.startDateFld, gbC);
+			addStaffMemberForm.add((Component) this.startDateFld, new CC().wrap());
 			
 			// Is Office Manager Label
 			JLabel isOfficeManagerLbl = new JLabel("Office Manager: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 6;
-			addStaffMemberForm.add(isOfficeManagerLbl, gbC);
+			addStaffMemberForm.add(isOfficeManagerLbl);
 			// Is Office Manager Component
 			this.isOfficeManagerFld = new JCheckBox();
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 6;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.isOfficeManagerFld, gbC);
+			addStaffMemberForm.add(this.isOfficeManagerFld, new CC().wrap());
 			
 			// Role Label
 			JLabel roleLbl = new JLabel("Role: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 7;
-			addStaffMemberForm.add(roleLbl, gbC);
+			addStaffMemberForm.add(roleLbl);
 			
 			// Role Component
 			this.roleFld = new JComboBox<String>(this.roles);
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 7;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.roleFld, gbC);
+			addStaffMemberForm.add(this.roleFld, new CC().wrap());
 			
 			// Holiday Allowance Label
 			JLabel holidayAllowanceLbl = new JLabel("Holiday Allowance: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 8;
-			addStaffMemberForm.add(holidayAllowanceLbl, gbC);
+			addStaffMemberForm.add(holidayAllowanceLbl);
 			
 			// Holiday Allowance Component
 			this.holidayAllowanceFld = new JSpinner(new SpinnerNumberModel(20, 5, 100, 1));
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 8;
-				gbC.gridwidth = 2;
-			addStaffMemberForm.add(this.holidayAllowanceFld, gbC);
+			addStaffMemberForm.add(this.holidayAllowanceFld, new CC().wrap());
 			
 			// Add Button
 			JButton addBtn = new JButton("Add!");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LAST_LINE_END;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 2;
-				gbC.gridy = 9;
 				addBtn.addActionListener(this);
-			addStaffMemberForm.add(addBtn, gbC);
+			addStaffMemberForm.add(addBtn);
 		
-			gbC = new GridBagConstraints();
-			gbC.anchor = GridBagConstraints.CENTER;
-			gbC.gridx = 0;
-			gbC.weightx = 1;
-			gbC.weighty = 0.7;
-			gbC.gridwidth = 3;
-		this.add(addStaffMemberForm, gbC);
+		this.add(addStaffMemberForm, new CC());
 		
 		this.setLocationRelativeTo(null); // center window
-		
+		this.pack();
 		this.setVisible(true);
 	}
 
@@ -313,14 +168,16 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 			{
 				if (role.equals("Receptionist"))
 				{
-						new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
+						StaffMember sM = new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
+						((StaffMemberATM) StaffMemberModule.getStaffMemberTable().getModel()).addRow(sM);
 				}
 				else
 				{
-					new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
+					StaffMember sM = new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
+					((StaffMemberATM) StaffMemberModule.getStaffMemberTable().getModel()).addRow(sM);
 				}
-				System.out.println("Created Staff Member! :D");
-				JOptionPane.showMessageDialog(this, "Created a New Staff Member :)");
+				JOptionPane.showMessageDialog(this, "Created a New Staff Member :D");
+				
 				dispose();
 			}
 			catch (DuplicateEntryException e)
