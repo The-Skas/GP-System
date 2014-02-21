@@ -15,7 +15,6 @@ public class GPSIS {
 	 */
 	public static void main(String[] args)
 	{
-		System.out.println(Locale.getDefault().getDisplayCountry());
 		GPSISFramework GPSIS = new GPSISFramework();		
 		GPSIS.initialise();
 	}

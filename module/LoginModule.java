@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import net.miginfocom.layout.CC;
+import net.miginfocom.swing.MigLayout;
 import mapper.SQLBuilder;
 import object.StaffMember;
 import exception.EmptyResultSetException;
@@ -67,87 +69,37 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 	public void showLogin()
 	{
 		this.gpsisLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.gpsisLogin.setLayout(new GridBagLayout());
+		this.gpsisLogin.setLayout(new MigLayout());
 		this.gpsisLogin.setBackground(new Color(240, 240, 240));
-		this.gpsisLogin.setSize(400, 250);
 		
-		JPanel h = new JPanel(new GridBagLayout());			
+		JPanel h = new JPanel(new MigLayout());			
 			JLabel hTitle = new JLabel("Login");
-				hTitle.setFont(new Font("Serif", Font.BOLD, 24));
-				GridBagConstraints gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-			h.add(hTitle, gbC);
-			
-			gbC = new GridBagConstraints();
-			gbC.anchor = GridBagConstraints.PAGE_START;
-			gbC.gridx = 0;
-			gbC.gridy = 0;
-			gbC.weightx = 1;
-			gbC.weighty = 1;
-			gbC.gridwidth = 3;
-			gbC.ipady = 0;
-		this.gpsisLogin.add(h, gbC);
+				hTitle.setFont(fonts.get("Roboto").deriveFont(24f));
+			h.add(hTitle);
+		this.gpsisLogin.add(h, new CC().wrap().grow());
 		
-		JPanel loginForm = new JPanel(new GridBagLayout());
+		JPanel loginForm = new JPanel(new MigLayout());
 			
 			JLabel usernameLbl = new JLabel("Username: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 0;
-			loginForm.add(usernameLbl, gbC);
+			loginForm.add(usernameLbl);
 		
 			this.usernameFld = new JTextField(20);
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 0;
-				gbC.gridwidth = 2;
-			loginForm.add(this.usernameFld, gbC);
+			loginForm.add(this.usernameFld, new CC().wrap());
 		
 			JLabel passwordLbl = new JLabel("Password: ");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LINE_START;
-				gbC.fill = GridBagConstraints.NONE;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 0;
-				gbC.gridy = 1;
-			loginForm.add(passwordLbl, gbC);
+			loginForm.add(passwordLbl);
 		
 			this.passwordFld = new JPasswordField(20);
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.CENTER;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 1;
-				gbC.gridy = 1;
-				gbC.gridwidth = 2;
 				this.passwordFld.addActionListener(this);
-			loginForm.add(this.passwordFld, gbC);
+			loginForm.add(this.passwordFld, new CC().wrap());
 			
 			JButton loginBtn = new JButton("Login!");
-				gbC = new GridBagConstraints();
-				gbC.anchor = GridBagConstraints.LAST_LINE_END;
-				gbC.weightx = 1;
-				gbC.weighty = 1;
-				gbC.gridx = 2;
-				gbC.gridy = 2;
 				loginBtn.addActionListener(this);
-			loginForm.add(loginBtn, gbC);
+			loginForm.add(loginBtn, new CC().span(2).grow());
 		
-			gbC = new GridBagConstraints();
-			gbC.anchor = GridBagConstraints.CENTER;
-			gbC.gridx = 0;
-			gbC.weightx = 1;
-			gbC.weighty = 1;
-			gbC.gridwidth = 3;
-		this.gpsisLogin.add(loginForm, gbC);
+
+		this.gpsisLogin.add(loginForm);
+		this.gpsisLogin.pack();
 		
 		this.gpsisLogin.setLocationRelativeTo(null); // center window
 		

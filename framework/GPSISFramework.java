@@ -101,7 +101,7 @@ public class GPSISFramework {
 			System.out.print("\t\t- Roboto");
 			Font robotoFont = Font.createFont(Font.TRUETYPE_FONT, robotoFile);
 			fonts.put("Roboto", robotoFont);
-			System.out.print("\t\t\tSuccess.");
+			System.out.println("\t\t\tSuccess.");
 		} catch (FontFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

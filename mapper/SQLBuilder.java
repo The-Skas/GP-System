@@ -92,7 +92,7 @@ public class SQLBuilder {
             pS.setString(i, qBlock[VALUE]);
             i++;
         }
-        System.out.println(pS);
+       // System.out.println(pS);
         return pS.executeQuery();
         
     } 

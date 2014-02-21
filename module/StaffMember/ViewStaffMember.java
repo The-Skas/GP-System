@@ -216,7 +216,7 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 				this.save();
 				break;
 			case "Change Password":
-				new ChangePassword();
+				new ChangeStaffMemberPassword(this.selectedStaffMember);
 				break;
 			case "Remove":
 				this.remove();
