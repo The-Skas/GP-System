@@ -60,13 +60,22 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     public void addHoliday(StaffMember sM, Date dateOfHol)
     {
     	// TODO StaffMemberDMO:addHoliday
+
+    	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
+    	String holiday = fm.format(dateOfHol.getTime());
     	
-    	// check if Date exists
-    		// INSERT INTO Register COLUMNS (date) VALUES (dateOfHol.date())
-  
-    		// get last insert id (is the Date id) 
+    	// Check if user's already registered on Database
+    	try {
+				// Register User for today :D
+	    	SQLBuilder sql = new SQLBuilder("id","=","0")
+		        .SET("staff_member_id","=",""+sM.getId())
+		        .SET("date", "=", holiday)
+		        .SET("availability", "=", ""+Register.HOLIDAY);
+			putHelper(sql, "Register", new Register(sM, dateOfHol, Register.HOLIDAY));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     	
-    	// INSERT INTO StaffMemberRegister (sM.getId(), dateId, Register.HOLIDAY);
     	
     }
     
@@ -385,8 +394,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	
     }
     
-    
-    
     /** makeTemporary
      * 
      */
@@ -405,4 +412,18 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     		System.err.println(e.getMessage());
     	}
     }
+
+	public void removeHoliday(StaffMember staffMember, Date date) {
+		SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
+    	String d = fm.format(date.getTime());
+		
+		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+staffMember.getId()).AND("date", "=", d);
+		
+		try {
+			removeByPropertyHelper(sql, "Register");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }

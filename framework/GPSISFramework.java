@@ -7,8 +7,8 @@ package framework;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +18,7 @@ import mapper.MedicineDMO;
 import mapper.PatientDMO;
 import mapper.PrescriptionDMO;
 import mapper.RoomDMO;
+import mapper.SpecialityDMO;
 import mapper.StaffMemberDMO;
 import mapper.TaxOfficeDMO;
 import module.LoginModule;
@@ -33,6 +34,7 @@ public class GPSISFramework {
     protected static PatientDMO patientDMO = PatientDMO.getInstance();
     protected static MedicineDMO medicineDMO = MedicineDMO.getInstance();
     protected static PrescriptionDMO prescriptionDMO = PrescriptionDMO.getInstance();
+    protected static SpecialityDMO specialityDMO = SpecialityDMO.getInstance();
 //	etc.
 	
 	protected static final String APPTITLE = "General Practitioner's Surgery Information System";
@@ -95,18 +97,34 @@ public class GPSISFramework {
 	
 	public void loadFonts()
 	{
-
-		File robotoFile = new File("font/Roboto-Regular.ttf");
+		System.out.println("Working Directory = " +
+	              System.getProperty("user.dir"));
 		try {
+			// Roboto
 			System.out.print("\t\t- Roboto");
-			Font robotoFont = Font.createFont(Font.TRUETYPE_FONT, robotoFile);
+			InputStream resource = this.getClass().getResourceAsStream("/font/Roboto-Regular.ttf");
+			Font robotoFont = Font.createFont(Font.TRUETYPE_FONT, resource);
 			fonts.put("Roboto", robotoFont);
 			System.out.println("\t\t\tSuccess.");
+			
+			// OpenSans
+			System.out.print("\t\t- Open Sans");
+			resource = this.getClass().getResourceAsStream("/font/OpenSans-Regular.ttf");			
+			Font openSans = Font.createFont(Font.TRUETYPE_FONT, resource);
+			fonts.put("OpenSans", openSans);
+			System.out.println("\t\t\tSuccess.");
+			
+			// Ubuntu
+			System.out.print("\t\t- Ubuntu");
+			resource = this.getClass().getResourceAsStream("/font/Ubuntu-Regular.ttf");			
+			Font ubuntu = Font.createFont(Font.TRUETYPE_FONT, resource);
+			fonts.put("Ubuntu", ubuntu);
+			System.out.println("\t\t\tSuccess.");
+			
 		} catch (FontFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.err.println("FONT NOT FOUND");
-			e.printStackTrace();
+			System.err.println("\t\t\tError. File not Found.");
 		}
 	}
 	

@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -71,7 +72,8 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 		this.gpsisLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.gpsisLogin.setLayout(new MigLayout());
 		this.gpsisLogin.setBackground(new Color(240, 240, 240));
-		
+		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
+		gpsisLogin.setIconImage((icon.getImage()));
 		JPanel h = new JPanel(new MigLayout());			
 			JLabel hTitle = new JLabel("Login");
 				hTitle.setFont(fonts.get("Roboto").deriveFont(24f));

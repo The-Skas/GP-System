@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<project name="GPSIS" default="Main" basedir=".">
+	<!-- Sets variables which can later be used. -->
+	<!-- The value of a property is accessed via ${} -->
+	<property name="src.dir" location="" />
+	<property name="build.dir" location="bin" />
+	<property name="dist.dir" location="distributables" />
+
+	<!--
+  		Create a classpath container which can be later used in the ant task
+	-->
+	<path id="build.classpath">
+		<fileset dir="${src.dir}">
+  			<include name="library/*.jar" />
+		</fileset>
+		
+	</path>
+
+	<!-- Deletes the existing build directory-->
+  	<target name="clean">
+		<delete dir="${build.dir}" />
+  	</target>
+
+ 	<!-- Creates the  build  directory-->
+  	<target name="makedir">
+		<mkdir dir="${build.dir}" />
+  	</target>
+
+  	<!-- Compiles the java code -->
+  	<target name="compile" depends="clean, makedir">
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" classpathref="build.classpath">
+		</javac>
+  	</target>
+
+ 	<!--Creates the deployable jar file  -->
+	<target name="jar" depends="compile">
+		<jar destfile="${dist.dir}\GPSIS.jar" basedir="${build.dir}">
+			<zipgroupfileset includes="*.jar" dir="${src.dir}/library"/>
+			<fileset dir="${src.dir}">
+				<include name="font/*.ttf" />
+				<include name="image/*.jpg" />
+			</fileset>	
+  			<manifest>
+				<attribute name="Main-Class" value="framework.GPSIS" />
+  				<attribute name="Class-Path" value="${src.dir}/library" />
+  			</manifest>
+		</jar>
+ 	 </target>
+
+  	<target name="Main" depends="jar">
+		<description>GPSIS</description>
+  	</target>
+
+</project> 

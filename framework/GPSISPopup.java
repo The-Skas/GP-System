@@ -3,6 +3,7 @@
  */
 package framework;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import object.StaffMember;
@@ -22,6 +23,8 @@ public class GPSISPopup extends JFrame {
 	public GPSISPopup(String title)
 	{
 		super(GPSISFramework.APPTITLE + " - " + title);
+		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
+		this.setIconImage((icon.getImage()));
 	}
 	
 	

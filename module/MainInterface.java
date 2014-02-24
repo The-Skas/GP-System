@@ -11,7 +11,9 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -154,6 +156,9 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	public void createAndShowGUI()
 	{
 		JFrame gpsisMainFrame = new JFrame("General Practitioner's Surgery Information System");
+		// Set Icon
+		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
+		gpsisMainFrame.setIconImage((icon.getImage()));
 		gpsisMainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gpsisMainFrame.setLayout(new MigLayout(
 									new LC(),

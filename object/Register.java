@@ -5,6 +5,7 @@ package object;
 
 import java.util.Date;
 
+import mapper.SQLBuilder;
 import framework.GPSISObject;
 
 /**

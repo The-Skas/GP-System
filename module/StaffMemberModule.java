@@ -39,7 +39,7 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 			// need to implement controls for browsing staff members, filters etc.
 			
 			
-			// List View
+			// Table View
 			JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
 				staffMemberTable = this.buildStaffMemberTable();
 				staffMemberTable.getSelectionModel().addListSelectionListener(this);

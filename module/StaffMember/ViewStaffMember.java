@@ -1,4 +1,4 @@
-/** TODO ViewStaffMember
+/**
  * Displays a Window with the given Staff Member's properties ready for editing
  * @author Vijendra Patel
  */
@@ -194,6 +194,8 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		
 		// Holidays Stats
 		JButton holidaysBtn = new JButton("Holidays");
+		holidaysBtn.addActionListener(this);
+		holidaysBtn.setActionCommand("View Holidays");
 		s.add(holidaysBtn, new CC());
 		JLabel holidaysVal = new JLabel("0/" + selectedStaffMember.getHolidayAllowance());
 		try {
@@ -220,6 +222,9 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 				break;
 			case "Remove":
 				this.remove();
+				break;
+			case "View Holidays":
+				new ViewHolidays(selectedStaffMember);
 				break;
 		}
 	}
