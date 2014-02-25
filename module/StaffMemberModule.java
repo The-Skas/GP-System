@@ -46,8 +46,6 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 			leftPanel.add(new JScrollPane(staffMemberTable), new CC().span().grow());
 		staffMemberModuleView.add(leftPanel, new CC().span().grow());
 			
-			
-			
 			// Controls (RIGHT PANE)
 			JPanel rightPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
 				JButton addStaffMemberBtn = new JButton("Add Staff Member");

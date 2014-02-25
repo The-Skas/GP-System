@@ -21,6 +21,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import module.StaffMemberModule;
 import net.miginfocom.layout.CC;
@@ -34,7 +36,7 @@ import exception.DuplicateEntryException;
 import framework.GPSISFramework;
 import framework.GPSISPopup;
 
-public class AddStaffMember extends GPSISPopup implements ActionListener {
+public class AddStaffMember extends GPSISPopup implements ActionListener, ChangeListener {
 
 	private static final long serialVersionUID = -8748112836660009010L;
 	
@@ -48,9 +50,13 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 	private JComboBox<String> roleFld;
 	private String[] roles = {"Receptionist", "Nurse", "Doctor"};
 	private JSpinner holidayAllowanceFld;
+	private JCheckBox isMakeTempFld;
+	private JLabel endDateLbl;
+	private JDatePicker endDateFld;
 
 	public AddStaffMember() {
 		super("Add Staff Member"); // Set the JFrame Title
+		this.setModal(true);
 		
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLayout(new MigLayout());
@@ -131,6 +137,23 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 			this.holidayAllowanceFld = new JSpinner(new SpinnerNumberModel(20, 5, 100, 1));
 			addStaffMemberForm.add(this.holidayAllowanceFld, new CC().wrap());
 			
+			// Make Temporary Label
+			JLabel makeTemporaryLbl = new JLabel("Make Temporary: ");
+			addStaffMemberForm.add(makeTemporaryLbl);
+			
+			// Make Temporary Component
+			this.isMakeTempFld = new JCheckBox();
+			addStaffMemberForm.add(this.isMakeTempFld);
+			this.isMakeTempFld.addChangeListener(this);
+			
+			// End Date Label
+			this.endDateLbl = new JLabel("End Date: ");
+			addStaffMemberForm.add(this.endDateLbl);
+			this.endDateLbl.setVisible(false);
+			this.endDateFld = JDateComponentFactory.createJDatePicker(JDateComponentFactory.createDateModel(new Date()));
+			addStaffMemberForm.add((Component)this.endDateFld, new CC().wrap());
+			((Component) this.endDateFld).setVisible(false);
+			
 			// Add Button
 			JButton addBtn = new JButton("Add!");
 				addBtn.addActionListener(this);
@@ -156,6 +179,9 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 		String role = (String) this.roleFld.getSelectedItem();
 		int holidayAllowance = (int)this.holidayAllowanceFld.getValue();
 		
+		boolean isMakeTemporary = this.isMakeTempFld.isSelected();
+		Date endDate = (Date) this.endDateFld.getModel().getValue();
+		
 		// check if fields are not blank
 		if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty())
 		{
@@ -166,16 +192,22 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 		
 			try
 			{
+				StaffMember sM;
 				if (role.equals("Receptionist"))
 				{
-						StaffMember sM = new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
-						((StaffMemberATM) StaffMemberModule.getStaffMemberTable().getModel()).addRow(sM);
+					sM = new Receptionist(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, holidayAllowance);
+					((StaffMemberATM) StaffMemberModule.getStaffMemberTable().getModel()).addRow(sM);
 				}
 				else
 				{
-					StaffMember sM = new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
+					sM = new MedicalStaffMember(username, password, firstName, lastName, isFullTime, startDate, isOfficeManager, role, holidayAllowance);
 					((StaffMemberATM) StaffMemberModule.getStaffMemberTable().getModel()).addRow(sM);
+
 				}
+				// if temporary
+				if (isMakeTemporary)
+					sM.setTemporary(endDate);
+				
 				JOptionPane.showMessageDialog(this, "Created a New Staff Member :D");
 				
 				dispose();
@@ -186,6 +218,20 @@ public class AddStaffMember extends GPSISPopup implements ActionListener {
 			}
 		}	
 		
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent arg0) {
+		if (this.isMakeTempFld.isSelected())
+		{
+			((Component) this.endDateFld).setVisible(true);
+			this.endDateLbl.setVisible(true);
+		}
+		else
+		{
+			((Component) this.endDateFld).setVisible(false);
+			this.endDateLbl.setVisible(false);
+		}
 	}
 	
 	

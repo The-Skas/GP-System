@@ -6,13 +6,20 @@ package module.StaffMember;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -48,6 +55,9 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 	private JSpinner holidayAllowanceFld;
 	
 	private StaffMember selectedStaffMember;
+	
+	private JFileChooser fC = new JFileChooser();
+	private JLabel pPicture;
 
 	public ViewStaffMember(StaffMember sM) {
 		super("Modify Staff Member");
@@ -154,10 +164,15 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 	public JPanel buildProfilePictureSegment()
 	{
 		JPanel p = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-			//JLabel picture = new JLabel(new ImageIcon());
-			JLabel picture = new JLabel ("Placeholder for Picture");
-			p.add(picture);
+			pPicture = new JLabel("Placeholder");
+			p.add(pPicture, new CC().wrap());
 		//p.setBackground(Color.red);
+			
+			// change picture button
+			JButton changePic = new JButton("Change Picture");
+			changePic.addActionListener(this);
+			changePic.setActionCommand("Change Profile Picture");
+			p.add(changePic);
 		return p;
 	}
 	
@@ -178,6 +193,32 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 				System.out.println("Stats:- No Appointments");
 			}
 			s.add(appointmentsVal, new CC().wrap());
+			
+			// Specialities Stats
+			JButton specialitiesBtn = new JButton("Specialities");
+			specialitiesBtn.addActionListener(this);
+			specialitiesBtn.setActionCommand("View Specialities");
+			s.add(specialitiesBtn);
+			JLabel specialitiesVal = new JLabel("0");
+			try {
+				specialitiesVal = new JLabel(""+StaffMemberDMO.getInstance().getSpecialities(selectedStaffMember).size());
+			} catch (EmptyResultSetException e) {
+				System.out.println("Stats:- No Specialities");
+			}
+			s.add(specialitiesVal, new CC().wrap());
+			
+			// Patients Stats
+			JButton patientsBtn = new JButton("Patients");
+			patientsBtn.addActionListener(this);
+			patientsBtn.setActionCommand("View Patients");
+			s.add(patientsBtn);
+			JLabel patientsVal = new JLabel("0");
+			/*try {
+				patientsVal = new JLabel(""+PatientDMO.getInstance().getPatients(selectedStaffMember).size());
+			} catch (EmptyResultSetException e) {
+				System.out.println("Stats:- No Permanent Patients");
+			}*/
+			s.add(patientsVal, new CC().wrap());
 			
 		}
 		
@@ -205,6 +246,21 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		}
 		s.add(holidaysVal, new CC().wrap());
 		
+		
+		
+		// Tax Form Stats
+		JButton taxFormsBtn = new JButton("Tax Forms");
+		taxFormsBtn.addActionListener(this);
+		taxFormsBtn.setActionCommand("View Tax Forms");
+		s.add(taxFormsBtn);
+		JLabel taxFormsVal = new JLabel("0");
+		try {
+			taxFormsVal = new JLabel(""+StaffMemberDMO.getInstance().getTaxForms(selectedStaffMember).size());
+		} catch (EmptyResultSetException e) {
+			System.out.println("Stats:- No Tax Forms");
+		}
+		s.add(taxFormsVal, new CC().wrap());
+		
 		//s.setBackground(Color.green);
 		return s;
 	}
@@ -225,6 +281,15 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 				break;
 			case "View Holidays":
 				new ViewHolidays(selectedStaffMember);
+				break;
+			case "View Specialities":
+				new ViewSpecialities(selectedStaffMember);
+				break;
+			case "Change Profile Picture":
+				this.choosePicture();
+				break;
+			case "View Tax Forms":
+				new ViewTaxForm(selectedStaffMember);
 				break;
 		}
 	}
@@ -273,5 +338,36 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		}
 		
 	}
+	
+	/** choosePicture
+	 * 
+	 */
+	public void choosePicture()
+	{
+		int returnVal = fC.showOpenDialog(this);
+		 
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fC.getSelectedFile();
+            //This is where a real application would open the file.
+            System.out.println("Opening: " + file.getName());
+            try {
+				BufferedImage img = ImageIO.read(file);
+				System.out.println("Resizing...");
+				img = resizeImage(img, img.getType());
+				this.pPicture.setIcon(new ImageIcon(img));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        } 
+    }
+	
+	private static BufferedImage resizeImage(BufferedImage originalImage, int type){
+		BufferedImage resizedImage = new BufferedImage(100, 100, type);
+		Graphics2D g = resizedImage.createGraphics();
+		g.drawImage(originalImage, 0, 0, 100, 100, null);
+		g.dispose();
+	 
+		return resizedImage;
+	    }
 
 }

@@ -347,7 +347,7 @@ public abstract class StaffMember extends GPSISObject {
 	{
 		this.role = r;
 	}
-	
+		
 	/** makeTemporary
 	 * makes this Staff Member temporary by giving them an End Date
 	 * @param eD the End Date of the Contract

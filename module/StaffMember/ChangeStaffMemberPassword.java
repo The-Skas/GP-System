@@ -34,6 +34,7 @@ public class ChangeStaffMemberPassword extends GPSISPopup implements ActionListe
 	
 	public ChangeStaffMemberPassword(StaffMember sM) {
 		super("Change Password");
+		this.setModal(true);
 		this.staffMember = sM;
 
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

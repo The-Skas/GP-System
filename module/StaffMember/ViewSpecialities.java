@@ -9,7 +9,9 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,6 +20,12 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+
+
+
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+
+import mapper.SpecialityDMO;
 import mapper.StaffMemberDMO;
 import module.StaffMemberModule;
 import net.miginfocom.layout.AC;
@@ -26,6 +34,7 @@ import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import net.sourceforge.jdatepicker.JDateComponentFactory;
 import net.sourceforge.jdatepicker.JDatePicker;
+import object.Speciality;
 import object.StaffMember;
 import exception.EmptyResultSetException;
 import framework.GPSISPopup;
@@ -34,49 +43,54 @@ import framework.GPSISPopup;
  * @author VJ
  *
  */
-public class ViewHolidays extends GPSISPopup implements ActionListener, ListSelectionListener {
+public class ViewSpecialities extends GPSISPopup implements ActionListener, ListSelectionListener {
 
 	private static final long serialVersionUID = 6455018870545066105L;
 	private static StaffMember staffMember;
-	private static HolidayATM hM;
-	private static JTable holidayTable;
+	private static SpecialityATM sModel;
+	private static JTable specialityTable;
 	private static JButton removeHolidayBtn;
-	private static JDatePicker holidayFld;
-	private static List<Date> holidays;
+	private static JComboBox<Speciality> specialityFld;
+	private static List<Speciality> specialities;
 
-	public ViewHolidays(StaffMember sM) {
-		super("Staff Member Holidays");
+	public ViewSpecialities(StaffMember sM) {
+		super("Staff Member Specialities");
 		this.setModal(true);
 		staffMember = sM;
 		
 		JPanel staffMemberModuleView = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-		// need to implement controls for browsing staff members, filters etc.
-		
-		
+	
 		// Table View
 		JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
 		try {
-			holidays = StaffMemberDMO.getInstance().getHolidays(staffMember);
+			specialities = StaffMemberDMO.getInstance().getSpecialities(staffMember);
 						
-			hM = new HolidayATM(holidays);
-			holidayTable = new JTable (hM);
-			holidayTable.getSelectionModel().addListSelectionListener(this);
-			leftPanel.add(new JScrollPane(holidayTable), new CC().span().grow());
+			sModel = new SpecialityATM(specialities);
+			specialityTable = new JTable (sModel);
+			specialityTable.getSelectionModel().addListSelectionListener(this);
+			leftPanel.add(new JScrollPane(specialityTable), new CC().span().grow());
 		} catch (EmptyResultSetException e) {
 			System.out.println("EMPTY SET");
-			leftPanel.add(new JLabel("No Holidays"));
+			leftPanel.add(new JLabel("No Specialities"));
 		}
 			
 		staffMemberModuleView.add(leftPanel, new CC().span().grow());		
 		
 		// Controls (RIGHT PANE)
 		JPanel rightPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-			// Holiday Label
-			JLabel startDateLbl = new JLabel("Add Holiday: ");
+			// Specialitiy Label
+			JLabel startDateLbl = new JLabel("Add Speciality: ");
 			rightPanel.add(startDateLbl);
-			// Holiday Component
-			holidayFld = JDateComponentFactory.createJDatePicker(JDateComponentFactory.createDateModel(new Date()));
-			rightPanel.add((Component) holidayFld, new CC().wrap());
+			// Specialities Component
+			try {
+				specialityFld = new JComboBox<Speciality>();
+				specialityFld.setModel(new SpecialityALM(SpecialityDMO.getInstance().getAll()));
+			} catch (EmptyResultSetException e) {
+				specialityFld = new JComboBox<Speciality>();
+			}
+			specialityFld.setRenderer(new SpecialityJCBRenderer());
+			AutoCompleteDecorator.decorate(specialityFld);
+			rightPanel.add((Component) specialityFld, new CC().wrap());
 			
 			JButton addHolidayBtn = new JButton("Add Holiday");
 			addHolidayBtn.addActionListener(this);
@@ -124,12 +138,12 @@ public class ViewHolidays extends GPSISPopup implements ActionListener, ListSele
 	public void remove()
 	{
 		if (JOptionPane.showConfirmDialog(this, 
-				"Are you sure that you wish to remove " + holidays.get(holidayTable.getSelectedRow()) + "?", 
+				"Are you sure that you wish to remove " + specialities.get(specialityTable.getSelectedRow()) + "?", 
 				"Are you sure?", 
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 		{
-			StaffMemberDMO.getInstance().removeHoliday(staffMember, holidays.get(holidayTable.getSelectedRow()));
-			hM.removeRow(holidays.get(holidayTable.getSelectedRow())); // use the removeRow method in ATM
+			StaffMemberDMO.getInstance().removeSpeciality(staffMember, specialities.get(specialityTable.getSelectedRow()));
+			sModel.removeRow(specialities.get(specialityTable.getSelectedRow())); // use the removeRow method in ATM
 		}
 		
 	}
@@ -140,8 +154,8 @@ public class ViewHolidays extends GPSISPopup implements ActionListener, ListSele
 	 */
 	public void add()
 	{
-		StaffMemberDMO.getInstance().addHoliday(staffMember, (Date) holidayFld.getModel().getValue());
-		hM.addRow((Date) holidayFld.getModel().getValue());
+		StaffMemberDMO.getInstance().addSpeciality(staffMember, specialities.get(specialityFld.getSelectedIndex()));
+		sModel.addRow(specialities.get(specialityFld.getSelectedIndex()));
 	}
 
 }

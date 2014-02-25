@@ -3,6 +3,7 @@ package mapper;
  * This Data Mapper contains all of the methods concerned with the Staff Member Table.
  * There are many-to-many relations with other Entities and therefore there are more complex methods in here.
  */
+import java.awt.Component;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +19,7 @@ import object.CalendarAppointment;
 import object.MedicalStaffMember;
 import object.Receptionist;
 import object.Register;
+import object.Speciality;
 import object.StaffMember;
 import object.TaxForm;
 import exception.EmptyResultSetException;
@@ -59,14 +61,10 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
      */
     public void addHoliday(StaffMember sM, Date dateOfHol)
     {
-    	// TODO StaffMemberDMO:addHoliday
-
     	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
     	String holiday = fm.format(dateOfHol.getTime());
     	
-    	// Check if user's already registered on Database
     	try {
-				// Register User for today :D
 	    	SQLBuilder sql = new SQLBuilder("id","=","0")
 		        .SET("staff_member_id","=",""+sM.getId())
 		        .SET("date", "=", holiday)
@@ -79,9 +77,16 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	
     }
     
-    public void addSpeciality()
+    public void addSpeciality(StaffMember sM, Speciality sp)
     {
-    	// TODO StaffMemberDMO:addSpeciality
+    	try {
+	    	SQLBuilder sql = new SQLBuilder("id","=","0")
+		        .SET("staff_member_id","=",""+sM.getId())
+		        .SET("speciality_id", "=", ""+sp.getId());
+			putHelper(sql, "Register", null);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
     
     public void addTaxForm()
@@ -101,7 +106,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     {
     	if (res != null) // if found, create a the StaffMember object 
         {
-        	boolean fullTime;
         	// check if temporary staff entry exists in database. SELECT * FROM TempStaffMember WHERE TempStaffMember.staff_member_id = res.getInt("id");
         	ResultSet tempCheckRes = GPSISDataMapper.getResultSet(new SQLBuilder("staff_member_id", "=", ""+res.getInt("id")), "TempStaffMember");
         	Calendar cal = Calendar.getInstance();
@@ -112,10 +116,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         		cal.setTime(tempCheckRes.getDate("end_date"));
         		// temp contract and on full time
         		endDate = cal.getTime();
-        		fullTime = true;
         	}
-        	else
-        		fullTime = res.getBoolean("full_time");
         	
         	cal.setTime(res.getDate("start_date"));
         	Date startDate = cal.getTime();
@@ -127,7 +128,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         								res.getString("enc_password"),
         								res.getString("first_name"),
         								res.getString("last_name"),
-        								fullTime,
+        								res.getBoolean("full_time"),
         								startDate,
         								res.getBoolean("office_manager"),
         								res.getInt("holiday_allowance"));
@@ -142,7 +143,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 											res.getString("enc_password"),
 											res.getString("first_name"),
 											res.getString("last_name"),
-											fullTime,
+											res.getBoolean("full_time"),
 											startDate,
 											res.getBoolean("office_manager"),
 											res.getString("role"), 
@@ -232,6 +233,31 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     {
     	return calendarAppointmentDMO.getAllByProperties(new SQLBuilder("staff_member_id", "=",""+ o.getId()));
     }
+    
+    public List<Speciality> getSpecialities(StaffMember o) throws EmptyResultSetException
+    {
+    	List<Speciality> sMSpecialities = new ArrayList<Speciality>();
+    	try {
+    		
+			ResultSet res = GPSISDataMapper.getResultSet(new SQLBuilder("staff_member_id", "=",""+ o.getId()), "StaffMemberSpeciality JOIN Speciality ON StaffMemberSpeciality.speciality_id = Speciality.id");
+			while (res.next())
+			{
+				sMSpecialities.add(new Speciality(res.getInt("speciality_id"), res.getString("name")));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	if (sMSpecialities.isEmpty())
+    		throw new EmptyResultSetException();
+    	else
+    		return sMSpecialities;
+    }
+    
+    public List<TaxForm> getTaxForms(StaffMember o) throws EmptyResultSetException 
+    {
+		//return taxFormDMO.getAllByProperties(new SQLBuilder("staff_member_id", "=", ""+o.getId()));
+    	throw new EmptyResultSetException();
+	}
     
     /** getAllByProperties
      * returns a Set of StaffMembers that match the given criteria
@@ -424,6 +450,18 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
 	}
+	
+	public void removeSpeciality(StaffMember sM, Speciality s)
+	{
+		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+sM.getId()).AND("speciality_id", "=",""+ s.getId());
+		
+		try {
+			removeByPropertyHelper(sql, "StaffMemberSpeciality");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
 }
