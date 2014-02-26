@@ -88,7 +88,7 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 		}
 	}
 
-	private JTable buildStaffMemberTable()
+	public static JTable buildStaffMemberTable()
 	{
 		try {
 			staffMembers = staffMemberDMO.getAll();
