@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 import javax.imageio.ImageIO;
@@ -28,6 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
 
+import mapper.PatientDMO;
 import mapper.StaffMemberDMO;
 import module.StaffMemberModule;
 import module.StaffMember.HolidayManagement.ViewHolidays;
@@ -225,11 +227,11 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 			patientsBtn.setActionCommand("View Patients");
 			s.add(patientsBtn);
 			JLabel patientsVal = new JLabel("0");
-			/*try {
-				patientsVal = new JLabel(""+PatientDMO.getInstance().getPatients(selectedStaffMember).size());
+			try {
+				patientsVal = new JLabel(""+PatientDMO.getInstance().getAllPermanentPatientsByDoctorId(selectedStaffMember.getId()).size());
 			} catch (EmptyResultSetException e) {
 				System.out.println("Stats:- No Permanent Patients");
-			}*/
+			}
 			s.add(patientsVal, new CC().wrap());
 			
 		}

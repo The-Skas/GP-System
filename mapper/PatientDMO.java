@@ -163,20 +163,27 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     
     //** END MEDICAL CONDITIONS **//
     
-    public Set<PermanentPatient> getAllPermanentPatientsByDoctorId(int id) throws SQLException
+    public List<PermanentPatient> getAllPermanentPatientsByDoctorId(int id) throws EmptyResultSetException
     {
-        Set<PermanentPatient> permPatients = new HashSet<>();
-        ResultSet rs = GPSISDataMapper.getResultSet
-            (
-                new SQLBuilder("doctor_id","=",""+id), this.tblPermenant
-            );
+        List<PermanentPatient> permPatients = new ArrayList<>();
+        ResultSet rs;
+		try {
+			rs = GPSISDataMapper.getResultSet
+			    (
+			        new SQLBuilder("doctor_id","=",""+id), this.tblPermenant
+			    );
+			while(rs.next())
+	        {
+	            permPatients.add(getPermanentPatientById(rs.getInt("patient_id")));
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
         
-        //There shouldnt be nulls in this..
-        while(rs.next())
-        {
-            permPatients.add(getPermanentPatientById(rs.getInt("patient_id")));
-        }
-        return permPatients;
+		if (permPatients.isEmpty())  
+			throw new EmptyResultSetException();
+		else
+			return permPatients;
     }
     
     public PermanentPatient getPermanentPatientById(int id)
@@ -350,7 +357,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     }
     
     public static void main(String [] args) throws SQLException
-    {
+    {/*
         GPSISDataMapper.connectToDatabase();
         PatientDMO tbl = PatientDMO.getInstance();
         
@@ -364,7 +371,13 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         }
         
         
-        Set<PermanentPatient> patients =tbl.getAllPermanentPatientsByDoctorId(30);
+        List<PermanentPatient> patients;
+		try {
+			patients = tbl.getAllPermanentPatientsByDoctorId(30);
+		} catch (EmptyResultSetException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         
         ArrayList<String> mc = new ArrayList<>();
         
@@ -424,7 +437,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         System.out.println();System.out.println();
        
         System.out.println(patientFamily.getChildren());
-        
+        */
     }
 
    

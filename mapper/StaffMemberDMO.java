@@ -1,9 +1,4 @@
 package mapper;
-/** StaffMemberDMO
- * This Data Mapper contains all of the methods concerned with the Staff Member Table.
- * There are many-to-many relations with other Entities and therefore there are more complex methods in here.
- */
-import java.awt.Component;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
