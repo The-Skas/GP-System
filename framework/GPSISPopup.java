@@ -6,7 +6,6 @@ package framework;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-
 import object.StaffMember;
 
 /**
@@ -23,7 +22,7 @@ public class GPSISPopup extends JDialog {
 	
 	public GPSISPopup(String title)
 	{
-		super(new JFrame(), GPSISFramework.APPTITLE + " - " + title);
+		super(new JFrame(), GPSISFramework.APPTITLE + " - " + title, JDialog.ModalityType.APPLICATION_MODAL);
 		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
 		this.setIconImage((icon.getImage()));
 	}

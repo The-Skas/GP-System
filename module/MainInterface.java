@@ -31,6 +31,7 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	
 	private static CardLayout cl = new CardLayout();
 	private static JPanel view = new JPanel(cl);
+	private static JLabel headerTitle;
 	
 	/** actionPerformed
 	 *  Switch through the Card Layout given by the Action Command
@@ -38,6 +39,7 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		cl.show(view, ae.getActionCommand());
+		headerTitle.setText(ae.getActionCommand());
 	}
 	
 	private JPanel buildFooter()
@@ -49,11 +51,11 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 								new AC().shrink()
 							));
 			JLabel fTitle = new JLabel("Logged in as " + currentUser.getUsername());
-				fTitle.setFont(fonts.get("Roboto").deriveFont(12f));
+				fTitle.setFont(fonts.get("Ubuntu").deriveFont(12f));
 			f.add(fTitle, new CC().dockWest());
 		
 			JLabel fCredits = new JLabel("Created by: VJ, Salman, Milka, Oshan, Matt and Seun");
-				fCredits.setFont(fonts.get("Roboto").deriveFont(10f));
+				fCredits.setFont(fonts.get("Ubuntu").deriveFont(10f));
 			f.add(fCredits, new CC().dockEast());
 		
 		f.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
@@ -73,17 +75,17 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 			
 			JLabel hLogo = new JLabel(GPSISModuleMain.getGPSISLogo());
 				hLogo.setForeground(new Color(235, 235, 235));
-			h.add(hLogo, new CC().span(2));
+			h.add(hLogo, new CC().span(1));
 			
 			
 			
-			JLabel hTitle = new JLabel("Header");
-				hTitle.setFont(fonts.get("Roboto").deriveFont(24f));
-				hTitle.setForeground(new Color(235, 235, 235));
-			h.add(hTitle, new CC().span(8));
-		
+			headerTitle = new JLabel("GP-SIS");
+				headerTitle.setFont(fonts.get("Ubuntu").deriveFont(24f));
+				headerTitle.setForeground(new Color(235, 235, 235));
+			h.add(headerTitle, new CC().pad("5px").span().wrap());
 			
-			h.add(this.buildNavigation(), new CC().dockSouth());
+			
+			h.add(this.buildNavigation(), new CC().span().dockSouth().alignX("center"));
 			
 		return h;
 	}

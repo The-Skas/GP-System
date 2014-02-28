@@ -225,6 +225,7 @@ public class AddStaffMember extends GPSISPopup implements ActionListener, Change
 		if (this.isMakeTempFld.isSelected())
 		{
 			((Component) this.endDateFld).setVisible(true);
+			this.isFullTimeFld.setSelected(true);
 			this.endDateLbl.setVisible(true);
 		}
 		else

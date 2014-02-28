@@ -1,15 +1,14 @@
 /**
  * 
  */
-package module.StaffMember;
+package module.StaffMember.SpecialityManagement;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -20,20 +19,12 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-
-
-
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-
 import mapper.SpecialityDMO;
 import mapper.StaffMemberDMO;
-import module.StaffMemberModule;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
-import net.sourceforge.jdatepicker.JDateComponentFactory;
-import net.sourceforge.jdatepicker.JDatePicker;
 import object.Speciality;
 import object.StaffMember;
 import exception.EmptyResultSetException;
@@ -49,32 +40,32 @@ public class ViewSpecialities extends GPSISPopup implements ActionListener, List
 	private static StaffMember staffMember;
 	private static SpecialityATM sModel;
 	private static JTable specialityTable;
-	private static JButton removeHolidayBtn;
-	private static JComboBox<Speciality> specialityFld;
+	private static JButton removeSpecialityBtn;
+	public static JComboBox<Speciality> specialityFld;
 	private static List<Speciality> specialities;
+	private static JPanel leftPanel;
 
 	public ViewSpecialities(StaffMember sM) {
 		super("Staff Member Specialities");
+		this.setLayout(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow())); 
 		this.setModal(true);
 		staffMember = sM;
 		
-		JPanel staffMemberModuleView = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
 	
 		// Table View
-		JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
+		leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
 		try {
 			specialities = StaffMemberDMO.getInstance().getSpecialities(staffMember);
-						
-			sModel = new SpecialityATM(specialities);
-			specialityTable = new JTable (sModel);
-			specialityTable.getSelectionModel().addListSelectionListener(this);
-			leftPanel.add(new JScrollPane(specialityTable), new CC().span().grow());
-		} catch (EmptyResultSetException e) {
-			System.out.println("EMPTY SET");
-			leftPanel.add(new JLabel("No Specialities"));
-		}
 			
-		staffMemberModuleView.add(leftPanel, new CC().span().grow());		
+		} catch (EmptyResultSetException e) {
+			System.out.println("No Specialities");
+			specialities = new ArrayList<Speciality>();
+		}	
+		sModel = new SpecialityATM(specialities);
+		specialityTable = new JTable (sModel);
+		specialityTable.getSelectionModel().addListSelectionListener(this);
+		leftPanel.add(new JScrollPane(specialityTable), new CC().grow().span());
+		this.add(leftPanel, new CC().span().grow());		
 		
 		// Controls (RIGHT PANE)
 		JPanel rightPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
@@ -85,43 +76,52 @@ public class ViewSpecialities extends GPSISPopup implements ActionListener, List
 			try {
 				specialityFld = new JComboBox<Speciality>();
 				specialityFld.setModel(new SpecialityALM(SpecialityDMO.getInstance().getAll()));
+				specialityFld.setRenderer(new SpecialityJCBRenderer());
+				rightPanel.add((Component) specialityFld);
+				specialityFld.setSelectedIndex(0);
+				JButton addSpecialityBtn = new JButton("Add Speciality");
+				addSpecialityBtn.addActionListener(this);
+				addSpecialityBtn.setActionCommand("Add Speciality");
+				rightPanel.add(addSpecialityBtn, new CC().wrap());
+				
 			} catch (EmptyResultSetException e) {
-				specialityFld = new JComboBox<Speciality>();
+				System.out.println("No Specialities Found, add some!");				
 			}
-			specialityFld.setRenderer(new SpecialityJCBRenderer());
-			AutoCompleteDecorator.decorate(specialityFld);
-			rightPanel.add((Component) specialityFld, new CC().wrap());
 			
-			JButton addHolidayBtn = new JButton("Add Holiday");
+			removeSpecialityBtn = new JButton("Remove Speciality");
+			removeSpecialityBtn.addActionListener(this);
+			removeSpecialityBtn.setActionCommand("Remove Speciality");
+			removeSpecialityBtn.setVisible(false);
+			rightPanel.add(removeSpecialityBtn);
+			
+			
+			JButton addHolidayBtn = new JButton("Add New Speciality");
 			addHolidayBtn.addActionListener(this);
-			addHolidayBtn.setActionCommand("Add Holiday");
-			rightPanel.add(addHolidayBtn, new CC().wrap());
+			addHolidayBtn.setActionCommand("Add New Speciality");
+			rightPanel.add(addHolidayBtn, new CC().alignX("right").alignY("baseline"));
 			
-			removeHolidayBtn = new JButton("Remove Holiday");
-			removeHolidayBtn.addActionListener(this);
-			removeHolidayBtn.setActionCommand("Remove Holiday");
-			removeHolidayBtn.setVisible(false);
-			rightPanel.add(removeHolidayBtn);
 			
-		staffMemberModuleView.add(rightPanel, new CC().dockEast());
+			
+		this.add(rightPanel, new CC().dockEast());
 	
-		this.add(staffMemberModuleView);
-		
 		this.pack();
 		this.setLocationRelativeTo(null); // center window
 		this.setVisible(true);
 	}
-	
+		
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		switch (ae.getActionCommand())
 		{
-			case "Add Holiday":
+			case "Add Speciality":
 				this.add();
 				break;
-			case "Remove Holiday":
+			case "Remove Speciality":
 				this.remove();
+				break;
+			case "Add New Speciality":
+				new AddNewSpeciality();
 				break;
 		}
 		
@@ -129,16 +129,16 @@ public class ViewSpecialities extends GPSISPopup implements ActionListener, List
 
 	@Override
 	public void valueChanged(ListSelectionEvent arg0) {
-		removeHolidayBtn.setVisible(true);
+		removeSpecialityBtn.setVisible(true);
 	}
 	
 	/** remove
-	 * Removes Holiday from the Database
+	 * Removes Speciality Relationship from the Database
 	 */
-	public void remove()
+	private void remove()
 	{
 		if (JOptionPane.showConfirmDialog(this, 
-				"Are you sure that you wish to remove " + specialities.get(specialityTable.getSelectedRow()) + "?", 
+				"Are you sure that you wish to remove " + specialities.get(specialityTable.getSelectedRow()).getName() + "?", 
 				"Are you sure?", 
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 		{
@@ -149,13 +149,12 @@ public class ViewSpecialities extends GPSISPopup implements ActionListener, List
 	}
 	
 	/** add
-	 * Adds a Holiday
-	 * TODO need to check if limit reached and for duplicate holiday
+	 * Adds a Speciality
 	 */
-	public void add()
+	private void add()
 	{
-		StaffMemberDMO.getInstance().addSpeciality(staffMember, specialities.get(specialityFld.getSelectedIndex()));
-		sModel.addRow(specialities.get(specialityFld.getSelectedIndex()));
+		StaffMemberDMO.getInstance().addSpeciality(staffMember, (Speciality)specialityFld.getSelectedItem());
+		sModel.addRow((Speciality)specialityFld.getSelectedItem());
 	}
 
 }

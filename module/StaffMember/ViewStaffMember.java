@@ -30,6 +30,9 @@ import javax.swing.WindowConstants;
 
 import mapper.StaffMemberDMO;
 import module.StaffMemberModule;
+import module.StaffMember.HolidayManagement.ViewHolidays;
+import module.StaffMember.SpecialityManagement.ViewSpecialities;
+import module.StaffMember.TaxFormManagement.ViewTaxForm;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -97,49 +100,58 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		i.add(new JLabel("Username"), new CC());
 		this.usernameFld = new JLabel(this.selectedStaffMember.getUsername());
 		this.usernameFld.setPreferredSize(new Dimension(200, 24));
-		i.add(this.usernameFld, new CC().span().wrap());
+		i.add(this.usernameFld, new CC().wrap());
 		
 		// First Name Field
 		i.add(new JLabel("First Name"), new CC());
 		this.firstNameFld = new JTextField(this.selectedStaffMember.getFirstName());
 		this.firstNameFld.setPreferredSize(new Dimension(200, 24));
-		i.add(this.firstNameFld, new CC().span().wrap());
+		i.add(this.firstNameFld, new CC().wrap());
 		
 		// Last Name Field
 		i.add(new JLabel("Last Name"), new CC());
 		this.lastNameFld = new JTextField(this.selectedStaffMember.getLastName());
 		this.lastNameFld.setPreferredSize(new Dimension(200, 24));
-		i.add(this.lastNameFld, new CC().span().wrap());
+		i.add(this.lastNameFld, new CC().wrap());
 		
 		// Full Time Field
 		i.add(new JLabel("Full Time"), new CC());
 		this.isFullTimeFld = new JCheckBox();
 		this.isFullTimeFld.setSelected(this.selectedStaffMember.isFullTime());
-		i.add(this.isFullTimeFld, new CC().span().wrap());
+		i.add(this.isFullTimeFld, new CC().wrap());
 		
 		// Start Date Field
 		i.add(new JLabel("Start Date"), new CC());
 		SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
     	String sD = fm.format(this.selectedStaffMember.getStartDate().getTime());
 		this.startDateFld = new JLabel(sD);
-		i.add(this.startDateFld, new CC().span().wrap());
+		i.add(this.startDateFld, new CC().wrap());
 		
+		// End Date Field - ONLY ON TEMPORARY Staff Members
+		if(selectedStaffMember.isTemporary())
+		{
+			i.add(new JLabel("End Date"));
+			String eD = fm.format(this.selectedStaffMember.getEndDate().getTime());
+			JLabel endDateFld = new JLabel(eD);
+			i.add(endDateFld, new CC().wrap());
+		}
+			
 		// Office Manager Field
 		i.add(new JLabel("Office Manager"), new CC());
 		this.isOfficeManagerFld = new JCheckBox();
 		this.isOfficeManagerFld.setSelected(this.selectedStaffMember.isOfficeManager());
-		i.add(this.isOfficeManagerFld, new CC().span().wrap());
+		i.add(this.isOfficeManagerFld, new CC().wrap());
 		
 		// Role Field
 		i.add(new JLabel("Role"), new CC());
 		this.roleFld = new JComboBox<String>(this.roles);
 		this.roleFld.setSelectedIndex(2);
-		i.add(this.roleFld, new CC().span().wrap());
+		i.add(this.roleFld, new CC().wrap());
 		
 		// Holiday Allowance Field
 		i.add(new JLabel("Holiday Allowance"), new CC());
 		this.holidayAllowanceFld = new JSpinner(new SpinnerNumberModel(this.selectedStaffMember.getHolidayAllowance(), 5, 400, 1));
-		i.add(this.holidayAllowanceFld, new CC().span().wrap());
+		i.add(this.holidayAllowanceFld, new CC().wrap());
 		
 		JButton changePwdBtn = new JButton("Change Password");
 		changePwdBtn.addActionListener(this);
@@ -361,13 +373,14 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
         } 
     }
 	
-	private static BufferedImage resizeImage(BufferedImage originalImage, int type){
+	private static BufferedImage resizeImage(BufferedImage originalImage, int type)
+	{
 		BufferedImage resizedImage = new BufferedImage(100, 100, type);
 		Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(originalImage, 0, 0, 100, 100, null);
 		g.dispose();
 	 
 		return resizedImage;
-	    }
+	}
 
 }

@@ -5,7 +5,7 @@
 	<!-- The value of a property is accessed via ${} -->
 	<property name="src.dir" location="" />
 	<property name="build.dir" location="bin" />
-	<property name="dist.dir" location="distributables" />
+	<property name="dist.dir" location="dist" />
 
 	<!--
   		Create a classpath container which can be later used in the ant task

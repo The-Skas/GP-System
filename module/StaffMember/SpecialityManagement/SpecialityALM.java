@@ -1,7 +1,7 @@
 /**
  * 
  */
-package module.StaffMember;
+package module.StaffMember.SpecialityManagement;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import object.Speciality;
 public class SpecialityALM extends AbstractListModel<Speciality> implements ComboBoxModel<Speciality> {
 	
 	private static final long serialVersionUID = 2702545823423913068L;
+	private Speciality selectedItem;
 
 	private List<Speciality> data;
 	
@@ -37,15 +38,28 @@ public class SpecialityALM extends AbstractListModel<Speciality> implements Comb
 
 	@Override
 	public Object getSelectedItem() {
-		// TODO Auto-generated method stub
-		return null;
+		return selectedItem;
 	}
 
 	@Override
 	public void setSelectedItem(Object arg0) {
-		// TODO Auto-generated method stub
-		
+		for (Speciality s : data)
+		{
+			if (s.equals(arg0))
+			{
+				selectedItem = (Speciality) arg0;
+				break;
+			}
+		}
 	}
 	
-
+	/** addSpeciality
+	 * add a Speciality Object to the Table and refresh the Table
+	 * @param o
+	 */
+	public void addSpeciality(Speciality o)
+	{
+		this.data.add(o);
+		this.fireIntervalAdded(this, data.size() - 1, data.size());
+	}
 }

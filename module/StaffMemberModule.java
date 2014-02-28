@@ -41,7 +41,7 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 			
 			// Table View
 			JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-				staffMemberTable = this.buildStaffMemberTable();
+				staffMemberTable = buildStaffMemberTable();
 				staffMemberTable.getSelectionModel().addListSelectionListener(this);
 			leftPanel.add(new JScrollPane(staffMemberTable), new CC().span().grow());
 		staffMemberModuleView.add(leftPanel, new CC().span().grow());

@@ -80,10 +80,9 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     public void addSpeciality(StaffMember sM, Speciality sp)
     {
     	try {
-	    	SQLBuilder sql = new SQLBuilder("id","=","0")
-		        .SET("staff_member_id","=",""+sM.getId())
+	    	SQLBuilder sql = new SQLBuilder("staff_member_id","=",""+sM.getId())
 		        .SET("speciality_id", "=", ""+sp.getId());
-			putHelper(sql, "Register", null);
+			putHelper(sql, "StaffMemberSpeciality", null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

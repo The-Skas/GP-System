@@ -1,7 +1,7 @@
 /**
  * 
  */
-package module.StaffMember;
+package module.StaffMember.HolidayManagement;
 
 import java.util.Date;
 import java.util.List;

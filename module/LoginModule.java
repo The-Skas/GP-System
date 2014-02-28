@@ -4,9 +4,6 @@ package module;
  * @author VJ
  */
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -76,9 +73,9 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 		gpsisLogin.setIconImage((icon.getImage()));
 		JPanel h = new JPanel(new MigLayout());			
 			JLabel hTitle = new JLabel("Login");
-				hTitle.setFont(fonts.get("Roboto").deriveFont(24f));
+				hTitle.setFont(fonts.get("Ubuntu").deriveFont(24f));
 			h.add(hTitle);
-		this.gpsisLogin.add(h, new CC().wrap().grow());
+		this.gpsisLogin.add(h, new CC().wrap().alignX("center"));
 		
 		JPanel loginForm = new JPanel(new MigLayout());
 			

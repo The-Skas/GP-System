@@ -1,9 +1,8 @@
 /**
  * 
  */
-package module.StaffMember;
+package module.StaffMember.SpecialityManagement;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -39,12 +38,11 @@ public class SpecialityATM extends AbstractTableModel {
     }
 	 
     public Object getValueAt(int row, int col) {
-        Speciality d = data.get(row);
-        return d.getName();
+        return data.get(row).getName();
     }
     
 	public Class<?> getColumnClass(int c) {
-	    return new Date().getClass();
+	    return columnNames[c].getClass();
 	}	
 	
 	
