@@ -9,9 +9,20 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
 import mapper.CalendarAppointmentDMO;
 import mapper.CareProgrammeDMO;
 import mapper.MedicineDMO;
@@ -20,6 +31,7 @@ import mapper.PrescriptionDMO;
 import mapper.RoomDMO;
 import mapper.SpecialityDMO;
 import mapper.StaffMemberDMO;
+import mapper.TaxFormDMO;
 import mapper.TaxOfficeDMO;
 import module.LoginModule;
 import object.StaffMember;
@@ -35,6 +47,7 @@ public class GPSISFramework {
     protected static MedicineDMO medicineDMO = MedicineDMO.getInstance();
     protected static PrescriptionDMO prescriptionDMO = PrescriptionDMO.getInstance();
     protected static SpecialityDMO specialityDMO = SpecialityDMO.getInstance();
+    protected static TaxFormDMO taxFormDMO = TaxFormDMO.getInstance();
 //	etc.
 	
 	protected static final String APPTITLE = "General Practitioner's Surgery Information System";
@@ -42,6 +55,7 @@ public class GPSISFramework {
 	private static final GPSISFramework instance = new GPSISFramework();
 	
 	protected static Map<String, Font> fonts = new HashMap<String, Font>();
+	protected static List<Date> publicHolidays = new ArrayList<Date>();
 	
 	public static GPSISFramework getInstance()
 	{
@@ -79,7 +93,8 @@ public class GPSISFramework {
 		
 		System.out.println("\t- Loading Fonts");
 			this.loadFonts();
-		
+		System.out.print("\t- Loading Public Holidays");
+			this.loadHolidays();
 		
 		LoginModule m = new LoginModule();
 		m.showLogin();	
@@ -97,8 +112,6 @@ public class GPSISFramework {
 	
 	public void loadFonts()
 	{
-		System.out.println("Working Directory = " +
-	              System.getProperty("user.dir"));
 		try {
 			// Roboto
 			System.out.print("\t\t- Roboto");
@@ -126,6 +139,42 @@ public class GPSISFramework {
 		} catch (IOException e) {
 			System.err.println("\t\t\tError. File not Found.");
 		}
+	}
+	
+	public void loadHolidays()
+	{
+		try {
+			URL holidays = new URL("https://www.gov.uk/bank-holidays/england-and-wales.ics");
+			InputStream fin = holidays.openStream();
+
+			CalendarBuilder builder = new CalendarBuilder();
+			Calendar calendar = builder.build(fin);
+	
+			for (Iterator<?> i = calendar.getComponents().iterator(); i.hasNext();) {
+			    Component component = (Component) i.next();
+			    SimpleDateFormat fm = new SimpleDateFormat("yyyyMMdd");
+			    publicHolidays.add(fm.parse(component.getProperty("DTSTART").getValue()));  			    
+			}
+			
+			System.out.println("\t\tSuccess.");
+		} catch (IOException e) {
+			System.out.println("\t\tFailed. www.gov.uk/bank-holidays/england-and-wales.ics does not exist.");
+		} catch (ParserException | ParseException e) {
+			System.out.println("\t\tFailed. Format changed in iCalendar");
+		} 
+	}
+	
+	public boolean isHoliday(Date d)
+	{
+		SimpleDateFormat sDF = new SimpleDateFormat("yyyy-MM-dd");
+		for (Date pubD : publicHolidays)
+		{
+			if (sDF.format(pubD).equals(sDF.format(d)))
+				return true;
+			else
+				return false;
+		}
+		return false;
 	}
 	
 }

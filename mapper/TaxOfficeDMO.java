@@ -6,11 +6,9 @@ package mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import object.TaxOffice;
+import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 
 public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice> 
@@ -71,16 +69,16 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
      * @return a Set containing all of the TaxOffices that match the given criteria
      */
     @Override
-	public List<TaxOffice> getAllByProperties(SQLBuilder query) 
+	public List<TaxOffice> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
     {
-          List<TaxOffice> staffMembers = new ArrayList<TaxOffice>();
+          List<TaxOffice> taxOffices = new ArrayList<TaxOffice>();
           
           try 
           {            
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);            
             while(res.next()) // While there's a TaxOffice, create a the TaxOffice object and add it to a Set
             {
-                staffMembers.add(this.buildTaxOffice(res));
+            	taxOffices.add(this.buildTaxOffice(res));
             }
 
         } 
@@ -88,16 +86,21 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
         {
             e.printStackTrace();
         }
-        return staffMembers;
+          
+        if (taxOffices.isEmpty())
+        	throw new EmptyResultSetException();
+        else
+        	return taxOffices;
     }
     
     /** getByProperties
      * Returns the first TaxOffice object matching the criteria
      * @param query an SQLBuilder query
      * @return the first TaxOffice object in the ResultSet
+     * @throws EmptyResultSetException 
      */
     @Override
-	public TaxOffice getByProperties(SQLBuilder query) 
+	public TaxOffice getByProperties(SQLBuilder query) throws EmptyResultSetException 
     {
         try 
         {
@@ -105,7 +108,7 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
             
             if (res.next()) // if found, create a the TaxOffice object 
             {
-            	this.buildTaxOffice(res);
+            	return this.buildTaxOffice(res);
             }
 
         } 
@@ -113,7 +116,7 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice>
         {
             e.printStackTrace();
         }
-        return null;
+        throw new EmptyResultSetException();
     }
     
     /** put

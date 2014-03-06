@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,11 +45,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     {
         this.tableName = tableName;
     }
-    
-    public void addAvailability()
-    {
-    	// TODO StaffMemberDMO:addAvailability
-    }
         
     /** create a new relation between the StaffMember and Register in StaffRegister, check if date exists in Register before creating
      * 
@@ -81,11 +77,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-    }
-    
-    public void addTaxForm()
-    {
-    	// TODO StaffMemberDMO:addTaxForm
     }
     
     /** buildStaffMember
@@ -247,12 +238,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     		return sMSpecialities;
     }
     
-    public List<TaxForm> getTaxForms(StaffMember o) throws EmptyResultSetException 
-    {
-		//return taxFormDMO.getAllByProperties(new SQLBuilder("staff_member_id", "=", ""+o.getId()));
-    	throw new EmptyResultSetException();
-	}
-    
     /** getAllByProperties
      * returns a Set of StaffMembers that match the given criteria
      * @param query an SQLBuild query
@@ -314,11 +299,128 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	
     }
     
-    public Set<Date> getAvailables()
+    public Register getRegister(StaffMember sM) throws EmptyResultSetException
     {
-    	// TODO StaffMemberDMO:getAvailables
-		return null;
+    	SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+sM.getId());
     	
+
+    		ResultSet resRegister;
+			try {
+				resRegister = getResultSet(sql, "Register");
+				if (resRegister.next())
+	    		{
+	    			return new Register(
+							resRegister.getInt("id"),
+							this.getById(resRegister.getInt("staff_member_id")),
+							resRegister.getDate("date"),
+							resRegister.getInt("availability")
+							);
+	    		}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+    		throw new EmptyResultSetException();
+    	
+    }
+    
+    public List<Register> getAllRegisters(StaffMember sM) throws EmptyResultSetException
+    {
+    	SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+sM.getId());
+    	List<Register> register = new ArrayList<Register>();
+    	
+			try {
+				ResultSet resRegister = getResultSet(sql, "Register");
+			
+	    		while (resRegister.next())
+	    		{
+	    			register.add(new Register(
+	    							resRegister.getInt("id"),
+	    							this.getById(resRegister.getInt("staff_member_id")),
+	    							resRegister.getDate("date"),
+	    							resRegister.getInt("availability")
+	    							));
+	    			
+	    		}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (EmptyResultSetException e) {
+				// this should never be reached... All associated Registers will be removed if a StaffMember is removed
+				e.printStackTrace();
+			}
+			
+			if (register.isEmpty())
+				throw new EmptyResultSetException();
+			else				
+				return register;
+    }
+    
+    /** getAvailableTimes
+     * Milka's favourite method.
+     * Structure:
+     * 	Keys are the Start of the Time Range. Values are the End of the Time Range.
+     * Purpose
+     * 	return the boundaries of when a StaffMember is available. need to check: Appointments and Availability.
+     */
+    public HashMap<Date, Date> getAvailableTimes(StaffMember sM, Date d)
+    {
+    	
+    	HashMap<Date, Date> times = new HashMap<Date, Date>();
+    	
+    	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");    	 
+    	// retrieve all of the appointments for a StaffMember on this date.
+    	SQLBuilder query = new SQLBuilder("staff_member_id", "=", ""+sM.getId()).AND("DATE(start_time)", "=", fm.format(d.getTime()));
+    	List<CalendarAppointment> appointments = new ArrayList<CalendarAppointment>();
+    	try {
+			 appointments = calendarAppointmentDMO.getAllByProperties(query);
+		} catch (EmptyResultSetException e) {
+			// No Appointments for this Date hence they are free
+			System.out.println(sM.getName() + " has no appointments on " + fm.format(d));
+		}
+    	
+    	if (!appointments.isEmpty())
+    	{
+    		for (CalendarAppointment cA : appointments)
+    		{
+    			times.put(cA.getStartTime(), cA.getEndTime());
+    		}
+    	}
+    	
+    	// Retrieve the availability for this Date, assumed FULL if none
+    	try {
+			Register r = this.getRegister(sM);
+		} catch (EmptyResultSetException e) {
+			Register r = new Register(sM, d, 3);
+		}
+    	
+    	
+    	
+    	
+		return null;
+    }
+    
+    public List<TaxForm> getTaxForms(StaffMember sM) throws EmptyResultSetException
+    {
+    	SQLBuilder query = new SQLBuilder("staff_member_id", "=",""+ sM.getId());
+    	
+		return taxFormDMO.getAllByProperties(query);
+    }
+    
+    public void putRegister(Register o)
+    {
+    	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
+    	String date = fm.format(o.getDate().getTime());
+    	
+    	try
+    	{
+    		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+o.getStaffMember().getId())
+    							.SET("date", "=", date)
+    							.SET("availability", "=", ""+o.getAvailability());
+    		putHelper(sql, "Register", o);
+    	} 
+    	catch (SQLException e)
+    	{
+    		e.printStackTrace();
+    	}
     }
     
     /** getByProperties
@@ -346,15 +448,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         // throw Exception because of empty result set
         throw new EmptyResultSetException();
     }
-    
-    public Set<TaxForm> getTaxForms()
-    {
-    	// TODO StaffMemberDMO:getTaxForms
-		return null;
-    	
-    }
-    
-    
+        
     /** put
      * Put a given StaffMember object onto the Database. Similar to the put method in a Map data structure. Used for INSERT and UPDATE
      * @param o The StaffMember object
@@ -383,7 +477,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
         	System.err.println(e.getMessage());
         }
     }
-    
+        
     /** register
      * registers attendance for today for a given Staff Member
      * @param sM the Staff Member to register
@@ -411,7 +505,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 			e.printStackTrace();
 		}
     	
-    	
     }
     
     /** makeTemporary
@@ -433,11 +526,11 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	}
     }
 
-	public void removeHoliday(StaffMember staffMember, Date date) {
+	public void removeRegister(Register o) {
 		SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
-    	String d = fm.format(date.getTime());
+    	String d = fm.format(o.getDate().getTime());
 		
-		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+staffMember.getId()).AND("date", "=", d);
+		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+o.getStaffMember().getId()).AND("date", "=", d);
 		
 		try {
 			removeByPropertyHelper(sql, "Register");

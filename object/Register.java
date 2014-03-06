@@ -5,7 +5,6 @@ package object;
 
 import java.util.Date;
 
-import mapper.SQLBuilder;
 import framework.GPSISObject;
 
 /**
@@ -22,11 +21,21 @@ public class Register extends GPSISObject {
 	public static final int MORNING = 1;
 	public static final int AFTERNOON = 2;
 	public static final int ALLDAY = 3;
+	
+	public Register(int i, StaffMember sM, Date d, int a)
+	{
+		this.id = i;
+		this.staffMember = sM;
+		this.date = d;
+		this.availability = a;
+	}
 
 	public Register(StaffMember sM, Date d, int a) {
-		this.setStaffMember(sM);
-		this.setDate(d);
-		this.setAvailability(a);
+		this.staffMember = sM;
+		this.date = d;
+		this.availability = a;
+		
+		staffMemberDMO.putRegister(this);
 	}
 
 	/**
@@ -55,6 +64,22 @@ public class Register extends GPSISObject {
 	 */
 	public void setAvailability(int availability) {
 		this.availability = availability;
+	}
+	
+	public String getReadableAvailability()
+	{
+		switch (this.availability)
+		{
+		case 0:
+			return "Holiday";
+		case 1:
+			return "Morning";
+		case 2:
+			return "Afternoon";
+		case 3:
+			return "All Day";
+		}
+		return "";
 	}
 
 	/**

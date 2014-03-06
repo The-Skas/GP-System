@@ -97,7 +97,6 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 			JTable sMT = new JTable (sMM);
 			return sMT;
 		} catch (EmptyResultSetException e) {
-			System.out.println("EMPTY SET");
 			return null;
 		}
 		

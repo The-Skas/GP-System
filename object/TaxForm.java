@@ -1,40 +1,42 @@
 package object;
 
-import java.math.BigDecimal;
-
 import framework.GPSISObject;
 
 public class TaxForm extends GPSISObject {
-	private TaxOffice taxOffice;
-	private char[] number = new char[6];
-	private BigDecimal salary;
 	
-	public TaxForm (int id, TaxOffice tO, String n, BigDecimal s)
+	private StaffMember staffMember;
+	private TaxOffice taxOffice;
+	private char[] taxNumber = new char[6];
+	private double salary;
+	
+	public TaxForm (int id, StaffMember sM, TaxOffice tO, String n, double s)
 	{
 		this.id = id;
+		this.staffMember = sM;
 		this.taxOffice = tO;
-		this.number = n.toCharArray();
+		this.taxNumber = n.toCharArray();
 		this.salary = s;
 	}
 	
-	public TaxForm (TaxOffice tO, String n, BigDecimal s)
+	public TaxForm (StaffMember sM, TaxOffice tO, String n, double s)
 	{
+		this.staffMember = sM;
 		this.taxOffice = tO;
-		this.number = n.toCharArray();
+		this.taxNumber = n.toCharArray();
 		this.salary = s;
 	}
 
 	/**
 	 * @return the number
 	 */
-	public char[] getNumber() {
-		return number;
+	public char[] getTaxNumber() {
+		return taxNumber;
 	}
 
 	/**
 	 * @return the salary
 	 */
-	public BigDecimal getSalary() {
+	public double getSalary() {
 		return salary;
 	}
 
@@ -45,5 +47,10 @@ public class TaxForm extends GPSISObject {
 		return taxOffice;
 	}
 
-	
+	/**
+	 * @return the staffMember
+	 */
+	public StaffMember getStaffMember() {
+		return staffMember;
+	}
 }

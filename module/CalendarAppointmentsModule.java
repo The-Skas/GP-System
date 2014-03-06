@@ -4,6 +4,7 @@
 package module;
 
 import java.awt.Color;
+import object.StaffMember;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.BorderLayout;
@@ -44,6 +45,9 @@ public class CalendarAppointmentsModule extends GPSISModuleMain {
 	
 	@Override
 	public JPanel getModuleView() {
+		
+		//Search search = new module.StaffMember.Search();
+		StaffMember selectedSM = module.StaffMember.Search.getStaffMember();
 		
 	/*
 		try {

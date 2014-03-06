@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 import javax.imageio.ImageIO;
@@ -32,9 +31,10 @@ import javax.swing.WindowConstants;
 import mapper.PatientDMO;
 import mapper.StaffMemberDMO;
 import module.StaffMemberModule;
+import module.StaffMember.AvailabilityManagement.ViewAvailability;
 import module.StaffMember.HolidayManagement.ViewHolidays;
 import module.StaffMember.SpecialityManagement.ViewSpecialities;
-import module.StaffMember.TaxFormManagement.ViewTaxForm;
+import module.StaffMember.TaxFormManagement.ViewTaxForms;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -68,6 +68,8 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		super("Modify Staff Member");
 		this.selectedStaffMember = sM;
 		
+		
+		
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLayout(new MigLayout(
 				new LC().fill(),
@@ -75,7 +77,6 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 				new AC().grow()
 			));
 		this.setBackground(new Color(240, 240, 240));
-		//this.setSize(600, 450);
 		
 		// left panel
 		JPanel lP = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
@@ -86,6 +87,17 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		
 		this.add(lP, new CC().dockWest().spanX());
 		this.add(buildInfoSegment(), new CC().span().grow());
+		
+		// set permissions
+		if (!currentUser.isOfficeManager() && currentUser.getId() != selectedStaffMember.getId())
+		{
+			this.firstNameFld.setEditable(false);
+			this.lastNameFld.setEditable(false);
+			this.isFullTimeFld.setEnabled(false);
+			this.isOfficeManagerFld.setEnabled(false);
+			this.roleFld.setEnabled(false);
+			this.holidayAllowanceFld.setEnabled(false);
+		}
 		
 		this.pack();
 		this.setLocationRelativeTo(null); // center window
@@ -155,22 +167,23 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		this.holidayAllowanceFld = new JSpinner(new SpinnerNumberModel(this.selectedStaffMember.getHolidayAllowance(), 5, 400, 1));
 		i.add(this.holidayAllowanceFld, new CC().wrap());
 		
-		JButton changePwdBtn = new JButton("Change Password");
-		changePwdBtn.addActionListener(this);
-		changePwdBtn.setActionCommand("Change Password");
-		i.add(changePwdBtn, new CC().push());
+		if (currentUser.isOfficeManager() || currentUser.getId() == selectedStaffMember.getId()) 
+		{
+			JButton changePwdBtn = new JButton("Change Password");
+			changePwdBtn.addActionListener(this);
+			changePwdBtn.setActionCommand("Change Password");
+			i.add(changePwdBtn, new CC().push());
 		
-		JButton saveBtn = new JButton("Save!");
-		saveBtn.addActionListener(this);
-		saveBtn.setActionCommand("Save");
-		i.add(saveBtn, new CC().push());
-		
-		JButton removeBtn = new JButton("Remove!");
-		removeBtn.addActionListener(this);
-		removeBtn.setActionCommand("Remove");
-		i.add(removeBtn, new CC().push());
-				
-		//i.setBackground(Color.cyan);
+			JButton saveBtn = new JButton("Save!");
+			saveBtn.addActionListener(this);
+			saveBtn.setActionCommand("Save");
+			i.add(saveBtn, new CC().push());
+			
+			JButton removeBtn = new JButton("Remove!");
+			removeBtn.addActionListener(this);
+			removeBtn.setActionCommand("Remove");
+			i.add(removeBtn, new CC().push());
+		}		
 		return i;
 	}
 	
@@ -248,15 +261,15 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		s.add(absencesVal, new CC().wrap());
 		
 		// Holidays Stats
-		JButton holidaysBtn = new JButton("Holidays");
+		JButton holidaysBtn = new JButton("Availabilities");
 		holidaysBtn.addActionListener(this);
-		holidaysBtn.setActionCommand("View Holidays");
+		holidaysBtn.setActionCommand("View Availabilities");
 		s.add(holidaysBtn, new CC());
 		JLabel holidaysVal = new JLabel("0/" + selectedStaffMember.getHolidayAllowance());
 		try {
 			holidaysVal = new JLabel(StaffMemberDMO.getInstance().getHolidays(selectedStaffMember).size() + "/" + selectedStaffMember.getHolidayAllowance());
 		} catch (EmptyResultSetException e) {
-			System.out.println("Stats:- No Holidays");
+			System.out.println("Stats:- No Availabilities");
 		}
 		s.add(holidaysVal, new CC().wrap());
 		
@@ -293,8 +306,8 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 			case "Remove":
 				this.remove();
 				break;
-			case "View Holidays":
-				new ViewHolidays(selectedStaffMember);
+			case "View Availabilities":
+				new ViewAvailability(selectedStaffMember);
 				break;
 			case "View Specialities":
 				new ViewSpecialities(selectedStaffMember);
@@ -303,7 +316,7 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 				this.choosePicture();
 				break;
 			case "View Tax Forms":
-				new ViewTaxForm(selectedStaffMember);
+				new ViewTaxForms(selectedStaffMember);
 				break;
 		}
 	}

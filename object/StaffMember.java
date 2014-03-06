@@ -229,6 +229,15 @@ public abstract class StaffMember extends GPSISObject {
 		return this.lastName;
 	}
 	
+	/** getName
+	 * returns the first name and last name of the staff member concatenated
+	 * @return a String representation of the Staff Members first and last name
+	 */
+	public String getName()
+	{
+		return this.firstName + " " + this.lastName;
+	}
+	
 	/** getRole
 	 * returns the role of the Staff Member
 	 * @return a string representation the Staff Member's role

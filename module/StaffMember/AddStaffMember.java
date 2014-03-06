@@ -65,7 +65,6 @@ public class AddStaffMember extends GPSISPopup implements ActionListener, Change
 		
 		JPanel h = new JPanel(new MigLayout());	
 			JLabel hTitle = new JLabel("Add Staff Member");
-				GPSISFramework.getInstance();
 				hTitle.setFont(GPSISFramework.getFonts().get("Roboto").deriveFont(24f));
 			h.add(hTitle, new CC().wrap());
 			

@@ -19,7 +19,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import mapper.StaffMemberDMO;
-import module.StaffMemberModule;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -128,7 +127,7 @@ public class ViewHolidays extends GPSISPopup implements ActionListener, ListSele
 				"Are you sure?", 
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 		{
-			StaffMemberDMO.getInstance().removeHoliday(staffMember, holidays.get(holidayTable.getSelectedRow()));
+			//StaffMemberDMO.getInstance().removeHoliday(staffMember, holidays.get(holidayTable.getSelectedRow()));
 			hM.removeRow(holidays.get(holidayTable.getSelectedRow())); // use the removeRow method in ATM
 		}
 		
