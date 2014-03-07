@@ -1,5 +1,6 @@
 package mapper;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -16,12 +17,25 @@ import object.CareProgramme;
 import object.Patient;
 import object.RoutineAppointment;
 import object.StaffMember;
+import exception.DuplicateEntryException;
 import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 
 // a class to connect to the DB and pull/push data from/to there
 
 public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment> {
+	
+	//TODO
+	/*
+	 * I really need a method like this:
+	 * // check for duplicates in StaffMember table
+		SQLBuilder sql = new SQLBuilder("username", "=", u);
+		try 
+		{
+			staffMemberDMO.getByProperties(sql);
+			throw new DuplicateEntryException();
+		} 
+	 */
 	
 	// table names used by put and getter methods
 	private static String tblRoutine = "RoutineAppointment";
@@ -45,6 +59,121 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         }
         return instance;
     }
+    
+    public List<CalendarAppointment> getAppointmentsByDoctorId(int id) 
+    {
+    	List<CalendarAppointment> appointments = new ArrayList<>();
+    	
+    	try {
+			ResultSet rs = getResultSet(
+							new SQLBuilder("staff_member_id","=", ""+id), tblRoutine
+					);
+			
+			while(rs.next())
+			{					
+				appointments.add(getById(rs.getInt("ca_id")));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    			
+    	return appointments;
+    }
+    
+    public boolean isTimeAvailable(int doctorId, Date date)
+    {
+    	List<CalendarAppointment> appointments = new ArrayList<>();
+    	
+    	try {
+			ResultSet rs = getResultSet
+					(
+							new SQLBuilder("staff_member_id","=", ""+doctorId).AND("start_time", "=", "2014-01-01 15:30"), CalendarAppointmentDMO.tblRoutine
+					);
+			
+			while(rs.next())
+			{					
+				appointments.add(getById(rs.getInt("ca_id")));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	if(appointments.isEmpty())
+    		return true;
+    	else
+    		return false;
+    }
+    
+    
+    public List<CalendarAppointment> getAppointmentsOfDoctorIdByDay(int id, Date day) throws EmptyResultSetException, SQLException
+    {
+    	String sql = "SELECT * FROM CalendarAppointment cA RIGHT JOIN RoutineAppointment rA ON rA.ca_id = cA.id LEFT JOIN CareManagementAppointment cMA ON cMA.ca_id = cA.id LEFT JOIN CareProgramme cP ON cMA.care_programme_id = cP.id WHERE DATE(start_time) = ? AND rA.staff_member_id = ? OR cP.staff_member_id = ?";
+    	PreparedStatement pS = dbConnection.prepareStatement(sql); 
+    	
+    	pS.setDate(1, new java.sql.Date(day.getTime()));
+    	pS.setInt(2, id);
+    	pS.setInt(3, id);
+    	
+    	ResultSet res = pS.executeQuery();
+    	
+    	ArrayList<CalendarAppointment> a = new ArrayList<CalendarAppointment>();
+    	while(res.next())
+    	{
+    		SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    		System.out.println("!!!!!!!!!!!!!!!!"+fm.format(res.getDate("start_time")));
+    		Date startTime, endTime; 
+    		cal.setTime(res.getTimestamp("start_time"));
+    		startTime = cal.getTime();
+    		cal.setTime(res.getTimestamp("end_time"));
+    		endTime = cal.getTime();
+    		if(res.getObject("care_programme_id") == null) // If Routine Appointment
+    		{
+    			a.add(new RoutineAppointment(res.getInt("id"),
+    										startTime,
+    										endTime,
+    										patientDMO.getById(res.getInt("patient_id")),
+    										staffMemberDMO.getById(res.getInt("staff_member_id")),
+    										res.getString("summary")));
+    		} else {
+    			a.add(new CareManagementAppointment(res.getInt("id"),
+													startTime,
+													endTime,
+													careProgrammeDMO.getById(res.getInt("care_programme_id"))
+    					));
+    		}
+    		
+    	}
+    		
+		return a;
+    	
+ 	
+//    	List<CalendarAppointment> appointments = new ArrayList<>();
+//    	
+//    	SQL
+//    	
+//    	try {
+//			ResultSet rs = getResultSet
+//					(
+//							new SQLBuilder("staff_member_id","=", ""+id), CalendarAppointmentDMO.tblRoutine
+//					);
+//			
+//			while(rs.next())
+//			{
+//					
+//				appointments.add(getById(rs.getInt("ca_id")));
+//
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//    			
+//    	return appointments;
+    }
+    
+    
 	
 	 // getter method for RoutineAppointment
 	public RoutineAppointment getRoutineAppointmentById(int id) throws EmptyResultSetException, SQLException
@@ -90,6 +219,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 		return null;
 	}
 	
+	
 	public CalendarAppointment getByProperties(SQLBuilder query) throws EmptyResultSetException
 	{
 		try {
@@ -100,7 +230,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
             if (res.next()) 
             { 
             		Date startTime; 
-            		cal.setTime(res.getTime("start_time"));
+            		cal.setTime(res.getTimestamp("start_time"));
             		startTime = cal.getTime();
             		cal.add(Calendar.MINUTE, 15);
             		Date endTime = cal.getTime();
@@ -108,7 +238,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
             		Patient p = patientDMO.getById(res.getInt("patient_id"));
             		StaffMember sm = staffMemberDMO.getById(res.getInt("staff_member_id"));
             		
-            		return new RoutineAppointment(startTime, endTime, p, sm);
+            		return new RoutineAppointment(res.getInt("id"),startTime, endTime, p, sm, res.getString("summary"));
             }
             	
             	else if (res1.next())
@@ -179,7 +309,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 	@Override
 	public void put(CalendarAppointment o) {
         SQLBuilder sql = null;
-        String pattern = "yyyy-MM-dd HH:mm:ss";
+        String pattern = "yyyy-MM-dd HH:mm";
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         String startTime = format.format(o.getStartTime());
         String endTime = format.format(o.getEndTime());
@@ -196,8 +326,8 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
         {        	
             String summary = ((RoutineAppointment) o).getSummary();
         	sql = new SQLBuilder("ca_id","=",""+o.getId()) // get the same CalendarAppointment id?
-            	.SET("patient_id","=",""+((RoutineAppointment) o).getPatient().getId())
-            	.SET("staff_member_id", "=",""+((RoutineAppointment) o).getDoctor().getId())
+            	.SET("patient_id","=",""+((RoutineAppointment) o).getPatientObject().getId())
+            	.SET("staff_member_id", "=",""+((RoutineAppointment) o).getDoctorObject().getId())
         	    .SET("summary", "=",""+summary);
         	try {
                 putHelper(sql, tblRoutine, o);

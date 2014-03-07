@@ -8,30 +8,25 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
+    public class DatePicker{
 
-//for window events
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowAdapter;
-
-    public class DatePicker {
-    	static Calendar cal = java.util.Calendar.getInstance(); 
+		Calendar cal = java.util.Calendar.getInstance(); 
     	int month = cal.get(java.util.Calendar.MONTH);
     	int year = cal.get(java.util.Calendar.YEAR);
     	JLabel l = new JLabel("", JLabel.CENTER);
     	String day = "";
     	JDialog d;
     	JButton[] button = new JButton[49];
+    	Date now = new Date();
 
- public DatePicker(JFrame parent) {
+ public DatePicker() {
          d = new JDialog();
          d.setModal(true);
          String[] header = { "Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat" };
@@ -90,7 +85,7 @@ import java.awt.event.WindowAdapter;
          d.add(p2, BorderLayout.NORTH);
          d.add(p1, BorderLayout.CENTER);
          d.pack();
-         d.setLocationRelativeTo(parent);
+         d.setLocationRelativeTo(null);
          displayDate();
          d.setVisible(true);
  }
@@ -102,19 +97,34 @@ import java.awt.event.WindowAdapter;
                      "MMMM yyyy");
      java.util.Calendar cal = java.util.Calendar.getInstance();
      cal.set(year, month, 1);
+     
+     
      int dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK);
      int daysInMonth = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+     
+
+     java.util.Calendar cal2 = java.util.Calendar.getInstance();
+     java.text.SimpleDateFormat dateF = new java.text.SimpleDateFormat(
+                     "dd MMMM yyyy");
+     Date today = new Date();
+     cal2.setTime(today);
+     System.out.println(dateF.format(today));
+     
+     
      for (int x = 6 + dayOfWeek, day = 1; day <= daysInMonth; x++, day++)
+     {
              button[x].setText("" + day);
+     }  
      l.setText(sdf.format(cal.getTime()));
      d.setTitle("Date Picker");
 }
 
 public String setPickedDate() {
+    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+            "yyyy/MM/dd");
      if (day.equals(""))
-             return day;
-     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
-                     "dd-MM-yyyy");
+             return sdf.format(now);
+
      java.util.Calendar cal = java.util.Calendar.getInstance();
      cal.set(year, month, Integer.parseInt(day));
      return sdf.format(cal.getTime());

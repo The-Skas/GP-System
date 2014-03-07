@@ -27,14 +27,17 @@ public class RoutineAppointment extends CalendarAppointment{
     protected StaffMember doctor;
     protected String summary;
      
-    public RoutineAppointment(Date sT, Date eT, Patient p, StaffMember d) { //to be done in the module
+    //This Constructor is used when creating a New Routine Appointment object
+    public RoutineAppointment(Date sT, Date eT, Patient p, StaffMember d, String s) { 
         super(sT, eT);
         this.patient = p;
         this.doctor = d;
+        this.summary = s;
         calendarAppointmentDMO.put(this);
     }
  
-    public RoutineAppointment(int id, Date sT, Date eT, Patient p, StaffMember d, String s) { //coming from DB
+    //This Constructor is used when retrieving Routine Appointment objects from the Database
+    public RoutineAppointment(int id, Date sT, Date eT, Patient p, StaffMember d, String s) { 
         super(id, sT, eT);
         this.patient = p;
         this.doctor = d;
@@ -51,15 +54,25 @@ public class RoutineAppointment extends CalendarAppointment{
     {
     	return this.summary;
     }
- 
-    public Patient getPatient()
+    
+    public Patient getPatientObject()
     {
-        return this.patient;
+    	return this.patient;
+    }
+    
+    public StaffMember getDoctorObject()
+    {
+    	return this.doctor;
+    }
+ 
+    public String getPatient()
+    {
+        return this.patient.getFirstName() + " " + this.patient.getLastName();
     }
      
-    public StaffMember getDoctor()
+    public String getDoctor() 
     {
-        return this.doctor;
+        return this.doctor.getUsername();
     }
     
     /*public static void main(String[] args)

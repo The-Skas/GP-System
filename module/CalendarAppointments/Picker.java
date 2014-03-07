@@ -125,7 +125,7 @@ import javax.swing.JTextField;
          b.addActionListener(new ActionListener() {
                  @Override
 				public void actionPerformed(ActionEvent ae) {
-                         text.setText(new DatePicker(f).setPickedDate());
+                         text.setText(new DatePicker().setPickedDate());
                  }
          });
  }

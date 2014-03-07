@@ -1,14 +1,12 @@
 package object;
  
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import framework.GPSISObject;
  
  
 public class CalendarAppointment extends GPSISObject 
-{        //protected - only the classes which extend one can see it
+{        
         protected Date startTime; 
         protected Date endTime; // always startTime + 15 for RoutineAppointments
  
@@ -67,6 +65,14 @@ public class CalendarAppointment extends GPSISObject
                 return true;
             else
                 return false;
+        }
+        
+        public String getType()
+        {
+        	if(this.isRoutine())
+        		return "Routine";
+        	else
+        		return "Care Management";
         }
  
         public void WriteAppointmentSummary(){ // doctors are supposed to write a summary of an appointment so that appointment history is available for each patient

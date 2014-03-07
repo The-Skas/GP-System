@@ -2,115 +2,160 @@ package module.CalendarAppointments;
 
 //import AppointmentsView;
 
-import java.awt.Container;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.text.DateFormat;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Set;
 
-import javax.swing.JFrame;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import mapper.CalendarAppointmentDMO;
-import framework.GPSISDataMapper;
-import framework.GPSISModuleMain; //why import this?
-import mapper.SQLBuilder;
+import net.miginfocom.layout.AC;
+import net.miginfocom.layout.CC;
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
+import mapper.CalendarAppointmentDMO; //why import this?
+import framework.GPSISPopup;
 import object.CalendarAppointment;
-import object.CareManagementAppointment;
-import object.StaffMember;
-import object.RoutineAppointment;
 import exception.EmptyResultSetException;
 
 
-public class AppointmentsView {
+public class AppointmentsView extends GPSISPopup implements ActionListener, ListSelectionListener{
 	
-	List<CalendarAppointment> appointments = new ArrayList<CalendarAppointment>();
-	
-	private List<CalendarAppointment> getAllAppointments(){
-	try {
-		List<CalendarAppointment> ca = CalendarAppointmentDMO.getInstance().getAll();
-		// HashSet<StaffMember> staffMembers = (HashSet<StaffMember>)staffMemberDMO.getAll(); // why use HashSet instead of Set?
-		return ca;
-	} catch (EmptyResultSetException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		return null;
-	}
-}
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static List<CalendarAppointment> calendarAppointments;
+	private static JTable calendarAppointmentsTable;
+	private static CalendarAppointmentATM cAM; 
+	private static JButton modifyAppointmentButton; 
 	
 	//constructor
 	public AppointmentsView(){
-				
-		//get a set of all appointments
-		//once this is done, filter the results by doctor, day, patients
-		List<CalendarAppointment> allAppointments = getAllAppointments();
-
-        // The data used as the titles for the table.
-        String[] title = {"Appointment ID", "Type", "Doctor", "Start Time", "End Time", "Patients"};
-
-        // The data used in the table, placed as a multidimensional array.
-        Object[][] data = new Object[allAppointments.size()][6];
-        
-        //Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        
-        int i = 0;
-        
-        for (CalendarAppointment appointment : allAppointments)
-        {
-        	data[i][0] = appointment.getId();
-        				if(appointment.isRoutine())        					
-            data[i][1] = "Routine Appointment";      					
-            			else
-            data[i][1] = "Care Management Appointment";	
-        				if(appointment.isRoutine())        					
-        	data[i][2] = ((RoutineAppointment) appointment).getDoctor();      					
-        				else
-        	data[i][2] = (((CareManagementAppointment) appointment).getCareProgramme().getDoctor());
-        	data[i][3] =  appointment.getStartTime();  
-        	data[i][4] =  appointment.getEndTime();       	
-        				if(appointment.isRoutine())        					
-            	data[i][5] = ((RoutineAppointment) appointment).getPatient();      					
-            			else
-            	data[i][5] = null; //((CareManagementAppointment) appointment.getCareProgramme().getPatientsOrSomethingLikeThat());
-        	
-        	i++;
-        }
-
-        // Table instantiated using the two sets of data.
-        JTable table = new JTable(data, title);
-        
-        // Make table uneditable
-        table.setEnabled(false);
-        
-        // The table displayed in a Scrollpane.
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(1200, 550));
-    
-        JPanel totalGUI = new JPanel();
-        totalGUI.add(scrollPane);
-        totalGUI.setOpaque(true);
-        
-        // JFrame.setDefaultLookAndFeelDecorated(true);
-        JFrame frame = new JFrame("List of all appointments");
-
-        //Create and set up the ContentPane
-        frame.setContentPane(totalGUI);
-        
-       // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
 		
-		//createAndShowGUI();
+		super("A list of all appointments"); // Set the JFrame Title
+		
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.setLayout(new MigLayout());
+		this.setBackground(new Color(255, 255, 255));
+		this.setSize(100, 10);
+		
+		JPanel allAppointmentsMainPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
+		
+		//TODO why is this not working?
+		//allAppointmentsMainPanel.setSize(new Dimension(900, 900));
+		
+		// List View
+		JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
+		calendarAppointmentsTable = this.buildCalendarAppointmentsTable();
+		calendarAppointmentsTable.getSelectionModel().addListSelectionListener(this);
+		leftPanel.add(new JScrollPane(calendarAppointmentsTable), new CC().span().grow());
+		allAppointmentsMainPanel.add(leftPanel, new CC().span().grow());
+		
+		//not working as well
+		leftPanel.setSize(new Dimension(900, 900));
+	
+	// Controls (RIGHT PANE)
+	JPanel rightPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
+	JButton addAppointmentButton = new JButton("Add an Appointment");
+	addAppointmentButton.addActionListener(this);
+	addAppointmentButton.setActionCommand("Add an Appointment");
+	rightPanel.add(addAppointmentButton, new CC().wrap());
+		
+		modifyAppointmentButton = new JButton("View/Edit");
+		modifyAppointmentButton.addActionListener(this);
+		modifyAppointmentButton.setActionCommand("View/Edit");
+		modifyAppointmentButton.setVisible(false);
+		rightPanel.add(modifyAppointmentButton);
+		
+	allAppointmentsMainPanel.add(rightPanel, new CC().dockEast());
+	
+	this.getContentPane().add(allAppointmentsMainPanel, new CC().wrap());
+	
+	this.pack();
+	this.setVisible(true);
+	
+	this.setLocationRelativeTo(null);
+	
+	}
+
+	public static List<CalendarAppointment> getCalendarAppointments()
+	{
+		return calendarAppointments;
+	}
+	
+	public static JTable getCalendarAppointmentsTable()
+	{
+		return AppointmentsView.calendarAppointmentsTable;
+	}
+	
+	@Override
+	public void valueChanged(ListSelectionEvent arg0) {
+		modifyAppointmentButton.setVisible(true);
 		
 	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		switch (ae.getActionCommand())
+		{
+			case "Add an Appointment":
+				new AddAppointment();
+				break;
+			case "View/Edit":
+				CalendarAppointment cA = calendarAppointments.get(calendarAppointmentsTable.getSelectedRow());				
+				new ViewEditAppointment(cA);
+				break;
+		}
+	}
+	
+	private JTable buildCalendarAppointmentsTable()
+	{
+		try {			
+			calendarAppointments = CalendarAppointmentDMO.getInstance().getAll();
+						
+			cAM = new CalendarAppointmentATM(calendarAppointments);
+			JTable cAT = new JTable (cAM);
+			//cAT.setAutoCreateRowSorter(true);
+			
+			// set column widths
+			cAT.getColumnModel().getColumn(0).setMinWidth(30);
+			cAT.getColumnModel().getColumn(0).setMaxWidth(30);
+			cAT.getColumnModel().getColumn(0).setPreferredWidth(30);			
+			
+			cAT.getColumnModel().getColumn(1).setMinWidth(50);
+			cAT.getColumnModel().getColumn(1).setMaxWidth(50);
+			cAT.getColumnModel().getColumn(1).setPreferredWidth(50);
+			
+			cAT.getColumnModel().getColumn(2).setMinWidth(40);
+			cAT.getColumnModel().getColumn(2).setMaxWidth(40);
+			cAT.getColumnModel().getColumn(2).setPreferredWidth(40);
+			/*
+			cAT.getColumnModel().getColumn(3).setMinWidth(300);
+			cAT.getColumnModel().getColumn(3).setMaxWidth(300);
+			cAT.getColumnModel().getColumn(3).setPreferredWidth(300);
+			
+			cAT.getColumnModel().getColumn(4).setMinWidth(300);
+			cAT.getColumnModel().getColumn(4).setMaxWidth(300);
+			cAT.getColumnModel().getColumn(4).setPreferredWidth(300);
+			*/
+			
+			return cAT;
+		} catch (EmptyResultSetException e) {
+			System.out.println("EMPTY SET");
+			return null;
+		}
+		
+		
+	}
+
+
 }

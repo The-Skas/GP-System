@@ -13,6 +13,16 @@ public class AnalogClock extends JComponent implements ActionListener {
         javax.swing.Timer timer = new javax.swing.Timer(1000,this);
         timer.start();
     }
+    
+    /* tried to make a clock a separate thread, unsuccessfully
+     * gonna work on that later! 
+	@Override
+	public void run() {
+        javax.swing.Timer timer = new javax.swing.Timer(1000,this);
+        timer.start();
+		
+	}
+	*/
 
     public void actionPerformed(ActionEvent ae) {
         repaint();

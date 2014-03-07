@@ -19,9 +19,9 @@ public class CareProgramme extends GPSISObject {
 		return this.name;
 	}
 	
-	public StaffMember getDoctor()
+	public String getDoctor()
 	{
-		return this.doctor;
+		return this.doctor.getUsername();
 	}
 
 	
