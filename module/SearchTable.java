@@ -52,6 +52,7 @@ public class SearchTable<T extends AbstractTableModel> extends GPSISPopup implem
      * Additionally, it takes in a JTable to create the table, and a TableRowSorter
      * to create the search implementation.
     */
+    
     public SearchTable(final Broadcastable parent,final JTable tbl, String title) 
     {
         super(title);
@@ -65,7 +66,7 @@ public class SearchTable<T extends AbstractTableModel> extends GPSISPopup implem
         this.buttonFld = new JButton("Select");
         //Splits the cell into 2
         searchView.add(buttonFld, "split 2");
-        this.textQuery = new JTextField("COOL");
+        this.textQuery = new JTextField("");
         
         searchView.add(textQuery,  new CC().growX());
         this.add(searchView);

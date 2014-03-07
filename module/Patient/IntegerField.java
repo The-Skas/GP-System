@@ -17,22 +17,27 @@ import javax.swing.text.PlainDocument;
  *
  */
 public class IntegerField extends JTextField {
-
+    private int limit = 99999;
     public IntegerField() {
         super();
     }
 
-    public IntegerField( int cols ) {
+    public IntegerField( int cols, int limit ) {
         super( cols );
+        ((UpperCaseDocument)getDocument()).limit = limit;
     }
 
     @Override
     protected Document createDefaultModel() {
-        return new UpperCaseDocument();
+        return new UpperCaseDocument(this.limit);
     }
 
     static class UpperCaseDocument extends PlainDocument {
-
+        private int limit;
+        public UpperCaseDocument(int limit)
+        {
+           super();
+        }
         @Override
         public void insertString( int offs, String str, AttributeSet a )
                 throws BadLocationException {
@@ -40,8 +45,12 @@ public class IntegerField extends JTextField {
             if ( str == null ) {
                 return;
             }
-
+            
             char[] chars = str.toCharArray();
+            
+            if(getLength() + str.length() > this.limit)
+                return;
+            
             boolean ok = true;
 
             for ( int i = 0; i < chars.length; i++ ) {

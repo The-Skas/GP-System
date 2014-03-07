@@ -27,7 +27,7 @@ public class GPSISPopup extends JDialog {
 	
 	public GPSISPopup(String title)
 	{
-		super(new JFrame(), GPSISFramework.APPTITLE + " - " + title, JDialog.ModalityType.APPLICATION_MODAL);
+		super(new JFrame(),title+ " - " + GPSISFramework.APPTITLE);
 		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
 		this.setIconImage((icon.getImage()));
 	}

@@ -1,5 +1,16 @@
-/*  AddPatient
- * Opens a New Window displaying a Form to Add a New Patient
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author skas
+ */
+/*  View Patient
+ * Opens a New Window to ViewPatient
  * @author Salman Khalifa (skas)
  */
 package module.Patient;
@@ -30,6 +41,7 @@ import net.sourceforge.jdatepicker.JDatePicker;
 import object.Patient;
 import object.PermanentPatient;
 import exception.DuplicateEntryException;
+import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 import framework.GPSISFramework;
 import framework.GPSISPopup;
@@ -39,7 +51,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComponent;
 import mapper.PatientDMO;
 import mapper.StaffMemberDMO;
@@ -50,10 +65,11 @@ import module.StaffMember.StaffMemberATM;
 import module.ViewMedicalCondition;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
+import net.sourceforge.jdatepicker.DateModel;
 import object.StaffMember;
 import trunk.object.MedicalCondition;
 
-public class AddPatient extends GPSISPopup implements ActionListener,Broadcastable
+public class EditPatient extends GPSISPopup implements ActionListener,Broadcastable
 {
 
 	private static final long serialVersionUID = -8748112836660009010L;
@@ -68,8 +84,8 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
 	private JTextField lastNameFld;
         private JTextField addressFld;
         private JTextField postCodeFld;
-        private IntegerField phoneFld;
-        private IntegerField nhsFld;
+        private module.Patient.IntegerField phoneFld;
+        private module.Patient.IntegerField nhsFld;
 	private JDatePicker dobFld;
         private JLabel nhsLbl;
 	private JCheckBox isPermanentPatientFld;
@@ -84,25 +100,26 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         //of broadcast. This is a quick way to solve the problem of not being
         //able to refrence a button except by class.
         private JButton lastActive;
-        
+        //Current Patient
+        Patient currentPatient;
         //Values stored
         private Patient father;
         private Patient mother;
         private StaffMember doctor;
         private ArrayList<MedicalCondition> patientMedicalConditions = new ArrayList<>();
-	public AddPatient() 
+	public EditPatient(Patient p) 
         {
-		super("Add Patient"); // Set the JFrame Title
+		super("Edit Patient"); // Set the JFrame Title
 		
                 //add all
-                
+                currentPatient = p;
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLayout(new MigLayout());
 		this.setBackground(new Color(240, 240, 240));
 		//this.setSize(400, 450);
 		
 		JPanel h = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));	
-			JLabel hTitle = new JLabel("Add Patient");
+			JLabel hTitle = new JLabel("Edit Patient");
 //				GPSISFramework.getInstance();
 //				hTitle.setFont(GPSISFramework.getFonts().get("Roboto").deriveFont(24f));
 			h.add(hTitle, new CC().wrap());
@@ -117,6 +134,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
 			addPatientForm.add(firstNameLbl);
 			// First Name Component
 			this.firstNameFld = new JTextField(20);
+                        this.firstNameFld.setText(p.getFirstName());
 			addPatientForm.add(this.firstNameFld, new CC().wrap());
 			
 			// Last Name Label
@@ -124,6 +142,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
 			addPatientForm.add(lastNameLbl);
 			// Last Name Component
 			this.lastNameFld = new JTextField(20);
+                        this.lastNameFld.setText(p.getLastName());
 			addPatientForm.add(this.lastNameFld, new CC().wrap());
 			
 			// Is Permanent Label
@@ -139,7 +158,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
                         addPatientForm.add(nhsLbl);
 
                         //NHS Number Component
-                        this.nhsFld = new IntegerField(20, 10);
+                        this.nhsFld = new module.Patient.IntegerField(20, 10);
                         this.nhsFld.setActionCommand("NHS");
                         this.nhsFld.setEnabled(false);
                         addPatientForm.add(this.nhsFld, new CC().wrap());
@@ -154,36 +173,64 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
                         this.doctorNameLbl = new JLabel("Joe");
                         this.doctorNameLbl.setVisible(false);
                         addPatientForm.add(this.doctorNameLbl, new CC().wrap());
+                        //if P is permanentPatient
+                        if(p instanceof PermanentPatient)
+                        {
+                            PermanentPatient pp =(PermanentPatient) p;
+                            this.isPermanentPatientFld.setSelected(true);
+                            this.nhsFld.setText(pp.getNHSNumber());
+                            this.doctor = pp.getDoctor();
+                            this.doctorNameLbl.setText(doctor.getFirstName() +" "+doctor.getLastName());
+                        }
+                        
 			// DoB Label
 			JLabel dobLabel = new JLabel("Dob: ");
 			addPatientForm.add(dobLabel);
                         
 			// DoB Component
 			this.dobFld = JDateComponentFactory.createJDatePicker(JDateComponentFactory.createDateModel(new Date()));
-			addPatientForm.add((Component) this.dobFld, new CC().wrap());
-			
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(p.getDob());
+                        System.out.println(p.getDob());              //y   m  d
+                        this.dobFld.getModel().setDate(cal.get(Calendar.YEAR), 
+                                                       cal.get(Calendar.MONTH),
+                                                       cal.get(Calendar.DAY_OF_MONTH));
+
+                        addPatientForm.add((Component) this.dobFld, new CC().wrap());
                         //Sex Label
                         JLabel sexLbl = new JLabel("Sex: ");
                         addPatientForm.add(sexLbl);
                         
                         //Sex Component
                         this.sexFld = new JComboBox<>(this.sex);
+                        char t_sex = p.getSex();
+                        if(t_sex == 'm')
+                        {
+                            this.sexFld.setSelectedIndex(0);
+                        }
+                        else if(t_sex == 'f')
+                        {
+                            this.sexFld.setSelectedIndex(1);
+                        }
                         addPatientForm.add(sexFld,  new CC().wrap());
 			
                         //Phone
                         JLabel phoneLbl = new JLabel("Phone: ");
                         addPatientForm.add(phoneLbl);
-                        this.phoneFld = new IntegerField(20,20);
+                        this.phoneFld = new module.Patient.IntegerField(20,20);
+                        this.phoneFld.setText(p.getPhone());
                         addPatientForm.add(this.phoneFld, new CC().wrap());
                         
                         JLabel addressLbl = new JLabel("Address: ");
                         addPatientForm.add(addressLbl);
                         this.addressFld = new JTextField(20);
+                        this.addressFld.setText(p.getAddress());
                         addPatientForm.add(this.addressFld, new CC().wrap());
                         
                         JLabel postCodeLbl = new JLabel("Post Code: ");
                         addPatientForm.add(postCodeLbl);
                         this.postCodeFld = new JTextField(20);
+                        this.postCodeFld.setText(p.getPostCode());
                         addPatientForm.add(this.postCodeFld, new CC().wrap());
                         
                         //Parent Lbl
@@ -197,6 +244,18 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
                         this.selectMotherBtn.setActionCommand("Select Mother");
                         this.selectMotherBtn.addActionListener(this);
                         
+                        //Sets button/variables if parents arent null
+                        if(p.getFather() != null)
+                        {
+                            this.father = p.getFather();
+                            this.selectFatherBtn.setText(father.getFirstName()+" "+father.getLastName());
+                        }
+                        
+                        if(p.getMother() != null)
+                        {
+                            this.mother = p.getMother();
+                            this.selectMotherBtn.setText(mother.getFirstName()+" "+mother.getLastName());
+                        }
                         addPatientForm.add(selectFatherBtn, "split 2");
                         addPatientForm.add(selectMotherBtn, new CC().wrap());
                         
@@ -210,7 +269,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
                         this.medCondButton.setPreferredSize(new Dimension(40, 40));
                         this.medCondButton.setActionCommand("Medical Conditions");
                         this.medCondButton.addActionListener(this);
-                        
+                        this.patientMedicalConditions = p.getMedicalConditions();
 			addPatientForm.add(medCondButton, new CC().span().alignX("center"));
 			// Add Button
 			JButton addBtn = new JButton("Add!");
@@ -286,7 +345,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         
         char sex = ((String)this.sexFld.getSelectedItem()).charAt(0);
         
-        Patient p=new Patient(this.firstNameFld.getText(), 
+        Patient p=new Patient(currentPatient.getId(),this.firstNameFld.getText(), 
                 this.lastNameFld.getText(),
                 sex, 
                 this.postCodeFld.getText(), 
@@ -297,6 +356,8 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
                 this.mother !=null ? this.mother.getId() : 0);
         PatientDMO pDMO=PatientDMO.getInstance();
         
+        //have to put here since updating
+        pDMO.put(p);
         pDMO.addPatientMedicalConditions(this.patientMedicalConditions, p);
         
         if(this.isPermanentPatientFld.isSelected())
@@ -311,7 +372,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         return p;
     }
     /*
-     * This is an example of how SearchTable communicates with AddPatient.
+     * This is an example of how SearchTable communicates with ViewPatient.
      * Every Module which would need a SearchTable must implement this.
     */
     public void broadcast(Object obj) {
@@ -342,23 +403,31 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
                     this.doctorNameLbl.setVisible(true);
                 }
             }  
-            else if(st.tbl.getModel() instanceof PatientATM)
+            else if(st.tbl.getModel() instanceof module.Patient.PatientATM)
             {
-                PatientATM pATM = (PatientATM)st.tbl.getModel();
+                module.Patient.PatientATM pATM = (module.Patient.PatientATM)st.tbl.getModel();
                 
                 Patient patient = pATM.getData().get(st.getSelectedRow());
 
                 if(this.lastActive.equals(selectFatherBtn))
                 {
-                    this.father = patient;
-                    this.selectFatherBtn.setText(patient.getFirstName()+" "+
+                    if(patient.getId() != this.currentPatient.getId()) 
+                    {
+                        this.father = patient;
+                    
+                        this.selectFatherBtn.setText(patient.getFirstName()+" "+
                                                  patient.getLastName());
+                    }
                 }
                 else if(this.lastActive.equals(selectMotherBtn))
                 {
-                    this.mother = patient;
-                    this.selectMotherBtn.setText(patient.getFirstName()+" "+
+                    if(patient.getId() != this.currentPatient.getId())
+                    {
+                        this.mother = patient;
+                    
+                        this.selectMotherBtn.setText(patient.getFirstName()+" "+
                                                  patient.getLastName());
+                    }
                 }
                
             }
@@ -386,7 +455,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
             }
             else
             {
-                PatientATM pATM =(PatientATM) PatientModule.patientTable.getModel();
+                module.Patient.PatientATM pATM =(module.Patient.PatientATM) PatientModule.patientTable.getModel();
                 
                 pATM.addRow(this.buildPatientFromValues());
                 this.dispose();
@@ -394,8 +463,22 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         }
         else if(e.getActionCommand().equals("Select Doctor"))
         {
-           // new SearchTable(this,StaffMemberModule.buildStaffMemberTable(),
-             //       "Patient Search");
+            new SearchTable(this,StaffMemberModule.buildStaffMemberTable(),
+                    "Doctor Search");
+            this.lastActive = this.selDoctorButton;
+            this.setEnabled(false);
+        }
+        else if(e.getActionCommand().equals("Select Mother"))
+        {
+            new SearchTable(this,PatientModule.buildPatientsTable(),
+                    "Patient Search");
+            this.lastActive = this.selectMotherBtn;
+            this.setEnabled(false);
+        }
+        else if(e.getActionCommand().equals("Select Father"))
+        {
+            new SearchTable(this,PatientModule.buildPatientsTable(),
+                    "Patient Search");
             this.lastActive = this.selectFatherBtn;
             this.setEnabled(false);
         }
@@ -414,7 +497,11 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
     {
         GPSISFramework GPSIS = new GPSISFramework();
         GPSISDataMapper.connectToDatabase();
-        new AddPatient();
+            try {
+                new EditPatient(PatientDMO.getInstance().getById(20));
+            } catch (EmptyResultSetException ex) {
+                Logger.getLogger(EditPatient.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
 	
 }

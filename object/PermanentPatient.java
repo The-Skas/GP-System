@@ -7,6 +7,7 @@
 package object;
 
 import java.util.Date;
+import mapper.PatientDMO;
 import object.Patient;
 import object.StaffMember;
 
@@ -38,6 +39,8 @@ public class PermanentPatient extends Patient {
         
         pat.nhsNumber = nhsNumber;
         pat.doctor = doctor;
+        
+        PatientDMO.getInstance().putPermanentPatient(pat);
         
         return pat;
     }

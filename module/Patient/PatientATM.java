@@ -6,6 +6,7 @@
 
 package module.Patient;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import object.Patient;
@@ -16,7 +17,7 @@ import object.PermanentPatient;
  * @author skas
  */
 public class PatientATM extends AbstractTableModel {
-    public String[] columnNames = {"First Name", "Last Name","Sex", "Date of Birth", "NHS","Post Code","Phone"};
+    public String[] columnNames = {"First Name", "Last Name","Sex", "Date of Birth (Y/M/D)", "NHS","Post Code","Phone"};
 
     private List<Patient> data;
     
@@ -57,12 +58,13 @@ public class PatientATM extends AbstractTableModel {
             case 2:
                 return (p.getSex() == 'f' ? "Female" : "Male");
             case 3:
-                return p.getDob().toString();
+                String dob = new SimpleDateFormat("yyyy-MM-dd").format(p.getDob());
+                return dob;
             case 4:
                 if(p instanceof PermanentPatient)
                     return ((PermanentPatient)p).getNHSNumber();
                 else
-                    return 0;
+                    return "0";
             case 5:
                 return p.getPostCode();
             case 6:
@@ -79,7 +81,7 @@ public class PatientATM extends AbstractTableModel {
 	
 	
 	/** addRow
-	 * add a Staff Member Object to the Table and refresh the Table
+	 * add a Patient Object to the Table and refresh the Table
 	 * @param o
 	 */
 	public void addRow(Patient o)
@@ -89,7 +91,7 @@ public class PatientATM extends AbstractTableModel {
 	}
 	
 	/** removeRow
-	 * remove a Staff Member Object from the Table and refresh the Table
+	 * remove a Patient Object from the Table and refresh the Table
 	 * @param o
 	 */
 	public void removeRow(Patient o)
@@ -97,5 +99,10 @@ public class PatientATM extends AbstractTableModel {
 		this.data.remove(o);
 		this.fireTableChanged(null);
 	}
+        
+        public Patient getPatientAtRow(int i)
+        {
+            return this.data.get(i);
+        }
     
 }

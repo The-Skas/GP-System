@@ -18,7 +18,7 @@ public class SimpleSwingX extends JPanel {
 
 	public SimpleSwingX() {
 		this.comboBox = new JComboBox(new Object[]{"Ester", "Jordi", "Jordina",
-				"Jorge", "Sergi","COOL"});
+				"Jorge", "Sergi","COOL","a","b","c","d","e","z","X","y","Z"});
 		this.add(this.comboBox);
 
 		// Install auto-completion support. 

@@ -20,6 +20,7 @@ import org.joda.time.DateTime;
 
 import framework.GPSISObject;
 import java.util.List;
+import trunk.object.MedicalCondition;
 /**
  *
  * @author skas
@@ -91,6 +92,8 @@ public class Patient extends GPSISObject{
         
         this.fatherId = fatherId;
         this.motherId = motherId;
+        
+        PatientDMO.getInstance().put(this);
     }
     public Patient setFatherId(int id)
     {
@@ -171,7 +174,7 @@ public class Patient extends GPSISObject{
         }
     }
     
-    public ArrayList<String> getMedicalConditions()
+    public ArrayList<MedicalCondition> getMedicalConditions()
     {
         PatientDMO tblPatient = PatientDMO.getInstance();
         try{
@@ -182,14 +185,12 @@ public class Patient extends GPSISObject{
         return null;
     }
     
-    public void addMedicalConditions(ArrayList<String> mc)
+    public void addMedicalConditions(ArrayList<MedicalCondition> mc)
     {
         PatientDMO tblPatient = PatientDMO.getInstance();
-        try {
+        
             tblPatient.addPatientMedicalConditions(mc, this);
-        }catch(SQLException e) {
-            System.out.println(e);
-        }
+        
     }
     
     public Patient getFather() {

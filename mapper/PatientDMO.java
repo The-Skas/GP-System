@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import object.Patient;
 import object.PermanentPatient;
 import object.StaffMember;
+import trunk.object.MedicalCondition;
 /**
  *
  * @author skas
@@ -105,34 +106,83 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     /*** MEDICAL CONDITIONS ***/
     
     //Add A list of Medical Conditions if Found to the specified patient
-    public void addPatientMedicalConditions(ArrayList<String>medicalConditions, Patient p) throws SQLException
+    public ArrayList<MedicalCondition> getAllMedicalConditions()
     {
-        int id;
-        for(String mC : medicalConditions)
-        {
-            ResultSet res =GPSISDataMapper.getResultSet
-                (
-                    new SQLBuilder("name","=",""+mC), this.tblMC
-                );
-            if(res.next())
+        ArrayList<MedicalCondition> medicalConditions = new ArrayList<>();
+        
+        ResultSet res = null;
+        try {
+            res = GPSISDataMapper.getResultSet
+                    (
+                            new SQLBuilder(), this.tblMC
+                    );
+        } catch (SQLException ex) {
+            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            while(res.next())
             {
-                id = res.getInt("id");
+                medicalConditions.add(
+                        new MedicalCondition(
+                                res.getInt("id"),
+                                res.getString("name")
+                        ));
                 
-                SQLBuilder insertSql = new SQLBuilder("patient_id","=",""+p.getId())
-                                                 .SET("mc_id","=",""+id);
-                
-                GPSISDataMapper.putHelper(insertSql, this.tblPatientMC, null);
             }
-            else
-            {
-                System.out.println("ERROR: Medical Condition of name "+ mC +" Not found");
+        } catch (SQLException ex) {
+            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return medicalConditions;
+    }
+    public void addPatientMedicalConditions(ArrayList<MedicalCondition>medicalConditions, Patient p) 
+    {
+        //delete all before adding new, that way we can update/add/remove
+        deletePatientMedicalConditions(p);
+        int id;
+        for(MedicalCondition mC : medicalConditions)
+        {
+            try {
+                ResultSet res =GPSISDataMapper.getResultSet
+                        (
+                                new SQLBuilder("name","=",""+mC.getName()), this.tblMC
+                        );
+                if(res.next())
+                {
+                    id = res.getInt("id");
+                    
+                    SQLBuilder insertSql = new SQLBuilder("patient_id","=",""+p.getId())
+                            .SET("mc_id","=",""+id);
+                    
+                    GPSISDataMapper.putHelper(insertSql, this.tblPatientMC, null);
+                }
+                else
+                {
+                    System.out.println("ERROR: Medical Condition of name "+ mC.getName() +" Not found");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
-    public ArrayList<String> getPatientMedicalConditions(Patient p) throws SQLException
+    public void deletePatientMedicalConditions(Patient p)
+    {   
+        
+        //Issue, what if in the middle of deleting a patient, everything messes up.
+        //remove all PatientMedicalConditions
+        try {
+            GPSISDataMapper.removeByPropertyHelper
+                (
+                        new SQLBuilder("patient_id","=",""+p.getId()), this.tblPatientMC   
+                );
+        } catch (SQLException ex) {
+            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public ArrayList<MedicalCondition> getPatientMedicalConditions(Patient p) throws SQLException
     {
-        ArrayList<String> medicalConditions = new ArrayList<>();
+        ArrayList<MedicalCondition> medicalConditions = new ArrayList<>();
         
         ResultSet res = GPSISDataMapper.getResultSet
             ( 
@@ -148,7 +198,11 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 );
             if(resMC.next())
             {
-                medicalConditions.add(resMC.getString("name"));
+                medicalConditions.add(
+                        new MedicalCondition(
+                                resMC.getInt("id"),
+                                resMC.getString("name")
+                        ));
             }
         }
         
@@ -285,7 +339,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 //its NHS Number for the permenant Patients.
                 patients.add(
                             this.getPermanentPatientOrPatient(
-                                    new Patient( res.getInt("id"), 
+                       new Patient( res.getInt("id"), 
                                     res.getString("first_name"), 
                                     res.getString("last_name"),
                                     res.getString("sex").charAt(0),
@@ -351,12 +405,9 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-       @Override
-    public void removeById(int id) {
-        ; //To change body of generated methods, choose Tools | Templates.
-    }
+      
     
-    public static void main(String [] args) throws SQLException
+    public static void main(String [] args) throws SQLException, EmptyResultSetException
     {/*
         GPSISDataMapper.connectToDatabase();
         PatientDMO tbl = PatientDMO.getInstance();
@@ -426,6 +477,11 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         } catch (EmptyResultSetException ex) {
             Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        System.out.println("Add illness");
+        
+        //Testing Family
+        
         System.out.println("**Checking If Patient "+patientFamily.getFirstName()+" has siblings**");
         
         System.out.println();System.out.println();
@@ -438,6 +494,15 @@ public class PatientDMO extends GPSISDataMapper<Patient>
        
         System.out.println(patientFamily.getChildren());
         */
+        System.out.println();System.out.println();
+        
+        System.out.println("Testing Medical conditions");
+        
+        Patient patientWithMC = tbl.getById(2);
+        
+        System.out.println(patientWithMC.getFirstName()+"'s MC's are: "+
+                patientWithMC.getMedicalConditions()
+        );
     }
 
    
