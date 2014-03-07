@@ -70,8 +70,7 @@ public class RegisterDMO extends GPSISDataMapper<Register> {
     	
     	try
     	{
-    		SQLBuilder sql = new SQLBuilder("id", "=", "0")
-    							.SET("staff_member_id", "=", ""+o.getStaffMember().getId())
+    		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+o.getStaffMember().getId())
     							.SET("date", "=", date)
     							.SET("availability", "=", ""+o.getAvailability());
     		putHelper(sql, "Register", o);

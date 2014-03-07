@@ -66,6 +66,12 @@ public class GPSISFramework {
 	{
 		return fonts;
 	}
+	
+	public static List<Date> getPublicHolidays()
+	{
+		return publicHolidays;
+	}
+	
 	/** initialise
 	 * Initialises the Framework
 	 * Initialisation List: 

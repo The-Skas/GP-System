@@ -16,7 +16,7 @@ import object.StaffMember;
 public class StaffMemberATM extends AbstractTableModel {
 
 
-	private static final long serialVersionUID = 8897868375348957174L;
+	private static final long serialVersionUID = 1L;
 	private String[] columnNames = {"Username", "First Name", "Last Name", "Full Time", "Start Date", "Office Manager", "Role", "Holiday Allowance"};
 	private List<StaffMember> data;
 	

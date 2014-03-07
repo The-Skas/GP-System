@@ -238,8 +238,8 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         }
         else if(e.getActionCommand().equals("Select Doctor"))
         {
-            new SearchTable(this,StaffMemberModule.buildStaffMemberTable(),
-                    "Patient Search");
+           // new SearchTable(this,StaffMemberModule.buildStaffMemberTable(),
+             //       "Patient Search");
             this.setEnabled(false);
         }
 

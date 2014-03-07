@@ -7,11 +7,11 @@ package exception;
  * @author VJ
  *
  */
-public class EmptyResultSetException extends Exception {
+public class UserDidntSelectException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	
-	public EmptyResultSetException()
+	public UserDidntSelectException()
 	{
 		super("No Results from SQL Query");
 	}

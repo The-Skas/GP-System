@@ -9,7 +9,7 @@ package exception;
  */
 public class DuplicateEntryException extends Exception {
 
-	private static final long serialVersionUID = 6807729861972260771L;
+	private static final long serialVersionUID = 1L;
 	
 	public DuplicateEntryException()
 	{
