@@ -1,5 +1,7 @@
-/**
- * 
+/** AddTaxForm
+ * A window that displays a Form to add a Tax Form to a given Staff Member
+ * TODO Correct implementation of Tax Number (Waiting on Reply from TA)
+ * @author Vijendra Patel (vp302)
  */
 package module.StaffMember.TaxFormManagement;
 
@@ -26,17 +28,17 @@ import exception.EmptyResultSetException;
 import framework.GPSISFramework;
 import framework.GPSISPopup;
 
-/**
- * @author VJ
- *
- */
 public class AddTaxForm extends GPSISPopup implements ActionListener {
 
-	private static final long serialVersionUID = -263661084525294688L;
+	private static final long serialVersionUID = 1L;
 	public static JComboBox<TaxOffice> taxOfficeFld;
 	private static StaffMember selectedStaffMember;
 	private static JFormattedTextField salaryFld;
 
+	/** AddTaxForm Constructor
+	 * Initialises and displays a window with a Form to add a Tax Form to a given Staff Member
+	 * @param sM
+	 */
 	public AddTaxForm(StaffMember sM) {
 		super("Add Tax Form");
 		selectedStaffMember = sM;
@@ -97,6 +99,9 @@ public class AddTaxForm extends GPSISPopup implements ActionListener {
 		this.setVisible(true);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		switch (ae.getActionCommand())
@@ -110,6 +115,9 @@ public class AddTaxForm extends GPSISPopup implements ActionListener {
 		}
 	}
 	
+	/** add
+	 * Adds a Tax Form to the Database
+	 */
 	public void add()
 	{
 		((TaxFormATM) ViewTaxForms.getTable().getModel()).addRow(new TaxForm(selectedStaffMember, (TaxOffice)taxOfficeFld.getSelectedItem(), "taxnum", (Double)salaryFld.getValue()));

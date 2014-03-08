@@ -44,7 +44,7 @@ import object.StaffMember;
 
 public class SearchPane implements ListSelectionListener, DocumentListener, ActionListener {
 
-    	private static String dialogTitle = "Select Staff Member";
+    	private static String dialogTitle = "Select a Staff Member";
     	private static StaffMemberDMO dmo = StaffMemberDMO.getInstance(); // change to your own DMO!
     	private static StaffMemberATM aTM; // change to your own Abstract Table Model Type
     	private static TableRowSorter<StaffMemberATM> tableSorter;  // change to your own Abstract Table Model Type    	

@@ -1,5 +1,6 @@
 /**
  * 
+ * @author Vijendra Patel (vp302)
  */
 package module.StaffMember.TaxFormManagement;
 
@@ -20,10 +21,6 @@ import net.miginfocom.swing.MigLayout;
 import framework.GPSISFramework;
 import framework.GPSISPopup;
 
-/**
- * @author VJ
- *
- */
 public class AddTaxOffice extends GPSISPopup implements ActionListener {
 
 	private static final long serialVersionUID = -263661084525294688L;

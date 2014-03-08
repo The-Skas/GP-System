@@ -1,5 +1,6 @@
-/**
- * 
+/** StaffMemberATM
+ * an extension of the AbstractTableModel for use in Tables that use StaffMember objects
+ * @author Vijendra Patel (vp302)
  */
 package module.StaffMember;
 
@@ -9,10 +10,6 @@ import javax.swing.table.AbstractTableModel;
 
 import object.StaffMember;
 
-/**
- * @author VJ
- *
- */
 public class StaffMemberATM extends AbstractTableModel {
 
 
@@ -20,23 +17,39 @@ public class StaffMemberATM extends AbstractTableModel {
 	private String[] columnNames = {"Username", "First Name", "Last Name", "Full Time", "Start Date", "Office Manager", "Role", "Holiday Allowance"};
 	private List<StaffMember> data;
 	
+	/** StaffMemberATM Constructor
+	 * Creates a Staff Member Abstract Table Model with the given data
+	 * @param d a List of Staff Member objects to present in the table
+	 */
 	public StaffMemberATM(List<StaffMember> d)
 	{
 		this.data = d;
 	}
 	 
+    /* (non-Javadoc)
+     * @see javax.swing.table.TableModel#getColumnCount()
+     */
     public int getColumnCount() {
         return columnNames.length;
     }
 	 
+    /* (non-Javadoc)
+     * @see javax.swing.table.TableModel#getRowCount()
+     */
     public int getRowCount() {
         return data.size();
     }
 	 
+    /* (non-Javadoc)
+     * @see javax.swing.table.AbstractTableModel#getColumnName(int)
+     */
     public String getColumnName(int col) {
         return columnNames[col];
     }
 	 
+    /* (non-Javadoc)
+     * @see javax.swing.table.TableModel#getValueAt(int, int)
+     */
     public Object getValueAt(int row, int col) {
         StaffMember sM = data.get(row);
         switch (col)
@@ -61,6 +74,9 @@ public class StaffMemberATM extends AbstractTableModel {
         return null;
     }
     
+	/* (non-Javadoc)
+	 * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+	 */
 	public Class<?> getColumnClass(int c) {
 	    return getValueAt(0, c).getClass();
 	}	

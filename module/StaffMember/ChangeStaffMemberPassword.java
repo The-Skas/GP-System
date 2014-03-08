@@ -1,5 +1,5 @@
 /**
- * 
+ * Opens a new window displaying a form to change the user's password. Visible to all Office Managers or if the user matches the user currently logged in
  */
 package module.StaffMember;
 

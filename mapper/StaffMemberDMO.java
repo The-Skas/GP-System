@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -171,7 +172,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 			while (resRegistered.next())
 			{
 				cal.setTime(resRegistered.getDate("date"));
-	        	Date register = cal.getTime();				
+	        	Date register = cal.getTime();
 	        	registered.add(register);
 			}
 			
@@ -188,15 +189,38 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 			Calendar end = Calendar.getInstance();
 			end.setTime(new Date());
 			
-			for (Date registeredDate : registered)
+			/* loop through each date
+			 * 	loop through each registered date
+			 * 
+			 * 
+			 */
+			
+			/*for (Date registeredDate : registered)
 			{
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
 					SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
+					System.out.println(fm.format(registeredDate.getTime()) + " ?= " + fm.format(date.getTime()));
+					
 					if (!fm.format(registeredDate.getTime()).equals(fm.format(date.getTime())))
 					{
 						absences.add(date);
 					}
 				}
+			}*/
+			
+			for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime())
+			{
+				Iterator<Date> iter = registered.iterator();
+				boolean absent = true;
+				while (iter.hasNext())
+				{
+					Date registeredDate = iter.next();
+					SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
+					if (fm.format(registeredDate.getTime()).equals(fm.format(date.getTime())))
+						absent = false;
+				}
+				if (absent)
+					absences.add(date);
 			}
 			
 		}

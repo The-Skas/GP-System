@@ -6,20 +6,13 @@ package module.StaffMember;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,7 +24,10 @@ import javax.swing.WindowConstants;
 import mapper.PatientDMO;
 import mapper.StaffMemberDMO;
 import module.StaffMemberModule;
+import module.StaffMember.AbsenceManagement.ViewAbsences;
+import module.StaffMember.AppointmentManagement.ViewAppointments;
 import module.StaffMember.AvailabilityManagement.ViewAvailability;
+import module.StaffMember.PatientManagement.ViewPatients;
 import module.StaffMember.SpecialityManagement.ViewSpecialities;
 import module.StaffMember.TaxFormManagement.ViewTaxForms;
 import net.miginfocom.layout.AC;
@@ -48,7 +44,6 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 	
 	// Set Fields
 	private JLabel usernameFld;
-	//private JPasswordField passwordFld;
 	private JTextField firstNameFld;
 	private JTextField lastNameFld;
 	private JCheckBox isFullTimeFld;
@@ -60,9 +55,6 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 	
 	private StaffMember selectedStaffMember;
 	
-	private JFileChooser fC = new JFileChooser();
-	private JLabel pPicture;
-
 	public ViewStaffMember(StaffMember sM) {
 		super("Modify Staff Member");
 		this.selectedStaffMember = sM;
@@ -80,8 +72,6 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		// left panel
 		JPanel lP = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
 		
-		
-		lP.add(buildProfilePictureSegment(), new CC().span().wrap().dockNorth());
 		lP.add(buildStatsSegment(), new CC().span().dockSouth());
 		
 		this.add(lP, new CC().dockWest().spanX());
@@ -186,21 +176,6 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		return i;
 	}
 	
-	// build Picture Segment
-	public JPanel buildProfilePictureSegment()
-	{
-		JPanel p = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-			pPicture = new JLabel("Placeholder");
-			p.add(pPicture, new CC().wrap());
-		//p.setBackground(Color.red);
-			
-			// change picture button
-			JButton changePic = new JButton("Change Picture");
-			changePic.addActionListener(this);
-			changePic.setActionCommand("Change Profile Picture");
-			p.add(changePic);
-		return p;
-	}
 	
 	// build Stats Segment
 	public JPanel buildStatsSegment()
@@ -215,8 +190,11 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 			JLabel appointmentsVal = new JLabel("0");
 			try {
 				appointmentsVal = new JLabel(""+StaffMemberDMO.getInstance().getAppointments(selectedStaffMember).size());
+				appointmentsBtn.addActionListener(this);
+				appointmentsBtn.setActionCommand("View Appointments");
 			} catch (EmptyResultSetException e) {
 				System.out.println("Stats:- No Appointments");
+				appointmentsBtn.setEnabled(false);
 			}
 			s.add(appointmentsVal, new CC().wrap());
 			
@@ -230,21 +208,38 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 				specialitiesVal = new JLabel(""+StaffMemberDMO.getInstance().getSpecialities(selectedStaffMember).size());
 			} catch (EmptyResultSetException e) {
 				System.out.println("Stats:- No Specialities");
+				specialitiesBtn.setEnabled(false);
 			}
 			s.add(specialitiesVal, new CC().wrap());
 			
 			// Patients Stats
 			JButton patientsBtn = new JButton("Patients");
-			patientsBtn.addActionListener(this);
-			patientsBtn.setActionCommand("View Patients");
 			s.add(patientsBtn);
 			JLabel patientsVal = new JLabel("0");
 			try {
 				patientsVal = new JLabel(""+PatientDMO.getInstance().getAllPermanentPatientsByDoctorId(selectedStaffMember.getId()).size());
+				patientsBtn.addActionListener(this);
+				patientsBtn.setActionCommand("View Patients");
 			} catch (EmptyResultSetException e) {
 				System.out.println("Stats:- No Permanent Patients");
+				patientsBtn.setEnabled(false);
 			}
 			s.add(patientsVal, new CC().wrap());
+			
+			// Prescriptions Stats
+			/*
+			JButton prescriptionsBtn = new JButton("Prescriptions");
+			s.add(prescriptionsBtn);
+			JLabel prescriptionsVal = new JLabel("0");
+			try {
+				// TODO add Method to PrescriptionDMO (Oshan)
+				prescriptionsVal = new JLabel(""+PrescriptionDMO.getInstance().getAllByDoctorId(selectedStaffMember.getId().size());
+				prescriptionsBtn.addActionListener(this);
+				prescriptionsBtn.setActionCommand("View Prescriptions");
+			} catch (EmptyResultSetException e) {
+				System.out.println("Stats:- No Prescriptions");
+				prescriptionsBtn.setEnabled(false);
+			}*/
 			
 		}
 		
@@ -254,8 +249,11 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		JLabel absencesVal = new JLabel("0");
 		try {
 			absencesVal = new JLabel(""+StaffMemberDMO.getInstance().getAbsences(selectedStaffMember).size());
+			absencesBtn.addActionListener(this);
+			absencesBtn.setActionCommand("View Absences");
 		} catch (EmptyResultSetException e) {
 			System.out.println("Stats:- No Absences");
+			absencesBtn.setEnabled(false);
 		}
 		s.add(absencesVal, new CC().wrap());
 		
@@ -311,12 +309,18 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 			case "View Specialities":
 				new ViewSpecialities(selectedStaffMember);
 				break;
-			case "Change Profile Picture":
-				this.choosePicture();
-				break;
 			case "View Tax Forms":
 				new ViewTaxForms(selectedStaffMember);
 				break;
+			case "View Absences":
+				new ViewAbsences(selectedStaffMember);
+				break;
+			case "View Patients":
+				new ViewPatients(selectedStaffMember);
+				break;
+			case "View Appointments":
+				new ViewAppointments(selectedStaffMember);
+			
 		}
 	}
 	
@@ -365,36 +369,5 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		
 	}
 	
-	/** choosePicture
-	 * 
-	 */
-	public void choosePicture()
-	{
-		int returnVal = fC.showOpenDialog(this);
-		 
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fC.getSelectedFile();
-            //This is where a real application would open the file.
-            System.out.println("Opening: " + file.getName());
-            try {
-				BufferedImage img = ImageIO.read(file);
-				System.out.println("Resizing...");
-				img = resizeImage(img, img.getType());
-				this.pPicture.setIcon(new ImageIcon(img));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-        } 
-    }
-	
-	private static BufferedImage resizeImage(BufferedImage originalImage, int type)
-	{
-		BufferedImage resizedImage = new BufferedImage(100, 100, type);
-		Graphics2D g = resizedImage.createGraphics();
-		g.drawImage(originalImage, 0, 0, 100, 100, null);
-		g.dispose();
-	 
-		return resizedImage;
-	}
 
 }

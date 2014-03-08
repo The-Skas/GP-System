@@ -167,7 +167,7 @@ public class AddStaffMember extends GPSISPopup implements ActionListener, Change
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// GET ALL THE VALUES
+		// Get all of the values from the fields
 		String username = this.usernameFld.getText().trim();
 		String password = new String (this.passwordFld.getPassword());
 		String firstName = this.firstNameFld.getText().trim();
