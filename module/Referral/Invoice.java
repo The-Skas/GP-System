@@ -59,7 +59,7 @@ public class Invoice extends JFrame {
 		a7.setText(""+refID);
 		a7.setEditable(false);
 		
-		lab2 = new JLabel("           Amount: £");
+		lab2 = new JLabel("           Amount:  ");
 		add(lab2);
 		a2 = new JTextArea(1,15);
 		add(a2);
@@ -119,7 +119,7 @@ public class Invoice extends JFrame {
 		add(a7);
 		
 		
-		lab2 = new JLabel("         Amount: £");
+		lab2 = new JLabel("         Amount:  ");
 		add(lab2);
 		a2 = new JTextArea(1,15);
 		add(a2);

@@ -46,7 +46,7 @@ import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import trunk.object.MedicalCondition;
+import object.MedicalCondition;
 
 /**
  *

@@ -30,6 +30,7 @@ import net.sourceforge.jdatepicker.JDatePicker;
 import object.Patient;
 import object.PermanentPatient;
 import exception.DuplicateEntryException;
+import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 import framework.GPSISFramework;
 import framework.GPSISPopup;
@@ -40,7 +41,10 @@ import java.awt.event.ItemListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import mapper.PatientDMO;
 import mapper.StaffMemberDMO;
 import module.Broadcastable;
@@ -51,7 +55,7 @@ import module.ViewMedicalCondition;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import object.StaffMember;
-import trunk.object.MedicalCondition;
+import object.MedicalCondition;
 
 public class AddPatient extends GPSISPopup implements ActionListener,Broadcastable
 {
@@ -394,8 +398,30 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         }
         else if(e.getActionCommand().equals("Select Doctor"))
         {
-           // new SearchTable(this,StaffMemberModule.buildStaffMemberTable(),
-             //       "Patient Search");
+            StaffMemberATM sMM = null;
+            try {
+                sMM = new StaffMemberATM(StaffMemberDMO.getInstance().getAll());
+            } catch (EmptyResultSetException ex) {
+                Logger.getLogger(AddPatient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JTable sMT = new JTable (sMM);
+			
+            new SearchTable(this,sMT,
+                    "Doctor Search");
+            this.lastActive = this.selDoctorButton;
+            this.setEnabled(false);
+        }
+        else if(e.getActionCommand().equals("Select Mother"))
+        {
+            new SearchTable(this,PatientModule.buildPatientsTable(),
+                    "Patient Search");
+            this.lastActive = this.selectMotherBtn;
+            this.setEnabled(false);
+        }
+        else if(e.getActionCommand().equals("Select Father"))
+        {
+            new SearchTable(this,PatientModule.buildPatientsTable(),
+                    "Patient Search");
             this.lastActive = this.selectFatherBtn;
             this.setEnabled(false);
         }

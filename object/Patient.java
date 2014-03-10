@@ -20,7 +20,7 @@ import org.joda.time.DateTime;
 
 import framework.GPSISObject;
 import java.util.List;
-import trunk.object.MedicalCondition;
+import object.MedicalCondition;
 /**
  *
  * @author skas

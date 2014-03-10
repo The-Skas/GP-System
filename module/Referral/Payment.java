@@ -68,7 +68,7 @@ public class Payment extends JFrame {
 		a6 = new JTextArea(1,15);
 		add(a6);
 		
-		lab2 = new JLabel("                   Total: £");
+		lab2 = new JLabel("                   Total:  ");
 		add(lab2); 
 		a2 = new JTextArea(1,15);
 		add(a2);

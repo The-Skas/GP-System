@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package trunk.object;
+package object;
 
 import framework.GPSISObject;
 import java.util.ArrayList;

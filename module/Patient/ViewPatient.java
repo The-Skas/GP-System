@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import mapper.PatientDMO;
 import mapper.StaffMemberDMO;
 import module.Broadcastable;
@@ -67,7 +68,7 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.sourceforge.jdatepicker.DateModel;
 import object.StaffMember;
-import trunk.object.MedicalCondition;
+import object.MedicalCondition;
 
 public class ViewPatient extends GPSISPopup implements ActionListener,Broadcastable
 {
@@ -463,7 +464,15 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
         }
         else if(e.getActionCommand().equals("Select Doctor"))
         {
-            new SearchTable(this,StaffMemberModule.buildStaffMemberTable(),
+            StaffMemberATM sMM = null;
+            try {
+                sMM = new StaffMemberATM(StaffMemberDMO.getInstance().getAll());
+            } catch (EmptyResultSetException ex) {
+                Logger.getLogger(AddPatient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JTable sMT = new JTable (sMM);
+			
+            new SearchTable(this,sMT,
                     "Doctor Search");
             this.lastActive = this.selDoctorButton;
             this.setEnabled(false);

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import object.Patient;
 import object.PermanentPatient;
 import object.StaffMember;
-import trunk.object.MedicalCondition;
+import object.MedicalCondition;
 /**
  *
  * @author skas
