@@ -99,7 +99,7 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
 		super("Add Patient"); // Set the JFrame Title
 		
                 //add all
-                
+                System.out.println("Cool");
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLayout(new MigLayout());
 		this.setBackground(new Color(240, 240, 240));

@@ -498,11 +498,10 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         
         System.out.println("Testing Medical conditions");
         
-        Patient patientWithMC = tbl.getById(2);
         
-        System.out.println(patientWithMC.getFirstName()+"'s MC's are: "+
-                patientWithMC.getMedicalConditions()
-        );
+//        System.out.println(patientWithMC.getFirstName()+"'s MC's are: "+
+//                patientWithMC.getMedicalConditions()
+//        );
     }
 
    
