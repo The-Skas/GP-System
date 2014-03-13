@@ -71,7 +71,15 @@ public class GPSISFramework {
 	{
 		return publicHolidays;
 	}
-	
+        public static boolean iscurrentUserAllowed()
+        {
+            return (!"Receptionist".equals(GPSISFramework.getCurrentUser().getRole())
+                 &&!GPSISFramework.getCurrentUser().isOfficeManager());
+        }
+        public static StaffMember getCurrentUser()
+        {
+                return currentUser;
+        }
 	/** initialise
 	 * Initialises the Framework
 	 * Initialisation List: 

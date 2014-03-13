@@ -39,15 +39,15 @@ public class ViewPrescriptions extends GPSISPopup {
 		
 		// Table View
 		JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-		try {
-			Prescriptions = PrescriptionDMO.getInstance().getPrescriptionsByDoctorId(staffMember.getId());
-						
-			pM = new PrescriptionATM(Prescriptions);
-			PrescriptionTable = new JTable (pM);
-			leftPanel.add(new JScrollPane(PrescriptionTable), new CC().span().grow());
-		} catch (EmptyResultSetException e) {
-			leftPanel.add(new JLabel("No Prescriptions"));
-		}
+//		try {
+//			Prescriptions = PrescriptionDMO.getInstance().getPrescriptionsByDoctorId(staffMember.getId());
+//						
+//			pM = new PrescriptionATM(Prescriptions);
+//			PrescriptionTable = new JTable (pM);
+//			leftPanel.add(new JScrollPane(PrescriptionTable), new CC().span().grow());
+//		} catch (EmptyResultSetException e) {
+//			leftPanel.add(new JLabel("No Prescriptions"));
+//		}
 			
 		patientView.add(leftPanel, new CC().span().grow());		
 		

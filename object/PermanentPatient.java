@@ -34,14 +34,18 @@ public class PermanentPatient extends Patient {
     
     public static PermanentPatient constructByPatient(Patient o, StaffMember doctor, String nhsNumber)
     {
+        PermanentPatient pat = PermanentPatient.getByPatient(o, doctor, nhsNumber);
+        PatientDMO.getInstance().putPermanentPatient(pat);
+        return pat;
+    }
+    
+    public static PermanentPatient getByPatient(Patient o, StaffMember doctor, String nhsNumber)
+    {
         PermanentPatient pat = new PermanentPatient(o.getId(), o.getFirstName(), o.getLastName(), o.getSex(), o.getPostCode(),
             o.getAddress(), o.getPhone(),(Date)o.getDob(), o.getFatherId(), o.getMotherId());
         
         pat.nhsNumber = nhsNumber;
         pat.doctor = doctor;
-        
-        PatientDMO.getInstance().putPermanentPatient(pat);
-        
         return pat;
     }
      public PermanentPatient setNHSAndDoctor(String NHS, StaffMember doctor)

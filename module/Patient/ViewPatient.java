@@ -58,6 +58,7 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import mapper.PatientDMO;
+import mapper.SQLBuilder;
 import mapper.StaffMemberDMO;
 import module.Broadcastable;
 import module.PatientModule;
@@ -73,7 +74,6 @@ import object.MedicalCondition;
 public class ViewPatient extends GPSISPopup implements ActionListener,Broadcastable
 {
 
-	private static final long serialVersionUID = -8748112836660009010L;
 	//Container
         private JPanel addPatientForm;
         //GUI Components
@@ -107,13 +107,22 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
         private Patient father;
         private Patient mother;
         private StaffMember doctor;
-        private ArrayList<MedicalCondition> patientMedicalConditions = new ArrayList<>();
+        private ArrayList<MedicalCondition> patientMedicalConditions;
+        private JButton viewFamilyBtn;
+        private StaffMemberATM sMM;
+        
+        private int patientIndex;
+        private JButton deleteFatherBtn;
+        private JButton deleteMotherBtn;
 	public ViewPatient(Patient p) 
         {
 		super("View Patient"); // Set the JFrame Title
-		
+                PatientATM pATM =(PatientATM) PatientModule.patientTable.getModel();
+		this.patientIndex = pATM.getData().indexOf(p);
                 //add all
                 currentPatient = p;
+               
+
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setLayout(new MigLayout());
 		this.setBackground(new Color(240, 240, 240));
@@ -121,8 +130,8 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
 		
 		JPanel h = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));	
 			JLabel hTitle = new JLabel("Edit Patient");
-//				GPSISFramework.getInstance();
-//				hTitle.setFont(GPSISFramework.getFonts().get("Roboto").deriveFont(24f));
+				GPSISFramework.getInstance();
+				hTitle.setFont(GPSISFramework.getFonts().get("Roboto").deriveFont(24f));
 			h.add(hTitle, new CC().wrap());
 			
 		this.add(h, new CC().wrap());
@@ -159,7 +168,7 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                         addPatientForm.add(nhsLbl);
 
                         //NHS Number Component
-                        this.nhsFld = new module.Patient.IntegerField(20, 10);
+                        this.nhsFld = new module.Patient.IntegerField(20, 6);
                         this.nhsFld.setActionCommand("NHS");
                         this.nhsFld.setEnabled(false);
                         addPatientForm.add(this.nhsFld, new CC().wrap());
@@ -177,11 +186,18 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                         //if P is permanentPatient
                         if(p instanceof PermanentPatient)
                         {
+                            System.out.println("In permanent!");
                             PermanentPatient pp =(PermanentPatient) p;
                             this.isPermanentPatientFld.setSelected(true);
                             this.nhsFld.setText(pp.getNHSNumber());
+                            this.nhsFld.setEnabled(true);
+                            this.nhsLbl.setEnabled(true);
                             this.doctor = pp.getDoctor();
+                            
+                            this.selDoctorButton.setEnabled(true);
+                            this.doctorNameLbl.setVisible(true);
                             this.doctorNameLbl.setText(doctor.getFirstName() +" "+doctor.getLastName());
+                            this.doctorNameLbl.setEnabled(true);
                         }
                         
 			// DoB Label
@@ -196,8 +212,16 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                         this.dobFld.getModel().setDate(cal.get(Calendar.YEAR), 
                                                        cal.get(Calendar.MONTH),
                                                        cal.get(Calendar.DAY_OF_MONTH));
-
+                        
                         addPatientForm.add((Component) this.dobFld, new CC().wrap());
+                        
+                        //Age Group
+                        JLabel ageGroup = new JLabel("AgeGroup: ");
+                        addPatientForm.add(ageGroup);
+                        
+                        JLabel ageGroupValue;
+                        ageGroupValue = new JLabel(p.getAgeGroup().toString());
+                        addPatientForm.add(ageGroupValue, new CC().wrap());
                         //Sex Label
                         JLabel sexLbl = new JLabel("Sex: ");
                         addPatientForm.add(sexLbl);
@@ -238,6 +262,16 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                         JLabel parentsLbl = new JLabel("Parents: ");
                         addPatientForm.add(parentsLbl);
                         //Father Button //Select Mother
+                        this.deleteFatherBtn = new JButton("X");
+                        this.deleteFatherBtn.setActionCommand("Delete Father");
+                        this.deleteFatherBtn.setForeground(Color.red);
+                        this.deleteFatherBtn.addActionListener(this);
+                        
+                        this.deleteMotherBtn = new JButton("X");
+                        this.deleteMotherBtn.setActionCommand("Delete Mother");
+                        this.deleteMotherBtn.setForeground(Color.red);
+                        this.deleteMotherBtn.addActionListener(this);
+                        
                         this.selectFatherBtn = new JButton("  Select Father  ");
                         this.selectFatherBtn.setActionCommand("Select Father");
                         this.selectFatherBtn.addActionListener(this);
@@ -258,7 +292,17 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                             this.selectMotherBtn.setText(mother.getFirstName()+" "+mother.getLastName());
                         }
                         addPatientForm.add(selectFatherBtn, "split 2");
-                        addPatientForm.add(selectMotherBtn, new CC().wrap());
+                        addPatientForm.add(this.deleteFatherBtn, new CC().wrap());
+                        addPatientForm.add(selectMotherBtn,"cell 1 14, split 2");
+                        addPatientForm.add(this.deleteMotherBtn,new CC().wrap());
+                        
+                        //View Family
+                        JLabel viewFamily = new JLabel("Family List: ");
+                        addPatientForm.add(viewFamily);
+                        this.viewFamilyBtn = new JButton("View Family");
+                        this.viewFamilyBtn.setActionCommand("Family");
+                        this.viewFamilyBtn.addActionListener(this);
+                        addPatientForm.add(viewFamilyBtn, new CC().wrap());
                         
 			// Medical Condition Label
 			JLabel roleLbl = new JLabel("Medical Conditions: ");
@@ -273,11 +317,13 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                         this.patientMedicalConditions = p.getMedicalConditions();
 			addPatientForm.add(medCondButton, new CC().span().alignX("center"));
 			// Add Button
-			JButton addBtn = new JButton("Add!");
+			JButton addBtn = new JButton("Update!");
 				addBtn.addActionListener(this);
+                                addBtn.setActionCommand("Update");
+
                         //Increase Font Size
                         addBtn.setFont(new Font("Verdana", Font.BOLD, 20));
-                                
+                        
 			addPatientForm.add(addBtn, new CC().newline());
                         
                         //Anonymous Listeners
@@ -305,41 +351,119 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                         });
                         
 		this.add(addPatientForm, new CC());
-		this.setEnabled(false);
+		this.setEnabled(true);
 		this.setLocationRelativeTo(null); // center window
 		this.pack();
 		this.setVisible(true);
-                this.checkAllComponents();
                 
+                if(GPSISFramework.iscurrentUserAllowed() ) {
+                    addBtn.setEnabled(false);
+                }
 	}
-        
-    public boolean checkAllComponents()
+    public void disableAllCompononts()
     {
-//        this.textFields.add(usernameFld);
-//        this.textFields.add(passwordFld);
-//        this.textFields.add(firstNameFld);
-//        this.textFields.add(addressFld);
         Component[] components = this.addPatientForm.getComponents();
         for(Component comp : components)
         {
-            if(comp instanceof JTextField)
+            if(comp instanceof JComponent)
+            {
+                //Do some check
+                JComponent jcomp =(JComponent) comp;
+                //Fix it up
+                jcomp.setEnabled(false);
+               // System.out.println(tempTxtFld.getText());
+                
+                //Check parsing, if error. Return false;
+            }
+        }
+    }
+    
+       public boolean AllTextFieldsNotEmpty(String[] msg)
+    {
+        
+        Component[] components = this.addPatientForm.getComponents();
+        for(Component comp : components)
+        {
+            if(comp instanceof JTextField && !(comp.equals(this.nhsFld)))
             {
                 //Do some check
                 JTextField tempTxtFld =(JTextField) comp;
                 //Fix it up
                 tempTxtFld.setText(tempTxtFld.getText().trim());
                // System.out.println(tempTxtFld.getText());
-                
+                if(tempTxtFld.getText().isEmpty())
+                {
+                    msg[0] = "Can't have empty fields!";
+                    return false;
+                }
+                if(PatientModule.validator.matcher(tempTxtFld.getText()).find())
+                {
+                    msg[0] = "Illegal characters!";
+                    return false;
+                }
+                if(tempTxtFld.getText().length() > 20 
+                && !comp.equals(this.postCodeFld)
+                && !comp.equals(this.addressFld))
+                {
+                    msg[0] = "Values too large!";
+                    return false;
+                }
                 //Check parsing, if error. Return false;
             }
         }
+        if(this.addressFld.getText().length() > 50)
+        {
+            msg[0] = "Address Field values too large.";
+            return false;
+        }
+        if(this.postCodeFld.getText().length() > 10)
+        {
+            msg[0] = "PostCode values too large.";
+            return false;
+        }
                 
-                System.out.println(this.dobFld.getModel().getValue());
+        System.out.println(this.dobFld.getModel().getValue());
 
         return true;
         
     }
-    
+    public boolean checkPermanentPatient(String [] msg)
+    {
+        
+        if(this.isPermanentPatientFld.isSelected())
+        {
+            if(this.nhsFld.getText().length() != 6)
+            {
+                msg[0] = "NHS Number length incorrect!";
+                return false;
+            }
+            
+            if(this.doctor == null)
+            {
+                msg[0] = "No doctor selected!";
+                return false;
+            }
+        }
+        
+        //To check if patients NHS Number is unique
+        PatientATM pATM =(PatientATM) PatientModule.patientTable.getModel();
+        List<Patient> patients = pATM.getData();
+        for(Patient p : patients)
+        {
+            if(p instanceof PermanentPatient && !(p.equals(currentPatient)))
+            {
+                PermanentPatient pP = (PermanentPatient) p;
+                if(pP.getNHSNumber().equals(this.nhsFld.getText()))
+                {
+                    System.out.println(currentPatient.getId()+" VS "+p.getId());
+                    msg[0] = "Duplicate NHS Number!";
+                    return false;
+                }
+            }
+                
+        }
+        return true;
+    }
     private Patient buildPatientFromValues()
     {
         Date dob =(Date) this.dobFld.getModel().getValue();
@@ -367,8 +491,10 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
             p = PermanentPatient.constructByPatient(p, 
                                                 this.doctor, 
                                                 this.nhsFld.getText());
-            
-            
+        }
+        else
+        {
+            pDMO.deletePermanentPatientById(p.getId());
         }
         return p;
     }
@@ -381,7 +507,6 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
         {
             SearchTable st =(SearchTable) obj;
             //do some stuff to st
-            System.out.println("In PatientModule, the row is"+st.getSelectedRow());
 
             //If you would have multiple searchTables that search in different
             //DMO's then use this method to diffrentiate types and construct
@@ -396,8 +521,10 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                 //of querying everytime.
                 if(this.lastActive.equals(this.selDoctorButton))
                 {
-                    List<StaffMember> smembers = StaffMemberModule.getStaffMembers();
-                    this.doctor = smembers.get(st.getSelectedRow());
+                    List<StaffMember> smembers = this.sMM.getData();
+                    int row= st.tbl.getSelectedRow();
+                    row = st.tbl.convertRowIndexToModel(row);
+                    this.doctor = smembers.get(row);
                     this.selDoctorButton.setText("Change Doctor");
                     this.doctorNameLbl.setText(this.doctor.getFirstName()+" "
                                               +this.doctor.getLastName());
@@ -407,15 +534,15 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
             else if(st.tbl.getModel() instanceof module.Patient.PatientATM)
             {
                 module.Patient.PatientATM pATM = (module.Patient.PatientATM)st.tbl.getModel();
-                
-                Patient patient = pATM.getData().get(st.getSelectedRow());
+                int row= st.tbl.getSelectedRow();
+                row = st.tbl.convertRowIndexToModel(row);
+                Patient patient = pATM.getData().get(row);
 
                 if(this.lastActive.equals(selectFatherBtn))
                 {
                     if(patient.getId() != this.currentPatient.getId()) 
                     {
                         this.father = patient;
-                    
                         this.selectFatherBtn.setText(patient.getFirstName()+" "+
                                                  patient.getLastName());
                     }
@@ -430,7 +557,16 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                                                  patient.getLastName());
                     }
                 }
-               
+            }
+            else if(st.tbl.getModel() instanceof module.Patient.PatientFamilyATM)
+            {
+                PatientFamilyATM pfATM = (PatientFamilyATM)st.tbl.getModel();
+                int row= st.tbl.getSelectedRow();
+                row = st.tbl.convertRowIndexToModel(row);
+                
+                Patient patient = pfATM.getData().get(row).getPatient();
+                
+                
             }
         }
         else if(this.lastActive.equals(this.medCondButton))
@@ -438,38 +574,52 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
             ViewMedicalCondition viewMedCond = ((ViewMedicalCondition)obj);
             this.patientMedicalConditions = viewMedCond.getMedicalConditions();
             this.medCondButton.setText("Change Medical Conditions");
-            
-            
         }
     }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
             // GET ALL THE VALUES
         System.out.println(this.nhsFld.getText());
-        this.checkAllComponents();
-        if(e.getActionCommand().equals("Add!"))
+        if(e.getActionCommand().equals("Update"))
         {
-           
-            if(!this.checkAllComponents())
+            String[] msg = new String[1];
+            if(!this.AllTextFieldsNotEmpty(msg) || !this.checkPermanentPatient(msg))
             {
-                JOptionPane.showMessageDialog(this, "Invalid Values!", "ERROR", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, msg[0], "ERROR", JOptionPane.ERROR_MESSAGE);
             }
             else
             {
                 module.Patient.PatientATM pATM =(module.Patient.PatientATM) PatientModule.patientTable.getModel();
                 
-                pATM.addRow(this.buildPatientFromValues());
+                //Replace at index;
+                System.out.println("Current Patient Value is "+ this.currentPatient);
+                System.out.println("Current Patient Local? is "+ currentPatient);
+                
+                for(Patient p : pATM.getData())
+                {
+                    if(p.getId() == this.currentPatient.getId())
+                    {
+                        System.out.println("The patient does exist in the model.");
+                    }
+                    
+                }
+                
+                pATM.getData().remove(this.patientIndex);
+                pATM.getData().add(this.patientIndex, this.buildPatientFromValues());
                 this.dispose();
             }
         }
         else if(e.getActionCommand().equals("Select Doctor"))
         {
-            StaffMemberATM sMM = null;
+            this.sMM = null;
             try {
-                sMM = new StaffMemberATM(StaffMemberDMO.getInstance().getAll());
+                SQLBuilder sql = new SQLBuilder("role","=","Doctor");
+                this.sMM = new StaffMemberATM(StaffMemberDMO.getInstance().getAllByProperties(sql));
             } catch (EmptyResultSetException ex) {
                 Logger.getLogger(AddPatient.class.getName()).log(Level.SEVERE, null, ex);
             }
+              
             JTable sMT = new JTable (sMM);
 			
             new SearchTable(this,sMT,
@@ -479,14 +629,28 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
         }
         else if(e.getActionCommand().equals("Select Mother"))
         {
-            new SearchTable(this,PatientModule.buildPatientsTable(),
+            PatientATM pATM = null;
+            try {            
+                pATM = new PatientATM(PatientDMO.getInstance().getAll());
+            } catch (EmptyResultSetException ex) {
+                Logger.getLogger(PatientModule.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JTable pT = new JTable (pATM);
+            new SearchTable(this,pT,
                     "Patient Search");
             this.lastActive = this.selectMotherBtn;
             this.setEnabled(false);
         }
         else if(e.getActionCommand().equals("Select Father"))
         {
-            new SearchTable(this,PatientModule.buildPatientsTable(),
+            PatientATM pATM = null;
+            try {            
+                pATM = new PatientATM(PatientDMO.getInstance().getAll());
+            } catch (EmptyResultSetException ex) {
+                Logger.getLogger(PatientModule.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JTable pT = new JTable (pATM);
+            new SearchTable(this,pT,
                     "Patient Search");
             this.lastActive = this.selectFatherBtn;
             this.setEnabled(false);
@@ -496,9 +660,26 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
             new ViewMedicalCondition(this, this.patientMedicalConditions);
             this.lastActive = this.medCondButton;
             this.setEnabled(false);
-
         }
-
+        else if(e.getActionCommand().equals("Family"))
+        {
+            System.out.println("Family?");
+            PatientFamilyATM pfM = null;
+            pfM = new PatientFamilyATM(this.currentPatient);
+            JTable pfT = new JTable (pfM);
+            new SearchTable(this,pfT,
+                    "View Family");
+        }
+        else if (e.getActionCommand().equals("Delete Father"))
+        {
+            this.father = null;
+            this.selectFatherBtn.setText("Select Father");
+        }
+        else if (e.getActionCommand().equals("Delete Mother"))
+        {
+            this.mother = null;
+            this.selectMotherBtn.setText("Select Mother");
+        }
 
     }
 

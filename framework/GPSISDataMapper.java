@@ -37,15 +37,15 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
 		//String dbName = "SEGJ";
 		//String url = "jdbc:mysql://localhost:3307/" + dbName;
 		
-		//String username = "grpj";
-		//String password = "wv7PBUZBMXH88NP6";
-		//String dbName = "GPSIS_GROUPJ";
-		//String url = "jdbc:mysql://alineofcode.co.uk:3306/" + dbName + "?useUnicode=true&characterEncoding=UTF-8";
+		String username = "grpj";
+		String password = "wv7PBUZBMXH88NP6";
+		String dbName = "GPSIS_GROUPJ";
+		String url = "jdbc:mysql://alineofcode.co.uk:3306/" + dbName + "?useUnicode=true&characterEncoding=UTF-8";
     	
-    	String username = "gpsisj";
-    	String password = "gpsisj";
-    	String dbName = "gpsisj";
-    	String url = "jdbc:mysql://db4free.net:3306/" + dbName + "?useUnicode=true&characterEncoding=UTF-8";
+//    	String username = "gpsisj";
+//    	String password = "gpsisj";
+//    	String dbName = "gpsisj";
+//    	String url = "jdbc:mysql://db4free.net:3306/" + dbName + "?useUnicode=true&characterEncoding=UTF-8";
     	
 		try
 		{

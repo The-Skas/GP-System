@@ -91,7 +91,16 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     public List<Patient> getPatientSiblings(Patient p)
     {
         SQLBuilder sql = new SQLBuilder("father_id","=",""+p.getFatherId())
-                                    .OR("mother_id","=",""+p.getMotherId());
+                                    .AND("father_id","!=", "NULL")
+                                    .AND("father_id","!=", "0")
+                                    .AND("father_id", "!=", ""+p.getId())
+                                    .AND("id", "!=", ""+p.getId())
+                                    .OR("mother_id","=",""+p.getMotherId())
+                                    .AND("mother_id","!=", "NULL")
+                                    .AND("mother_id","!=", "0")
+                                    .AND("mother_id", "!=", ""+p.getId())
+                                    .AND("id", "!=", ""+p.getId());
+        System.out.println("Get siblings!: "+ sql);
         return this.getAllByProperties(sql);
         
     }
@@ -168,7 +177,6 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     public void deletePatientMedicalConditions(Patient p)
     {   
         
-        //Issue, what if in the middle of deleting a patient, everything messes up.
         //remove all PatientMedicalConditions
         try {
             GPSISDataMapper.removeByPropertyHelper
@@ -206,13 +214,9 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             }
         }
         
-        if(medicalConditions.isEmpty())
-        {
-            return null;
-        }
-        else {
-            return medicalConditions;
-        }
+        
+        return medicalConditions;
+        
     }
     
     //** END MEDICAL CONDITIONS **//
@@ -268,12 +272,12 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 (
                         new SQLBuilder("patient_id","=",""+patient.getId()),this.tblPermenant
                 );
-        
+        System.out.println("Here in getPermanent/orPatient");
         //Returns a PermanentPatient if found
         if(rs.next())
         {
             return  PermanentPatient.
-                    constructByPatient
+                    getByPatient
                     (                   
                         patient, 
                         StaffMemberDMO.getInstance().getById(rs.getInt("doctor_id")),
@@ -285,6 +289,17 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         }
         //Otherwise returns the Patient passed in;
         return patient;
+        
+    }
+    
+    public void deletePermanentPatientById(int id)
+    {
+        SQLBuilder sql = new SQLBuilder("patient_id","=",""+id);
+        try {
+            GPSISDataMapper.removeByPropertyHelper(sql, this.tblPermenant);
+        } catch (SQLException ex) {
+            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
     
@@ -334,7 +349,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
             while(res.next()) 
             { // if found, create a the patient object
-
+                System.out.println("Heres patient id: "+res.getInt("id"));
                 //Before I add it, surely I would want a refrence to set
                 //its NHS Number for the permenant Patients.
                 patients.add(
@@ -398,7 +413,9 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 .SET("dob", "=",""+dob)
                 .SET("address", "=", ""+o.getAddress())
                 .SET("postcode", "=", ""+o.getPostCode())
-                .SET("phone", "=", ""+ o.getPhone());
+                .SET("phone", "=", ""+ o.getPhone())
+                .SET("father_id", "=",""+o.getFatherId())
+                .SET("mother_id", "=", ""+o.getMotherId());
         try {
             putHelper(sql, this.tableName, o);
         } catch (SQLException ex) {
@@ -498,7 +515,8 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         
         System.out.println("Testing Medical conditions");
         
-        
+//        Patient patientWithMC = tbl.getById(2);
+//        
 //        System.out.println(patientWithMC.getFirstName()+"'s MC's are: "+
 //                patientWithMC.getMedicalConditions()
 //        );
