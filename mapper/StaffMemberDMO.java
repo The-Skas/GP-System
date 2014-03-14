@@ -323,14 +323,13 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	
     }
     
-    public Register getRegister(StaffMember sM) throws EmptyResultSetException
+    public Register getRegister(StaffMember sM, Date d) throws EmptyResultSetException
     {
-    	SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+sM.getId());
+    	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");  
+    	SQLBuilder sql = new SQLBuilder("staff_member_id", "=", ""+sM.getId()).AND("date", "=", fm.format(d.getTime()));
     	
-
-    		ResultSet resRegister;
 			try {
-				resRegister = getResultSet(sql, "Register");
+				ResultSet resRegister = getResultSet(sql, "Register");
 				if (resRegister.next())
 	    		{
 	    			return new Register(
@@ -390,6 +389,18 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	
     	HashMap<Date, Date> times = new HashMap<Date, Date>();
     	
+    	// Retrieve the availability for this Date, assumed ALLDAY if none
+    	try {
+			Register r = this.getRegister(sM, d);
+			switch (r.getAvailability())
+			{
+				case Register.MORNING:
+			}
+			
+		} catch (EmptyResultSetException e) {
+			Register r = new Register(sM, d, Register.ALLDAY); // set the staff member's availability to ALLDAY
+		}
+    	
     	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");    	 
     	// retrieve all of the appointments for a StaffMember on this date.
     	SQLBuilder query = new SQLBuilder("staff_member_id", "=", ""+sM.getId()).AND("DATE(start_time)", "=", fm.format(d.getTime()));
@@ -409,18 +420,10 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     		}
     	}
     	
-    	// Retrieve the availability for this Date, assumed FULL if none
-    	try {
-			Register r = this.getRegister(sM);
-		} catch (EmptyResultSetException e) {
-			Register r = new Register(sM, d, 3);
-		}
-    	
-    	
-    	
-    	
+    	    	
 		return null;
     }
+    
     
     public List<TaxForm> getTaxForms(StaffMember sM) throws EmptyResultSetException
     {
