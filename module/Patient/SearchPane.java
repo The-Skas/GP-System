@@ -1,16 +1,16 @@
-/** Search Staff Members Pane
+/** Search Patients Pane
  * 
- * Used to Pick a Staff Member :D
+ * Used to Pick a Patient :D
  * 
  * If Copying and Pasting I highly recommend that you just a Find and Replace to replace the following:
- * - StaffMemberDMO with YOURDMO
- * - StaffMemberATM with YOURATM
- * - StaffMember with YOUROBJECT
+ * - PatientDMO with YOURDMO
+ * - PatientATM with YOURATM
+ * - Patient with YOUROBJECT
  * 
  * @author Vijendra Patel (vp302)
  *
  */
-package module.StaffMember;
+package module.Patient;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,7 +32,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 
-import mapper.StaffMemberDMO;
+import mapper.PatientDMO;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -40,16 +40,16 @@ import net.miginfocom.swing.MigLayout;
 import exception.EmptyResultSetException;
 import exception.UserDidntSelectException;
 import framework.GPSISFramework;
-import object.StaffMember;
+import object.Patient;
 
 public class SearchPane implements ListSelectionListener, DocumentListener, ActionListener {
 
-    	private static String dialogTitle = "Select a Staff Member";
-    	private static StaffMemberDMO dmo = StaffMemberDMO.getInstance(); // change to your own DMO!
-    	private static StaffMemberATM aTM; // change to your own Abstract Table Model Type
-    	private static TableRowSorter<StaffMemberATM> tableSorter;  // change to your own Abstract Table Model Type    	
-    	private static List<StaffMember> itemList; // change to a list of your own Objects
-    	private static StaffMember selectedItem; // change to your Object
+    	private static String dialogTitle = "Select a Patient";
+    	private static PatientDMO dmo = PatientDMO.getInstance(); // change to your own DMO!
+    	private static PatientATM aTM; // change to your own Abstract Table Model Type
+    	private static TableRowSorter<PatientATM> tableSorter;  // change to your own Abstract Table Model Type    	
+    	private static List<Patient> itemList; // change to a list of your own Objects
+    	private static Patient selectedItem; // change to your Object
     	    	
     	// the below doesn't need changing xD
     	private static JTextField searchFld = new JTextField(30);
@@ -60,10 +60,10 @@ public class SearchPane implements ListSelectionListener, DocumentListener, Acti
     	
     	/** doSearch
     	 * builds and displays a JDialog with the Table and Search in.
-    	 * @return the selected StaffMember
+    	 * @return the selected Patient
     	 * @throws UserDidntSelectException 
     	 */
-        public static StaffMember doSearch() throws UserDidntSelectException, EmptyResultSetException
+        public static Patient doSearch() throws UserDidntSelectException, EmptyResultSetException
         {
         	JDialog dialog = new JDialog();
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -82,19 +82,19 @@ public class SearchPane implements ListSelectionListener, DocumentListener, Acti
 	    		
     		// build Content Pane
 	    		JPanel searchPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-	    		searchFld.getDocument().addDocumentListener(new module.StaffMember.SearchPane());
+	    		searchFld.getDocument().addDocumentListener(new module.Patient.SearchPane());
 	    		searchPanel.add(searchFld, new CC().span().wrap());
 				itemList = dmo.getAll();						
-				aTM = new StaffMemberATM(itemList);
+				aTM = new PatientATM(itemList);
 				table = new JTable (aTM);
-				tableSorter = new TableRowSorter<StaffMemberATM>(aTM);
+				tableSorter = new TableRowSorter<PatientATM>(aTM);
 				
 				table.setRowSorter(tableSorter);
-				table.getSelectionModel().addListSelectionListener(new module.StaffMember.SearchPane());
+				table.getSelectionModel().addListSelectionListener(new module.Patient.SearchPane());
 				searchPanel.add(new JScrollPane(table), new CC().span().grow().wrap());
 				
 				selectBtn = new JButton("Select");
-	            selectBtn.addActionListener(new module.StaffMember.SearchPane());
+	            selectBtn.addActionListener(new module.Patient.SearchPane());
 	            selectBtn.setVisible(false);
 	            searchPanel.add(selectBtn);
 	    			
@@ -130,7 +130,7 @@ public class SearchPane implements ListSelectionListener, DocumentListener, Acti
          */
         private void filter() 
         {
-    		RowFilter<StaffMemberATM, Object> rf = null;
+    		RowFilter<PatientATM, Object> rf = null;
             List<RowFilter<Object,Object>> rfs = new ArrayList<RowFilter<Object,Object>>();
 
             try {

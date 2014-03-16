@@ -39,15 +39,11 @@ public class ViewAppointments extends GPSISPopup {
 		
 		// Table View
 		JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-		try {
 			Appointments = CalendarAppointmentDMO.getInstance().getAppointmentsByDoctorId(staffMember.getId());
 						
 			pM = new AppointmentATM(Appointments);
 			AppointmentTable = new JTable (pM);
 			leftPanel.add(new JScrollPane(AppointmentTable), new CC().span().grow());
-		} catch (EmptyResultSetException e) {
-			leftPanel.add(new JLabel("No Appointments"));
-		}
 			
 		patientView.add(leftPanel, new CC().span().grow());		
 		

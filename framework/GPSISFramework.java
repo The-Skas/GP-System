@@ -5,6 +5,7 @@ package framework;
  * @author Vijendra Patel
  */
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
@@ -18,11 +19,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JWindow;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
+import net.miginfocom.layout.AC;
+import net.miginfocom.layout.CC;
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
 import mapper.CalendarAppointmentDMO;
 import mapper.CareProgrammeDMO;
 import mapper.MedicineDMO;
@@ -57,6 +65,9 @@ public class GPSISFramework {
 	protected static Map<String, Font> fonts = new HashMap<String, Font>();
 	protected static List<Date> publicHolidays = new ArrayList<Date>();
 	
+	public static JTextArea debug;
+	public static JWindow splashWindow;
+	
 	public static GPSISFramework getInstance()
 	{
 		return instance;
@@ -71,15 +82,12 @@ public class GPSISFramework {
 	{
 		return publicHolidays;
 	}
-        public static boolean iscurrentUserAllowed()
-        {
-            return (!"Receptionist".equals(GPSISFramework.getCurrentUser().getRole())
-                 &&!GPSISFramework.getCurrentUser().isOfficeManager());
-        }
-        public static StaffMember getCurrentUser()
-        {
-                return currentUser;
-        }
+
+    public static StaffMember getCurrentUser()
+    {
+            return currentUser;
+    }
+    
 	/** initialise
 	 * Initialises the Framework
 	 * Initialisation List: 
@@ -93,25 +101,69 @@ public class GPSISFramework {
 	 */
 	public void initialise()
 	{
+		splashWindow = new JWindow();
+		splashWindow.setLayout(new MigLayout(new LC(), new AC().grow(), new AC().grow()));
+		splashWindow.setSize(600, 350);
+		splashWindow.setBackground(new Color(51, 51, 51));
+
+		//ImageIcon header = new ImageIcon(this.getClass().getResource("/image/splash_header.jpg"));
+		String header = "GP-SIS";
+		splashWindow.add(new JLabel(header), new CC().span().grow().wrap().dockNorth());
 		
-		System.out.println("GPSIS Main Framework");
-		System.out.println("Running Tests:");
-		System.out.print("\t- Connecting to Database");
-			if ((GPSISDataMapper.connectToDatabase()))
-				System.out.println("\t\tSuccess.");
-			else
-			{
-				System.out.println("\t\tFailed.");
-				System.exit(0);
+		debug = new JTextArea();
+		debug.setBackground(new Color(51, 51, 51));
+		debug.setForeground(new Color(240, 240, 240));
+		debug.setEditable(false);
+		splashWindow.add(debug, new CC().grow().span());
+		
+		splashWindow.setVisible(true);
+		
+		debug.setText(debug.getText() + "\nNote: Connecting to Database may take 3-4 tries in the ITL.");
+		debug.setText(debug.getText() + "\nRunning Tests:");
+		boolean dbConnected = false;
+		for (int i = 1; i <= 5; i++) {
+			debug.setText(debug.getText() + "\n\t- Connecting to Database");
+			
+			if (GPSISDataMapper.connectToDatabase()) {
+				debug.setText(debug.getText() + "\t\tSuccess.");
+				dbConnected = true;
+				break;
+			} else {
+				debug.setText(debug.getText() + "\t\tFailed. Attempts: " + i + "/5");
+				debug.setText(debug.getText() + "\n\tWaiting 3 Seconds before retry.");
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+		}
+		if (!dbConnected) {
+			debug.setText(debug.getText() + "\nUnable to Connect to Database... Exiting.");
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.exit(1);
+		}			
 		
-		System.out.println("\t- Loading Fonts");
+		debug.setText(debug.getText() + "\n\t- Loading Fonts");
 			this.loadFonts();
-		System.out.print("\t- Loading Public Holidays");
+		debug.setText(debug.getText() + "\n\t- Loading Public Holidays");
 			this.loadHolidays();
-		
+			
+		debug.setText(debug.getText() + "\nCompleted Tests...");
+		try {
+			Thread.sleep(1000);
+			debug.setText(debug.getText() + "\nLoading Login...");
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+
 		LoginModule m = new LoginModule();
-		m.showLogin();	
+		m.showLogin();
 	}
 	
 	/** TODO installGPSIS
@@ -124,29 +176,32 @@ public class GPSISFramework {
 		
 	}
 	
-	public void loadFonts()
+	/** loadFonts
+	 * loads external Fonts into the application, these are accessible via the fonts variable
+	 */
+	private void loadFonts()
 	{
 		try {
 			// Roboto
-			System.out.print("\t\t- Roboto");
+			debug.setText(debug.getText() + "\n\t\t- Roboto");
 			InputStream resource = this.getClass().getResourceAsStream("/font/Roboto-Regular.ttf");
 			Font robotoFont = Font.createFont(Font.TRUETYPE_FONT, resource);
 			fonts.put("Roboto", robotoFont);
-			System.out.println("\t\t\tSuccess.");
+			debug.setText(debug.getText() + "\t\t\tSuccess.");
 			
 			// OpenSans
-			System.out.print("\t\t- Open Sans");
+			debug.setText(debug.getText() + "\n\t\t- Open Sans");
 			resource = this.getClass().getResourceAsStream("/font/OpenSans-Regular.ttf");			
 			Font openSans = Font.createFont(Font.TRUETYPE_FONT, resource);
 			fonts.put("OpenSans", openSans);
-			System.out.println("\t\t\tSuccess.");
+			debug.setText(debug.getText() + "\t\t\tSuccess.");
 			
 			// Ubuntu
-			System.out.print("\t\t- Ubuntu");
+			debug.setText(debug.getText() + "\n\t\t- Ubuntu");
 			resource = this.getClass().getResourceAsStream("/font/Ubuntu-Regular.ttf");			
 			Font ubuntu = Font.createFont(Font.TRUETYPE_FONT, resource);
 			fonts.put("Ubuntu", ubuntu);
-			System.out.println("\t\t\tSuccess.");
+			debug.setText(debug.getText() + "\t\t\tSuccess.");
 			
 		} catch (FontFormatException e) {
 			e.printStackTrace();
@@ -155,7 +210,11 @@ public class GPSISFramework {
 		}
 	}
 	
-	public void loadHolidays()
+	/** loadHolidays
+	 * parses an External iCS file containing the Dates of British Public Holidays into an ArrayList of Dates, 
+	 * this is accessible via the publicHolidays variable
+	 */
+	private void loadHolidays()
 	{
 		try {
 			URL holidays = new URL("https://www.gov.uk/bank-holidays/england-and-wales.ics");
@@ -170,14 +229,19 @@ public class GPSISFramework {
 			    publicHolidays.add(fm.parse(component.getProperty("DTSTART").getValue()));  			    
 			}
 			
-			System.out.println("\t\tSuccess.");
+			debug.setText(debug.getText() + "\t\tSuccess.");
 		} catch (IOException e) {
-			System.out.println("\t\tFailed. www.gov.uk/bank-holidays/england-and-wales.ics does not exist.");
+			debug.setText(debug.getText() + "\t\tFailed. www.gov.uk/bank-holidays/england-and-wales.ics does not exist.");
 		} catch (ParserException | ParseException e) {
-			System.out.println("\t\tFailed. Format changed in iCalendar");
-		} 
+			debug.setText(debug.getText() + "\t\tFailed. Format changed in iCalendar");
+		}
 	}
 	
+	/** isHoliday
+	 * quickly checks if a given Date is a holiday
+	 * @param d
+	 * @return true if the given date is a holiday, false otherwise
+	 */
 	public boolean isHoliday(Date d)
 	{
 		SimpleDateFormat sDF = new SimpleDateFormat("yyyy-MM-dd");
@@ -185,8 +249,6 @@ public class GPSISFramework {
 		{
 			if (sDF.format(pubD).equals(sDF.format(d)))
 				return true;
-			else
-				return false;
 		}
 		return false;
 	}

@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import object.Referral;
+import object.ReferralObject;
 
 
 /**
@@ -19,9 +19,9 @@ public class SpecialistReferralATM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 	private String[] columnNames = {"ID", "Start Time", "End Time", "Type"};
-	private List<Referral> data;
+	private List<ReferralObject> data;
 	
-	public SpecialistReferralATM(List<Referral> d)
+	public SpecialistReferralATM(List<ReferralObject> d)
 	{
 		this.data = d;
 	}

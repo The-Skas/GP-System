@@ -14,7 +14,7 @@ import object.StaffMember;
 public abstract class GPSISModuleMain extends GPSISFramework {
 	
 	// variable placeholders
-	public static final String GPSISLOGO = "GP-SIS Logo"; //ImageIcon icon = new ImageIcon("", ""); USE LATER WHEN WE HAVE A LOGO	
+	public static final String GPSISLOGO = "GP-SIS"; //ImageIcon icon = new ImageIcon("", ""); USE LATER WHEN WE HAVE A LOGO	
 	
 	public static StaffMember getCurrentUser()
 	{

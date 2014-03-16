@@ -15,6 +15,7 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import object.ReferralObject;
 import object.StaffMember;
 import exception.EmptyResultSetException;
 import framework.GPSISPopup;
@@ -25,7 +26,7 @@ public class ViewSpecialistReferrals extends GPSISPopup {
 	private static StaffMember staffMember;
 	private static SpecialistReferralATM pM;
 	private static JTable SpecialistReferralTable;
-	private static List<Referral> SpecialistReferrals;
+	private static List<ReferralObject> SpecialistReferrals;
 
 	public ViewSpecialistReferrals(StaffMember sM) {
 		super(sM.getName() + " SpecialistReferrals");
@@ -37,15 +38,15 @@ public class ViewSpecialistReferrals extends GPSISPopup {
 		
 		// Table View
 		JPanel leftPanel = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-		try {
-			SpecialistReferrals = SpecialistReferralDMO.getInstance().getSpecialistReferralsByDoctorId(staffMember.getId());
-						
-			pM = new SpecialistReferralATM(SpecialistReferrals);
-			SpecialistReferralTable = new JTable (pM);
-			leftPanel.add(new JScrollPane(SpecialistReferralTable), new CC().span().grow());
-		} catch (EmptyResultSetException e) {
-			leftPanel.add(new JLabel("No Specialist Referrals"));
-		}
+//		try {
+//			SpecialistReferrals = SpecialistReferralDMO.getInstance().getSpecialistReferralsByDoctorId(staffMember.getId());
+//						
+//			pM = new SpecialistReferralATM(SpecialistReferrals);
+//			SpecialistReferralTable = new JTable (pM);
+//			leftPanel.add(new JScrollPane(SpecialistReferralTable), new CC().span().grow());
+//		} catch (EmptyResultSetException e) {
+//			leftPanel.add(new JLabel("No Specialist Referrals"));
+//		}
 			
 		patientView.add(leftPanel, new CC().span().grow());		
 		

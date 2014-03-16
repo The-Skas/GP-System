@@ -6,6 +6,7 @@ package module;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,10 +43,14 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 			String password = new String(sM.getEncryptedPassword());
 			if (password.trim().equals(inputPassword.trim()))
 			{
+				GPSISFramework.splashWindow.dispose();
 				gpsisLogin.dispose(); // close login window
 				currentUser = sM; // set the current user
 				
-				staffMemberDMO.register(currentUser);
+				if(!isHoliday(new Date()))
+					staffMemberDMO.register(currentUser);
+				else
+					System.out.println("Today's a Holiday!");
 				
 				MainInterface wM = new MainInterface(); // load the welcome module
 				wM.createAndShowGUI(); // show the welcome module

@@ -356,9 +356,12 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
 		this.pack();
 		this.setVisible(true);
                 
-                if(GPSISFramework.iscurrentUserAllowed() ) {
-                    addBtn.setEnabled(false);
-                }
+		if ((!"Receptionist".equals(currentUser.getRole())
+                &&!currentUser.isOfficeManager()))
+		{
+			addBtn.setEnabled(false);
+		}
+  
 	}
     public void disableAllCompononts()
     {

@@ -195,18 +195,6 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
 			 * 
 			 */
 			
-			/*for (Date registeredDate : registered)
-			{
-				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
-					System.out.println(fm.format(registeredDate.getTime()) + " ?= " + fm.format(date.getTime()));
-					
-					if (!fm.format(registeredDate.getTime()).equals(fm.format(date.getTime())))
-					{
-						absences.add(date);
-					}
-				}
-			}*/
 			
 			for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime())
 			{
@@ -514,6 +502,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember>
     	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
     	String today = fm.format(new Date().getTime());
     	// Check if user's already registered on Database
+    	    	
     	try {
     		SQLBuilder sql = new SQLBuilder("staff_member_id", "=", "" + sM.getId()).AND("date", "=", today);
 			ResultSet registerdCheckRes = GPSISDataMapper.getResultSet(sql, "Register");

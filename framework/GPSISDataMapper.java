@@ -55,13 +55,12 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
 		}
 		catch (ClassNotFoundException e)
 		{
-			System.err.println("ClassNotFoundException: " + e.getMessage());
-			//throw new ServletException("Class not found Error");
+			System.err.println("MYSQL's JDBC Not in Class Path");
 		}
 		catch
 		(SQLException e)
 		{
-			System.err.println("SQLException: " + e.getMessage());
+			return false;
 		}
 		return false;		
 	}

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package trunk.mapper;
+package mapper;
 
 import framework.GPSISDataMapper;
 import java.text.ParseException;
