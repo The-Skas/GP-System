@@ -49,6 +49,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +65,7 @@ import module.Broadcastable;
 import module.PatientModule;
 import module.SearchTable;
 import module.StaffMember.StaffMemberATM;
-import module.ViewMedicalCondition;
+import module.Patient.ViewMedicalCondition;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.sourceforge.jdatepicker.DateModel;
@@ -302,7 +303,7 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
                         this.viewFamilyBtn = new JButton("View Family");
                         this.viewFamilyBtn.setActionCommand("Family");
                         this.viewFamilyBtn.addActionListener(this);
-                        addPatientForm.add(viewFamilyBtn, new CC().wrap());
+                        addPatientForm.add(viewFamilyBtn,new CC().span().alignX("center"));
                         
 			// Medical Condition Label
 			JLabel roleLbl = new JLabel("Medical Conditions: ");
@@ -356,12 +357,10 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
 		this.pack();
 		this.setVisible(true);
                 
-		if ((!"Receptionist".equals(currentUser.getRole())
-                &&!currentUser.isOfficeManager()))
-		{
-			addBtn.setEnabled(false);
-		}
-  
+                if(PatientModule.iscurrentUserNotAllowed() ) {
+                    hTitle.setText("View Patient");
+                    addBtn.setEnabled(false);
+                }
 	}
     public void disableAllCompononts()
     {
@@ -465,6 +464,28 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
             }
                 
         }
+        return true;
+    }
+    public boolean checkDateValues(String [] msg)
+    {
+        Date dob =(Date) this.dobFld.getModel().getValue();
+        SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
+          
+        Date today = null;
+            try {
+                today = dt1.parse(dt1.format(new Date()));
+                 dob = dt1.parse(dt1.format(dob));
+            } catch (ParseException ex) {
+                Logger.getLogger(AddPatient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       
+
+        if(dob.after(today))
+        {
+            msg[0] = "Birthdate cant be after current date!";
+            return false;
+        }
+            
         return true;
     }
     private Patient buildPatientFromValues()
@@ -587,7 +608,8 @@ public class ViewPatient extends GPSISPopup implements ActionListener,Broadcasta
         if(e.getActionCommand().equals("Update"))
         {
             String[] msg = new String[1];
-            if(!this.AllTextFieldsNotEmpty(msg) || !this.checkPermanentPatient(msg))
+            if(!this.AllTextFieldsNotEmpty(msg) || !this.checkPermanentPatient(msg)
+             ||!this.checkDateValues(msg))
             {
                 JOptionPane.showMessageDialog(this, msg[0], "ERROR", JOptionPane.ERROR_MESSAGE);
             }

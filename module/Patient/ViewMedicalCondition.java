@@ -4,8 +4,8 @@
  * and open the template in the editor.
  */
 
-package module;
-
+package module.Patient;
+import module.Broadcastable;
 import framework.GPSISDataMapper;
 import framework.GPSISPopup;
 import java.awt.Color;

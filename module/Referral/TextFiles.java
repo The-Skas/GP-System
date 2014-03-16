@@ -18,7 +18,7 @@ public class TextFiles {
 		body += "You Have been booked into a Specialist meeting with ";
 		body += conName + ". ";
 		body += "\nYour Referral ID is " + refID + " (made by " + docName +").\n";
-		body += "\nYour Payment ID is " + payID + " and the amount paid was £" + amount + "p.";
+		body += "\nYour Payment ID is " + payID + " and the amount paid was ï¿½" + amount + "p.";
 		body += "\nThe address to attend is " + conAddress + ". \nPlease Ring " + conNum+ " ";
 		body += "to arrange a time.";
 		body += "\nRegards, " + docName;
@@ -41,7 +41,7 @@ public class TextFiles {
 		body += "\n";
 		body += "A referral for " + patName + "has been made to you.";
 		body += "\nThe Referral ID is " + refID + " (made by " + docName +").\n";
-		body += "\nPlease send the invoice as soon as possible, " + "the amount paid was £" + amount + "p.";
+		body += "\nPlease send the invoice as soon as possible, " + "the amount paid was " + amount + "p.";
 		body += "The Patient has been informed to contact you as soon as possible to arrange a time for this meet.";
 		body += "\nRegards, " + docName;
 		System.out.print(body);

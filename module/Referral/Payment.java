@@ -110,7 +110,7 @@ public class Payment extends JFrame {
 		main.add(pan3);
 		
 		pan4 = new JPanel();
-		lab2 = new JLabel("Total: £");
+		lab2 = new JLabel("Total: ");
 		pan4.add(lab2); 
 		space4 = new JLabel("                                                                                                              ");
 		pan4.add(space4);

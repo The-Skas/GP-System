@@ -89,7 +89,7 @@ public class Invoice extends JFrame {
 		main.add(pan2);
 		
 		pan3 = new JPanel();
-		lab2 = new JLabel("Amount: £");
+		lab2 = new JLabel("Amount: ");
 		pan3.add(lab2);
 		space3 = new JLabel("                                                                                                       ");
 		pan3.add(space3);

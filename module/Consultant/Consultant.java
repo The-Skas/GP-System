@@ -151,7 +151,7 @@ public class Consultant extends JFrame{
 		pan1.add(pan8);
 		lab8 = new JLabel("Price: ");
 		pan8.add(lab8);
-		space7 = new JLabel("                                                                                                             £");
+		space7 = new JLabel("                                                                                                             ");
 		pan8.add(space7);
 		jb8 = new JTextField(15);
 		pan8.add(jb8);

@@ -38,6 +38,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,6 @@ import module.Broadcastable;
 import module.PatientModule;
 import module.SearchTable;
 import module.StaffMember.StaffMemberATM;
-import module.ViewMedicalCondition;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import object.StaffMember;
@@ -107,8 +107,8 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
 		
 		JPanel h = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));	
 			JLabel hTitle = new JLabel("Add Patient");
-//				GPSISFramework.getInstance();
-//				hTitle.setFont(GPSISFramework.getFonts().get("Roboto").deriveFont(24f));
+				GPSISFramework.getInstance();
+				hTitle.setFont(GPSISFramework.getFonts().get("Roboto").deriveFont(24f));
 			h.add(hTitle, new CC().wrap());
 			
 		this.add(h, new CC().wrap());
@@ -283,7 +283,97 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         return true;
         
     }
+    public boolean AllTextFieldsNotEmpty(String[] msg)
+    {
+        
+        Component[] components = this.addPatientForm.getComponents();
+        for(Component comp : components)
+        {
+            if(comp instanceof JTextField && !(comp.equals(this.nhsFld)))
+            {
+                //Do some check
+                JTextField tempTxtFld =(JTextField) comp;
+                //Fix it up
+                tempTxtFld.setText(tempTxtFld.getText().trim());
+               // System.out.println(tempTxtFld.getText());
+                if(tempTxtFld.getText().isEmpty())
+                {
+                    msg[0] = "Can't have empty fields!";
+                    return false;
+                }
+                if(PatientModule.validator.matcher(tempTxtFld.getText()).find())
+                {
+                    msg[0] = "Illegal characters!";
+                    return false;
+                }
+                if(tempTxtFld.getText().length() > 20 
+                && !comp.equals(this.postCodeFld)
+                && !comp.equals(this.addressFld))
+                {
+                    msg[0] = "Values too large!";
+                    return false;
+                }
+                //Check parsing, if error. Return false;
+            }
+        }
+        if(this.addressFld.getText().length() > 50)
+        {
+            msg[0] = "Address Field values too large.";
+            return false;
+        }
+        if(this.postCodeFld.getText().length() > 10)
+        {
+            msg[0] = "PostCode values too large.";
+            return false;
+        }
+                
+        System.out.println(this.dobFld.getModel().getValue());
+
+        return true;
+        
+    }
+    public boolean checkPermanentPatient(String [] msg)
+    {
+        
+        if(this.isPermanentPatientFld.isSelected())
+        {
+            if(this.nhsFld.getText().length() != 6)
+            {
+                msg[0] = "NHS Number length incorrect!";
+                return false;
+            }
+            
+            if(this.doctor == null)
+            {
+                msg[0] = "No doctor selected!";
+                return false;
+            }
+        }
+        return true;
+    }
     
+    public boolean checkDateValues(String [] msg)
+    {
+        Date dob =(Date) this.dobFld.getModel().getValue();
+        SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
+          
+        Date today = null;
+            try {
+                today = dt1.parse(dt1.format(new Date()));
+                 dob = dt1.parse(dt1.format(dob));
+            } catch (ParseException ex) {
+                Logger.getLogger(AddPatient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       
+
+        if(dob.after(today))
+        {
+            msg[0] = "Birthdate cant be after current date!";
+            return false;
+        }
+            
+        return true;
+    }
     private Patient buildPatientFromValues()
     {
         Date dob =(Date) this.dobFld.getModel().getValue();
@@ -383,8 +473,12 @@ public class AddPatient extends GPSISPopup implements ActionListener,Broadcastab
         this.checkAllComponents();
         if(e.getActionCommand().equals("Add!"))
         {
-           
-            if(!this.checkAllComponents())
+            //Due to Strings being immutable, i have used
+            //an array to store the value of the string. This is to keep track/
+            //over write the error message by a refrenced string.
+            String[] msg = new String[1];
+            if(!this.AllTextFieldsNotEmpty(msg) || !this.checkPermanentPatient(msg)
+              || !this.checkDateValues(msg))
             {
                 JOptionPane.showMessageDialog(this, "Invalid Values!", "ERROR", JOptionPane.ERROR_MESSAGE);
             }

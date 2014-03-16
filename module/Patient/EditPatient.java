@@ -63,7 +63,6 @@ import module.Broadcastable;
 import module.PatientModule;
 import module.SearchTable;
 import module.StaffMember.StaffMemberATM;
-import module.ViewMedicalCondition;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.sourceforge.jdatepicker.DateModel;
