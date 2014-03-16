@@ -15,10 +15,10 @@ public class Medicine extends GPSISObject{
     private int id;
     private String name;
     private String description;
-    private int relevant_amount;
+    private String relevant_amount;
     
     
-    public Medicine(int id, String name, String description, int relevant_amount)
+    public Medicine(int id, String name, String description, String relevant_amount)
     {
         this.id = id;
         this.name = name;
@@ -26,7 +26,7 @@ public class Medicine extends GPSISObject{
         this.relevant_amount = relevant_amount;
     }    
     
-    public Medicine(String name, String description, int relevant_amount)
+    public Medicine(String name, String description, String relevant_amount)
     {
         this.name = name;
         this.description = description;
@@ -63,14 +63,20 @@ public class Medicine extends GPSISObject{
         return description;
     }
     
-    public void setRelevant_amount(int relevant_amount)
+    public void setRelevant_amount(String relevant_amount)
     {
         this.relevant_amount = relevant_amount;
     }
     
-    public int getRelevant_amount()
+    public String getRelevant_amount()
     {
         return relevant_amount;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return this.getName();
     }
     
 }

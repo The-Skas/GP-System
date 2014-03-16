@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import object.Medicine;
 
 
@@ -36,9 +35,39 @@ public class MedicineDMO extends GPSISDataMapper<Medicine>{
     {
         if(instance == null)
         {
-            instance = new MedicineDMO("medicine");
+            instance = new MedicineDMO("Medicine");
         }
         return instance;  
+    }
+    
+    
+    @Override
+    public List<Medicine> getAll() {
+        return getAllByProperties(new SQLBuilder());
+    }
+  
+    @Override
+    public Medicine getById(int id) {
+          try {
+            SQLBuilder query = new SQLBuilder("id","=",""+id);
+            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
+            
+            
+            if (res.next()) { // if found, create the object
+               return new Medicine(res.getInt("id"),
+                                 res.getString("name"),
+                                 res.getString("description"),                                  
+                                res.getString("relevant_amount"));
+                
+                
+            } else {
+                System.err.println("EMPTY SET");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;          
     }
 
     @Override
@@ -54,7 +83,7 @@ public class MedicineDMO extends GPSISDataMapper<Medicine>{
                return new Medicine(res.getInt("id"),
                                  res.getString("name"),
                                  res.getString("description"), 
-                                res.getInt("relevant_amount"));
+                                res.getString("relevant_amount"));
                 
                 
             } else {
@@ -82,7 +111,7 @@ public class MedicineDMO extends GPSISDataMapper<Medicine>{
                medicines.add(new Medicine(res.getInt("id"),
                                  res.getString("name"),
                                  res.getString("description"), 
-                                res.getInt("relevant_amount")));
+                                res.getString("relevant_amount")));
                 
                 
             } 
@@ -91,6 +120,18 @@ public class MedicineDMO extends GPSISDataMapper<Medicine>{
             e.printStackTrace();
         }
         return medicines;
+    }
+
+    @Override
+    public void removeById(int id) {
+        try 
+        {
+            removeByProperty(new SQLBuilder("id","=",""+id));
+        } 
+        catch (SQLException e) 
+        {
+        	System.err.println(e.getMessage());
+        }
     }
 
     @Override
@@ -122,5 +163,7 @@ public class MedicineDMO extends GPSISDataMapper<Medicine>{
             System.err.println(e.getMessage());
         }
     }
-          
+
+  
+    
 }
