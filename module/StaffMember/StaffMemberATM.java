@@ -101,5 +101,14 @@ public class StaffMemberATM extends AbstractTableModel {
 		this.data.remove(o);
 		this.fireTableChanged(null);
 	}
+        
+        /* getData
+        * return the StaffMembers
+        */
+        
+        public List<StaffMember> getData()
+        {
+            return this.data;
+        }
 
 }

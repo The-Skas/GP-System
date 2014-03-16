@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -55,6 +56,7 @@ import module.Patient.EditPatient;
 
 public class PatientModule extends GPSISModuleMain implements ActionListener, ListSelectionListener                                                  
 {
+    public static Pattern validator = Pattern.compile("[@$%^&*()<>|\\\\//+]"); // etc: write all characters you need.
     public static JTable patientTable;
     public static TableRowSorter<PatientATM> sorter;
     //Used for filterng.
