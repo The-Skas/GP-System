@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JWindow;
@@ -105,9 +107,8 @@ public class GPSISFramework {
 		splashWindow.setLayout(new MigLayout(new LC(), new AC().grow(), new AC().grow()));
 		splashWindow.setSize(600, 350);
 		splashWindow.setBackground(new Color(51, 51, 51));
-
-		//ImageIcon header = new ImageIcon(this.getClass().getResource("/image/splash_header.jpg"));
-		String header = "GP-SIS";
+		splashWindow.setLocationRelativeTo(null);
+		ImageIcon header = new ImageIcon(this.getClass().getResource("/image/splash_header.jpg"));
 		splashWindow.add(new JLabel(header), new CC().span().grow().wrap().dockNorth());
 		
 		debug = new JTextArea();
