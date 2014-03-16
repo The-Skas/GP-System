@@ -106,7 +106,6 @@ public class GPSISFramework {
 		splashWindow = new JWindow();
 		splashWindow.setLayout(new MigLayout(new LC(), new AC().grow(), new AC().grow()));
 		splashWindow.setSize(600, 350);
-		splashWindow.setBackground(new Color(51, 51, 51));
 		splashWindow.setLocationRelativeTo(null);
 		ImageIcon header = new ImageIcon(this.getClass().getResource("/image/splash_header.jpg"));
 		splashWindow.add(new JLabel(header), new CC().span().grow().wrap().dockNorth());
@@ -115,8 +114,10 @@ public class GPSISFramework {
 		debug.setBackground(new Color(51, 51, 51));
 		debug.setForeground(new Color(240, 240, 240));
 		debug.setEditable(false);
-		splashWindow.add(debug, new CC().grow().span());
-		
+
+		splashWindow.getContentPane().setBackground(new Color(51, 51, 51));
+		splashWindow.add(debug, new CC().pad("5px").grow().span());
+
 		splashWindow.setVisible(true);
 		
 		debug.setText(debug.getText() + "\nNote: Connecting to Database may take 3-4 tries in the ITL.");
