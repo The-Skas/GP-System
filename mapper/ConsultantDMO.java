@@ -108,7 +108,11 @@ public class ConsultantDMO extends GPSISDataMapper<ConsultantObject>{
     								res.getString("address"),
     								res.getString("email"),
     								res.getString("contact_num"),
-    								res.getDouble("price"));
+    								res.getDouble("price"),
+    								res.getString("account_name"),
+    								res.getInt("account_number"),
+    								res.getInt("sort_code"),
+    								res.getInt("is_active"));
     			
         }
         else 
@@ -155,7 +159,11 @@ public class ConsultantDMO extends GPSISDataMapper<ConsultantObject>{
                 .SET("address", "=",""+o.getAddress())
                 .SET("email", "=", ""+o.getEmail())
                 .SET("contact_num", "=", ""+o.getNum())
-                .SET("price", "=", ""+o.getPrice());
+                .SET("price", "=", ""+o.getPrice())
+       			.SET("account_name", "=", ""+o.getAccName())
+       			.SET("account_number", "=", ""+o.getAccNum())
+       			.SET("sort_code", "=", ""+o.getSortCode())
+       			.SET("is_active", "=", ""+o.isActive());
         try 
         {
         	//ADD OOOOOO

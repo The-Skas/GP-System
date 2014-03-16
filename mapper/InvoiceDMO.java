@@ -93,7 +93,7 @@ public class InvoiceDMO extends GPSISDataMapper<InvoiceObject>
     								res.getInt("consultant_id"),
     								res.getString("date_recieved"),
     								res.getInt("paid"));
-    			
+    								
         }
         else 
         {
@@ -110,9 +110,9 @@ public class InvoiceDMO extends GPSISDataMapper<InvoiceObject>
        SQLBuilder sql = new SQLBuilder("id","=",""+o.getId())
                 .SET("referral_id","=",""+o.getRefID())
                 .SET("amount", "=", ""+o.getAmount())
-                .SET("consultant_id","=",""+o.getConID())
                 .SET("date_recieved", "=",""+o.getDate())
-                .SET("paid", "=", ""+o.getIsPaid());
+                .SET("paid", "=", ""+o.getIsPaid())
+                .SET("consultant_id","=",""+o.getConID());
         try 
         {
             putHelper(sql, this.tableName, o);

@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 public class SpecialityTypeDMO extends GPSISDataMapper<SpecialityTypeObject>{   
 	// stores the only instance of this DataMapper
 	private static SpecialityTypeDMO instance;
+	private static int type;
 	
 	//SpecialityTypeDMO Constructor 
     private SpecialityTypeDMO(String tableName){
@@ -29,11 +30,12 @@ public class SpecialityTypeDMO extends GPSISDataMapper<SpecialityTypeObject>{
     
     //getInstance
     public static SpecialityTypeDMO getInstance(){
-        if(instance == null)
+        if(instance == null){
             instance = new SpecialityTypeDMO("ConsultantAilment");
+        }
+        
         return instance;
     }
-        
     //Returns the first SpecialityType object matching the criteria
     //getByProperties
     public SpecialityTypeObject getByProperties(SQLBuilder query){
@@ -82,12 +84,13 @@ public class SpecialityTypeDMO extends GPSISDataMapper<SpecialityTypeObject>{
     {
     	if (res != null) // if found, create a the SpecialityType object 
         {
-  
-    				return new SpecialityTypeObject(
-    								res.getInt("id"),
-    								res.getString("name"),
-    								res.getInt("consultant_id"));
     			
+    					return new SpecialityTypeObject(
+    							res.getInt("id"),
+    							res.getString("name"),
+    					res.getInt("consultant_id"));
+    			
+    		
         }
         else 
         {
@@ -100,17 +103,19 @@ public class SpecialityTypeDMO extends GPSISDataMapper<SpecialityTypeObject>{
     //put
     public void put(SpecialityTypeObject o){
     	
+   
        SQLBuilder sql = new SQLBuilder("id","=",""+o.getId())
                 .SET("name","=",""+o.getName())
-                .SET("consultant_id", "=", ""+o.getConID());
+                .SET("consultant_id","=",""+o.getConID());
         try 
+        
         {
             putHelper(sql, this.tableName, o);
         } 
         catch (SQLException e) 
         {
         	System.err.println(e.getMessage());
-        }
+    	}
     }
 
 }

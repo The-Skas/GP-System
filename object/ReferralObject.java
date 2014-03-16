@@ -8,18 +8,17 @@ import framework.GPSISObject;
 public class ReferralObject extends GPSISObject{
 	//The fields in Referrals Table
 	private Date dateMade;
-	private String docName;
-	private int conID,patID,payID,invID;
+	private int conID,patID,payID,invID,docid;
 	private int invPaid;
 	
 	public ReferralObject(){
 		
 	}
-	public ReferralObject(int id, Date dateMade, String docName, int conID, int patID, int invPaid){
+	public ReferralObject(int id, Date dateMade, int docid, int conID, int patID, int invPaid){
 		this.id = id;
 		//Setting the objects variables
 		this.dateMade = dateMade;
-		this.docName = docName;
+		this.docid = docid;
 		this.conID=conID;
 		this.patID=patID;
 		this.payID=payID;
@@ -27,10 +26,10 @@ public class ReferralObject extends GPSISObject{
 		this.invPaid=invPaid;
 	}
 	
-	public ReferralObject(Date dateMade, String docName, int conID, int patID, int invPaid){
+	public ReferralObject(Date dateMade, int docid, int conID, int patID, int invPaid){
 		//Setting the objects variables
 		this.dateMade = dateMade;
-		this.docName = docName;
+		this.docid = docid;
 		this.conID=conID;
 		this.patID=patID;
 		this.payID=payID;
@@ -41,8 +40,8 @@ public class ReferralObject extends GPSISObject{
 	public Date getDate(){
 		return dateMade;
 	}
-	public String getDocName(){
-		return docName;
+	public int getDocId(){
+		return docid;
 	}
 	public int getConID(){
 		return conID;

@@ -1,4 +1,4 @@
-/** TODO AddStaffMember
+/** 
  * Opens a New Window displaying a Form to Add a New Staff Member
  * @author VJ
  */

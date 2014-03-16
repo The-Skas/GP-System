@@ -127,6 +127,7 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 		careProgrammeManagementBtn.addActionListener(this);
 		careProgrammeManagementBtn.setActionCommand("Care Programme Management");
 		
+		
 		// set the CardLayout
 		GPSISModuleMain mM = new WelcomeModule();		
 		view.add(mM.getModuleView(), "Welcome");

@@ -80,12 +80,11 @@ public class ReferralDMO extends GPSISDataMapper<ReferralObject>{
     {
     	if (res != null) // if found, create a the Referral object 
         {
-    		System.out.println(res.getInt("id"));
   
     				return	new ReferralObject(
     								res.getInt("id"),
     								res.getDate("date_made"),
-    								res.getString("doctors_name"),
+    								res.getInt("doctors_id"),
     								res.getInt("consultant_id"),
     								res.getInt("patient_id"),
     								res.getInt("invoice_paid"));
@@ -105,11 +104,11 @@ public class ReferralDMO extends GPSISDataMapper<ReferralObject>{
   
        SQLBuilder sql = new SQLBuilder("id","=",""+o.getId())
                 .SET("date_made","=",""+s)
-                .SET("doctors_name", "=", ""+o.getDocName())
-                .SET("consultant_id","=",""+o.getConID())
-                .SET("patient_id", "=",""+o.getPatID())
+                .SET("doctors_id", "=", ""+o.getDocId())
                 //So they have the same id as the referral itself
-       			.SET("invoice_paid", "=", ""+o.isInvPaid());
+       			.SET("invoice_paid", "=", ""+o.isInvPaid())
+       			.SET("consultant_id","=",""+o.getConID())
+                .SET("patient_id", "=",""+o.getPatID());
         try 
         {
             putHelper(sql, this.tableName, o);
