@@ -25,15 +25,15 @@ import object.MedicalCondition;
  *
  * @author skas
  */
-enum AgeGroup
-{
-    UnderFive,
-    Youth,
-    Adult,
-    Elderly
-}
+
 public class Patient extends GPSISObject{
-    
+    public enum AgeGroup
+    {
+        UnderFive,
+        Youth,
+        Adult,
+        Elderly
+    }
     private static int YOUTH_YEARS = 5;
     private static int ADULT_YEARS = 18;
     private static int ELDER_YEARS = 65;
