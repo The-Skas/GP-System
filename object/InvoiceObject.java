@@ -23,7 +23,7 @@ public class InvoiceObject  extends GPSISObject{
 			//Sets Variables upon construction
 			this.id = id;
 			this.refid = refid;
-			this.amount = amount;
+			this.amount = calTax(amount);
 			this.conid = conid;
 			this.ispaid = ispaid;
 			//Turn string to date
@@ -33,11 +33,15 @@ public class InvoiceObject  extends GPSISObject{
 			//Sets Variables upon construction
 			this.id = getId();
 			this.refid = refid;
-			this.amount = amount;
+			this.amount = calTax(amount);
 			this.conid = conid;
 			this.ispaid = ispaid;
 			//Turn string to date
 			date2 = java.sql.Date.valueOf(date);
+		}
+		public Double calTax(Double total){
+			Double taxedTotal = ((total/100)*20) + total ;
+			return taxedTotal;
 		}
 		//Get methods for variables
 		public int getRefID(){

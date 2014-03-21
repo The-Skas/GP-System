@@ -16,9 +16,11 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import mapper.ConsultantDMO;
+import mapper.PatientDMO;
 import mapper.PaymentDMO;
 import mapper.ReferralDMO;
 import mapper.SpecialityTypeDMO;
+import mapper.StaffMemberDMO;
 import module.Consultant.Consultant.Event;
 import object.*;
 import exception.EmptyResultSetException;
@@ -39,6 +41,7 @@ public class MakeReferral extends JFrame {
 	private JMenu men;
 	private JMenuItem itm;
 	private JMenuBar mb;
+	private boolean staffExists = false,patientExists = false;
 	
 	//GUI for Make Referral form
 	public MakeReferral(){
@@ -65,26 +68,26 @@ public class MakeReferral extends JFrame {
 				
 		//Connecting to database in GPSISMapper class
 		
-		SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
-		GPSISDataMapper.connectToDatabase();
+		// 
 		try {
-	
+			SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
 			List<SpecialityTypeObject> set1 = specialityTypeDMO.getAll();
 			ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
-		    
 			List<ConsultantObject> set2 = consultantDMO.getAll();
 			
+			
 			for(SpecialityTypeObject x:set1){
-				int temp = x.getConID();
-				
+				int temp =x.getConID();
+		
 				for(ConsultantObject y:set2){
-					
-					if(y.isActive()==0){
-						choicesA.add(x.getName());
+					if((y.isActive()==0)){
+						if(temp == y.getId()){
+							choicesA.add(x.getName());
+						}
 					}
 				}
 			}
-			
+				
 		} catch (EmptyResultSetException e1) {
 			e1.printStackTrace();
 		}
@@ -163,24 +166,24 @@ public class MakeReferral extends JFrame {
 			if(e.getSource()== but1){
 				//Making sure the text fields contain data
 				if((text1.getText().length() >=1)&&(text2.getText().length() >=1)){
-				//Connects to database
+					
 				ReferralDMO referralDMO = ReferralDMO.getInstance();
-				GPSISDataMapper.connectToDatabase();
 				//Creates Date
 				Calendar cal = Calendar.getInstance();
 				java.util.Date dt = cal.getTime();
 				//Turns strings to integers
+				
 					try
 					{
-						//Catch exception (if text-field doesn't equal a real number (no characters))
-						try{
+					
 						//ConID Search finding a consultant suiting the selected drop-down item
 						String select = (String) combo1.getSelectedItem();
+			
 						//Connect to database
 						SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
-						GPSISDataMapper.connectToDatabase();
 						SpecialityTypeObject r2 = new SpecialityTypeObject();
 						List<SpecialityTypeObject> set1  = specialityTypeDMO.getAll();
+						
 						//Enhanced for loop iterating through the set returned from the database
 						for(SpecialityTypeObject x: set1){
 							if(x.getName().equals(select)){
@@ -188,37 +191,69 @@ public class MakeReferral extends JFrame {
 								con = x.getConID();
 							}
 						}
-						}catch(Exception eee){
-							//Pop-up message telling user there is no consultant available for their problems
-							JOptionPane.showMessageDialog(null,  "No Consultant matching Speciaity");
-						}
+						
+						//Confirming staff-member exists
+						StaffMemberDMO staffmemberDMO = StaffMemberDMO.getInstance();
+						List<StaffMember> set2;
+							set2 = staffmemberDMO.getAll();
+							for(StaffMember x: set2){
+								
+								if(x.getId()==Integer.parseInt(text1.getText())){
+									staffExists = true;
+								}
+							}
+							if(staffExists == false){
+								JOptionPane.showMessageDialog(null, "Staff Memeber doesn't exist!");
+							}
+						
+						//Confirming patient exists
+						PatientDMO patientDMO = PatientDMO.getInstance();
+						List<Patient> set3;
+		
+							set3 = patientDMO.getAll();
+							for(Patient x: set3){
+								if(x.getId()==Integer.parseInt(text2.getText())){
+									patientExists = true;
+								}
+							}
+							
+							if(patientExists == false){
+								JOptionPane.showMessageDialog(null, "Patient doesn't exist!");
+							}
+							
+							System.out.print("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"+ patientExists);
+							System.out.print("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"+ staffExists);
+				
 						//make invoice so can get invoice id = overwrite it in invoice passing through inv id
 						//and payment
 						//Have to convert boolean to tiny int (1 and zero)
-				    	ReferralObject r = new ReferralObject(dt, Integer.parseInt(text1.getText()), con, Integer.parseInt(text2.getText()),1);//last 2 have to be different
-				    	referralDMO.put(r);
-				    	//Prints out id number to use for adding Speciality's
-				    	JOptionPane.showMessageDialog(null, "Your Referral ID is: "+ r.getId());
-						//Create payment GUI Form
-				    	
-						
-						Payment r2 = new Payment(r.getId(),con);
-				    	Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-						int x = (int) ((dimension.getWidth() - r2.getWidth()) / 3);
-						int y = (int) ((dimension.getHeight() - r2.getHeight()) / 4);
-						r2.setLocation(x+60, y+50);
-						r2.setVisible(true);
-						r2.setTitle("Payment");
-						r2.setSize(600, 360);
-						
-						//Turn string to an integer willing that it is correct data (otherwise caught in catch)
-						pat = Integer.parseInt(text2.getText());
+						if((patientExists==true)&&(staffExists==true)){
+					    	ReferralObject r = new ReferralObject(dt, Integer.parseInt(text1.getText()), con, Integer.parseInt(text2.getText()),1);//last 2 have to be different
+					    	referralDMO.put(r);
+					    	//Prints out id number to use for adding Speciality's
+					    	JOptionPane.showMessageDialog(null, "Your Referral ID is: "+ r.getId());
+							//Create payment GUI Form
+					    	
+							Payment r3 = new Payment(r.getId(),con);
+					    	Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+							int x = (int) ((dimension.getWidth() - r3.getWidth()) / 3);
+							int y = (int) ((dimension.getHeight() - r3.getHeight()) / 4);
+							r3.setLocation(x+60, y+50);
+							r3.setVisible(true);
+							r3.setTitle("Payment");
+							r3.setSize(600, 360);
+							
+							//Turn string to an integer willing that it is correct data (otherwise caught in catch)
+							pat = Integer.parseInt(text2.getText());
+							setVisible(false);
+						}
 					}
-					catch (NumberFormatException nfe)
+					catch (NumberFormatException | EmptyResultSetException nfe)
 					{
 						JOptionPane.showMessageDialog(null,  "BAD DATA");
 					}		
-			}
+					
+				}
 			
 				//Catches if data entered into text fields is null if so the corresponding pop-up is shown
 				else if(text1.getText().length() <1){
@@ -237,7 +272,7 @@ public class MakeReferral extends JFrame {
 		Calendar cal = Calendar.getInstance();
 		java.util.Date dt = cal.getTime();
 		ReferralDMO referralDMO = ReferralDMO.getInstance();
-		GPSISDataMapper.connectToDatabase();
+		// 
 		ReferralObject r = new ReferralObject(dt, 6, 8, Integer.parseInt("566"),1);
     	referralDMO.put(r);
     	System.out.print(r.getId());

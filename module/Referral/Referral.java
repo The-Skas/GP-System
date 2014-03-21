@@ -29,8 +29,10 @@ import object.SpecialityTypeObject;
 import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 
+//Main window for referrals option
 public class Referral extends JFrame {
 	
+	//Creating variables
 	private JComboBox combo1;
 	//Choices for dropdown box
 	private String[] choices = {"Referral ID", "Invoice ID"};
@@ -44,7 +46,7 @@ public class Referral extends JFrame {
 	private JList list;
 	
 		public Referral() throws EmptyResultSetException{
-					
+			GPSISDataMapper.connectToDatabase();
 			//Border line colour
 			Border border = BorderFactory.createLineBorder(Color.BLACK);
 			//ActionListener class
@@ -68,22 +70,9 @@ public class Referral extends JFrame {
 			pan1.add(space2);
 			Main.add(pan1);
 
-			/*
-			//Combo box (and populating it)
-			 */
 			space1 = new JLabel("                                                                                                                                                             ");
 			pan2 = new JPanel();
 			pan2.add(space1);
-			/*
-			combo1 = new JComboBox(choices);
-			//Hovering text
-			combo1.setToolTipText("Select Type");
-			pan2.add(combo1);
-			space2 = new JLabel("                                                                              ");
-			pan2.add(space2);
-			combo1.addActionListener(e);
-			pan2.setBorder(BorderFactory.createEtchedBorder());
-				*/
 			Main.add(pan2);
 			
 			//Label, Text-box and Button to find referral
@@ -132,13 +121,9 @@ public class Referral extends JFrame {
 			pan6.add(space8);
 			space9 = new JLabel("                                                                                             ");
 			pan6.add(space9);
-			space10 = new JLabel("                                                                                             ");
+			space10 = new JLabel("                                                                                       ");
 			pan6.add(space10);
 			Main.add(pan6);
-			
-			//but4 = new JButton("Add Invoice");
-			//add(but4);
-			//but4.addActionListener(e);
 			
 			//Outstanding invoice button
 			pan7 = new JPanel();
@@ -183,7 +168,7 @@ public class Referral extends JFrame {
 						try{
 							//Connecting to database
 							ReferralDMO referralDMO = ReferralDMO.getInstance();
-							GPSISDataMapper.connectToDatabase();
+							// 
 							//Make a referralObject called r2 (using parseInt to turn text to an int)
 							ReferralObject r2 = referralDMO.getById(Integer.parseInt(searchValue));
 							//The GUI DetailReferral is constructed
@@ -237,7 +222,7 @@ public class Referral extends JFrame {
 					try{
 						iden = Integer.parseInt(find3.getText());
 						InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
-						GPSISDataMapper.connectToDatabase();
+						// 
 						InvoiceObject obj = invoiceDMO.getById(iden);
 						Invoice i = new Invoice(find3.getText(),obj.getRefID(),obj.getAmount(),obj.getConID(),obj.getIsPaid());
 						i.setSize(600, 350);

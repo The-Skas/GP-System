@@ -99,6 +99,7 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
+		
 		switch (ae.getActionCommand())
 		{
 			case "Add Staff Member":

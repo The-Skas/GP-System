@@ -85,5 +85,39 @@ public class ConsultantObject extends GPSISObject{
 			return isActive;
 		}
 		
-		
+		//Setters
+		public void setFName(String fname){
+			this.fname = fname;
+		}
+		public void setLName(String lname){
+			this.lname = lname;
+		}
+		public void setTitle(String title){
+			this.title = title;
+		}
+		public void setAddress(String add){
+			this.address = add;
+		}
+		public void setEmail(String email){
+			this.email = email;
+		}
+		//String as first number is 0 (it will be lost if data type is an int)
+		public void setNum(String number){
+			this.contactnum = number;
+		}
+		public void setPrice(double price){
+			this.price=price;
+		}
+		public void setAccName(String accName){
+			this.accName = accName;
+		}
+		public void setAccNum(int accNum){
+			this.accNum = accNum;
+		}
+		public void setSortCode(int sortCode){
+			this.sortCode = sortCode;
+		}
+		public void setisActive(int isActive){
+			this.isActive = isActive;
+		}
 }

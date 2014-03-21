@@ -54,7 +54,7 @@ public class Invoice extends JFrame {
 		Event e = new Event();
 		this.id = Integer.parseInt(id);
 		InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
-		GPSISDataMapper.connectToDatabase();
+		
 		try {
 			InvoiceObject inv = invoiceDMO.getById(this.id);
 		} catch (EmptyResultSetException e1) {
@@ -205,10 +205,10 @@ public class Invoice extends JFrame {
 				try{
 				lab6.setText("PAID");
 				InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
-				GPSISDataMapper.connectToDatabase();
 				InvoiceObject inv = new InvoiceObject(Integer.parseInt(a7.getText()), Double.parseDouble(a2.getText()),Integer.parseInt(a3.getText()),receivedDate, 1);
 				inv.setId(id);
 				invoiceDMO.put(inv);
+				//text file buildlinvoicw file
 				setVisible(false);
 				}catch(Exception ee){
 					JOptionPane.showMessageDialog(null, "Incorrect Date format");

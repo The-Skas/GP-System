@@ -3,7 +3,9 @@
  */
 package module;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,6 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -33,7 +36,7 @@ import object.Patient;
 public class SpecialistReferralsModule extends GPSISModuleMain {
 	
 	private JButton addChanCon, MakeRef;
-	private JLabel space;
+	private JLabel space,space2,space3,space4,space5;
 	private Patient p = null;
 	private JButton search;
 	
@@ -43,31 +46,36 @@ public class SpecialistReferralsModule extends GPSISModuleMain {
 	@Override
 	public JPanel getModuleView() {
 		Event e = new Event();
-		JPanel specialistReferralsModuleView = new JPanel(new GridBagLayout());
+		JPanel specialistReferralsModuleView = new JPanel(new FlowLayout());
 		
 		JLabel greeting = new JLabel("This is module/SpecialistReferralsModule.java!");
 			greeting.setFont(new Font("Serif", Font.BOLD, 24));
 			GridBagConstraints gbC = new GridBagConstraints();
+			GridBagConstraints gbC2 = new GridBagConstraints();
 			gbC.anchor = GridBagConstraints.CENTER;
+			gbC2.anchor = GridBagConstraints.SOUTHWEST;
 			specialistReferralsModuleView.setBorder(BorderFactory.createTitledBorder("Referrals"));
 			
 			addChanCon = new JButton("Add/Change Consultant");
 			addChanCon.addActionListener(e);
-			space = new JLabel("            ");
+			space = new JLabel("                                                                                                                                                                                      ");
 			MakeRef = new JButton("Make/View Referrals");
 			MakeRef.addActionListener(e);
 			specialistReferralsModuleView.add(addChanCon,gbC);
-			specialistReferralsModuleView.add(space,gbC);
-			specialistReferralsModuleView.add(MakeRef,gbC);
+			specialistReferralsModuleView.add(MakeRef,gbC2);
+			specialistReferralsModuleView.setBorder(BorderFactory.createBevelBorder(0));
 			
-			search = new JButton("Search");
+			search = new JButton("Search For patient ID");
+			specialistReferralsModuleView.add(space,gbC);
 			specialistReferralsModuleView.add(search);
 			search.addActionListener(e);
-			
-			
+			search.setToolTipText("returns ID");
+
 			
 		return specialistReferralsModuleView;
 	}
+	
+	
 	public class Event implements ActionListener{
 
 		@Override
@@ -81,7 +89,6 @@ public class SpecialistReferralsModule extends GPSISModuleMain {
 				int y = (int) ((dimension.getHeight() - a.getHeight()) / 4);
 				a.setLocation(x, y);
 				a.setVisible(true);
-				a.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				a.setSize(600,350);
 				a.setTitle("Menu");
 				
@@ -99,8 +106,6 @@ public class SpecialistReferralsModule extends GPSISModuleMain {
 					refer.setVisible(true);
 					refer.setTitle("Referral");
 					refer.setSize(600,350);
-					//Closes all windows after referral main window is closed
-					refer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					refer.setResizable(false);
 				} catch (EmptyResultSetException e1) {
 					e1.printStackTrace();

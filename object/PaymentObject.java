@@ -16,22 +16,32 @@ public class PaymentObject  extends GPSISObject{
 			//Set Variables
 			this.id=id;
 			this.refid = refid;
-			this.total=total;
+			this.total=calTax(total);
 			this.name=name;
 			this.accnum=accnum;
 			this.expdate=expdate;
 			this.csc=csc;
 		}
+	
 		public PaymentObject(int refid, String total, String name, String accnum, String expdate, String csc){
 			//Set Variables
 			this.id=getId();
 			this.refid = refid;
-			this.total=total;
+			this.total=calTax(total);
 			this.name=name;
 			this.accnum=accnum;
 			this.expdate=expdate;
 			this.csc=csc;
 		}
+		
+		//Tax
+		public String calTax(String total){
+			Double taxedTotal = Double.parseDouble(total);
+			taxedTotal = ((taxedTotal/100)*20) + taxedTotal ;
+			String taxedTotalS = ""+ taxedTotal;
+			return taxedTotalS;
+		}
+	
 		//Get methods
 		public int getRefID(){
 			return refid;

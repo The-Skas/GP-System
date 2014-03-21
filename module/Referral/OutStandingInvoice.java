@@ -48,7 +48,7 @@ import framework.GPSISDataMapper;
 			setLayout(new FlowLayout());
 			Event e = new Event();
 			 	InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
-				GPSISDataMapper.connectToDatabase();
+				
 				List<InvoiceObject> set1;
 				try {
 					set1 = invoiceDMO.getAll();
@@ -57,7 +57,7 @@ import framework.GPSISDataMapper;
 					}
 					this.set1 = set1;
 				} catch (EmptyResultSetException e1) {
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(null, "HERE");
 					e1.printStackTrace();
 				}
 				
@@ -110,7 +110,7 @@ import framework.GPSISDataMapper;
 					try{
 						iden = Integer.parseInt(com);
 						InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
-						GPSISDataMapper.connectToDatabase();
+						
 						InvoiceObject obj = invoiceDMO.getById(iden);
 						Invoice i = new Invoice(com,obj.getRefID(),obj.getAmount(),obj.getConID(),obj.getIsPaid());
 						Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();

@@ -67,6 +67,7 @@ public class PrescriptionsModule extends GPSISModuleMain implements ActionListen
     @Override
     public void actionPerformed(ActionEvent event)
         {
+    	/*
             Object source = event.getSource();
             System.out.println("Action Performed:");
             if (source == press1)   
@@ -81,7 +82,7 @@ public class PrescriptionsModule extends GPSISModuleMain implements ActionListen
       //  JOptionPane.PLAIN_MESSAGE); 
        // setVisible(true);  // show something                
             }
-            
+            */
         }
 
 

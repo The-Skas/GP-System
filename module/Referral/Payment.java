@@ -50,28 +50,36 @@ public class Payment extends JFrame {
 	private ReferralObject refobj;
 	private Patient patobj;
 	
+	//Takes referral id and consultant id
 	public Payment(int refid, int conid){
 		
+		//Creates line borders for text boxes
+		Border border = BorderFactory.createLineBorder(Color.BLACK);
+		//Makes main panel which all the other panels are set in
+		main = new JPanel();
+		add(main);
+		//Creates titled border fo the main 'wrapper' panel
+		main.setBorder(BorderFactory.createTitledBorder("Enter Card Details"));
+		
+		//action listener class
+		Event e = new Event();
+		
+		//setting class variables from passed in arguments
+		this.refid = refid;
+		this.conid = conid;
+		
+		//Returning a list of all consultants
 		ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
-		GPSISDataMapper.connectToDatabase();
 		List<ConsultantObject> s = consultantDMO.getAll();
 		for(ConsultantObject x: s){
+			//return price from desired consultant
 			if(x.getId()==conid){
 				price = x.getPrice();
 				consult = x;
 			}
 		}
 		
-		Border border = BorderFactory.createLineBorder(Color.BLACK);
-		main = new JPanel();
-		add(main);
-		main.setBorder(BorderFactory.createTitledBorder("Enter Card Details"));
-		
-		Event e = new Event();
-		this.refid = refid;
-		this.conid = conid;
-		
-		
+		//Payment ID panel
 		pan1 = new JPanel();
 		lab1 = new JLabel("Payment ID: ");
 		pan1.add(lab1); 
@@ -80,11 +88,14 @@ public class Payment extends JFrame {
 		a1 = new JTextField(15);
 		a1.setBorder(border);
 		pan1.add(a1);
+		//Not paid is set to text as it is getting paid now
 		a1.setText("Not Paid");
+		//Not editable
 		a1.setEditable(false);
 		pan1.setBorder(BorderFactory.createEtchedBorder());
 		main.add(pan1);
 		
+		//Referral ID panel
 		pan2 = new JPanel();
 		xtra = new JLabel("Referral ID: ");
 		pan2.add(xtra); 
@@ -98,6 +109,7 @@ public class Payment extends JFrame {
 		pan2.setBorder(BorderFactory.createEtchedBorder());
 		main.add(pan2);
 		
+		//Name on card panel
 		pan3 = new JPanel();
 		lab6 = new JLabel("Name on Card: ");
 		pan3.add(lab6); 
@@ -109,6 +121,7 @@ public class Payment extends JFrame {
 		pan3.setBorder(BorderFactory.createEtchedBorder());
 		main.add(pan3);
 		
+		//Total panel
 		pan4 = new JPanel();
 		lab2 = new JLabel("Total: ");
 		pan4.add(lab2); 
@@ -121,6 +134,7 @@ public class Payment extends JFrame {
 		main.add(pan4);
 		a2.setText(" "+ price);
 		
+		//Account number panel
 		pan5 = new JPanel();
 		lab3 = new JLabel("Account Num: ");
 		pan5.add(lab3); 
@@ -132,6 +146,7 @@ public class Payment extends JFrame {
 		pan5.setBorder(BorderFactory.createEtchedBorder());
 		main.add(pan5);
 		
+		//Expire panel
 		pan6 = new JPanel();
 		lab4 = new JLabel("Exp. Date: ");
 		pan6.add(lab4); 
@@ -143,6 +158,7 @@ public class Payment extends JFrame {
 		pan6.setBorder(BorderFactory.createEtchedBorder());
 		main.add(pan6);
 		
+		//CSC number panel
 		pan7 = new JPanel();
 		lab5 = new JLabel("CSC Num:");
 		pan7.add(lab5); 
@@ -154,107 +170,124 @@ public class Payment extends JFrame {
 		pan7.setBorder(BorderFactory.createEtchedBorder());
 		main.add(pan7);
 		
+		//Adding a pay button
 		if(counter<1){
-		but1 = new JButton("Pay");
-		main.add(but1);
-		but1.addActionListener(e);
-		counter +=1;
+			but1 = new JButton("Pay");
+			main.add(but1);
+			//Action listener esponds to an event, in this case being clicked
+			but1.addActionListener(e);
+			counter +=1;
 		}
 		
 		sp = new JLabel("");
 		main.add(sp);
 		
 	}
+	//Action listener class
 	public class Event implements ActionListener{
 
 		@Override
+		//If Pay button is pressed
 		public void actionPerformed(ActionEvent e) {
-			if((e.getSource()== but1)&&(a6.getText().length()!=0)&&(a4.getText().length()!=0)&&(a2.getText().length()!=0)&&(a3.getText().length()!=0)&&(a5.getText().length()!=0)){
-				
-					PaymentDMO paymentDMO = PaymentDMO.getInstance();
-					GPSISDataMapper.connectToDatabase();
+		
 			
-					//have to convert boolean to tiny int
-		    		PaymentObject r = new PaymentObject(refid,a2.getText(),a6.getText(),a3.getText(),a4.getText(), a5.getText());
-		    		paymentDMO.put(r);
-		    		
-		    		
-		    		//Getting todays date and storing it in dt
-		    		Calendar cal = Calendar.getInstance();
-					java.util.Date dt = cal.getTime();
-					String s = new SimpleDateFormat("yyyy-MM-dd").format(dt);
-					//send payment to text file for Accountants
-					sp.setText("Paid!");
-					//Send letters(to specialist and Patient
-					InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
-					GPSISDataMapper.connectToDatabase();
-					//Once payment is made the invoice is set up ready for paying upon being received.
+			//If text areas have more than 0 characters or specified lengths 
+			if((e.getSource()== but1)&&(a6.getText().trim().length()!=0)&&(a4.getText().trim().length()==4)
+					&&(a2.getText().trim().length()!=0)&&(a3.getText().trim().length()==8)&&(a5.getText().trim().length()==3)){
+				
+					try{
+						//Checking if data can be successfully converted (if it can it will make the payment below and create invoice)
+		System.out.println(a4.getText());
+		System.out.println(a5.getText());
+		System.out.println(a3.getText());
+						int temp = 0;
+						temp = Integer.parseInt(a4.getText());
+						temp = Integer.parseInt(a5.getText());
+						temp = Integer.parseInt(a3.getText());
+						double temp2 = Double.parseDouble(a3.getText());
 					
-					InvoiceObject inv = new InvoiceObject(refid, price,conid,s, 0);
-					invoiceDMO.put(inv);
-					JOptionPane.showMessageDialog(null, "Payment ID: " + r.getId() + "Invoice ID: "+ inv.getId());
-					
-					//Send Letters to both patient and Consultant
-					TextFiles SendLetters = new TextFiles();
-					
-					/*try {
-						SendLetters.buildPaymentFile(""+r.getId(), ""+r.getName(), ""+r.getAccNum(), ""+r.getEX(), ""+r.getCSC(), ""+r.getTotal());
-					} catch (IOException e5) {
-						e5.printStackTrace();
-					}
-					*//*
-					
-					ReferralDMO ref = ReferralDMO.getInstance();
-					GPSISDataMapper.connectToDatabase();
-					ArrayList<ReferralObject> all = new ArrayList<ReferralObject>();
-					try {
-						all = (ArrayList<ReferralObject>) ref.getAll();
-					} catch (EmptyResultSetException e4) {
-						e4.printStackTrace();
-					}
-					for(ReferralObject x: all){
-						if(x.getId()==refid ){
-							refobj = x;
-						}
-					}
-					String patName = "";
-					PatientDMO pat = PatientDMO.getInstance();
-					GPSISDataMapper.connectToDatabase();
-					ArrayList<Patient> all2 = new ArrayList<Patient>();
-					
-					try {
-						all2 = (ArrayList<Patient>) pat.getAll();
-					} catch (EmptyResultSetException e3) {
+						//Making payment
+						PaymentDMO paymentDMO = PaymentDMO.getInstance();
+			    		PaymentObject r = new PaymentObject(refid,a2.getText(),a6.getText(),a3.getText(),a4.getText(), a5.getText());
+			    		paymentDMO.put(r);
+			    		System.out.print(a6.getText().trim().length()+ " "+a4.getText().trim().length()+ " "+a2.getText().trim().length()+ " "+a3.getText().trim().length()+ " "+a5.getText().trim().length());
+			    		//Getting todays date and storing it in dt
+			    		Calendar cal = Calendar.getInstance();
+						java.util.Date dt = cal.getTime();
+						String s = new SimpleDateFormat("yyyy-MM-dd").format(dt);
+						sp.setText("Paid!");
 						
-						e3.printStackTrace();
+						//Once payment is made the invoice is set up ready for paying upon being received.
+						InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
+						InvoiceObject inv = new InvoiceObject(refid, price,conid,s, 0);
+						invoiceDMO.put(inv);
+						JOptionPane.showMessageDialog(null, "Payment ID: " + r.getId() + "Invoice ID: "+ inv.getId());
+						
+						//Send Letters to both patient and Consultant
+						TextFiles SendLetters = new TextFiles();
+						ReferralDMO ref = ReferralDMO.getInstance();
+						ArrayList<ReferralObject> all = new ArrayList<ReferralObject>();
+						//Making a list with all referrals in it
+						try {
+							all = (ArrayList<ReferralObject>) ref.getAll();
+						} catch (EmptyResultSetException e4) {
+							JOptionPane.showMessageDialog(null,  "Empty list");
+						}
+						
+						//finding the correct referral
+						for(ReferralObject x: all){
+							if(x.getId()==refid ){
+								//Setting a variable with the desired object
+								refobj = x;
+							}
+						}
+						
+						//Finding the correct patient name
+						String patName = "";
+						//making a list of all patients
+						PatientDMO pat = PatientDMO.getInstance();
+						ArrayList<Patient> all2 = new ArrayList<Patient>();
+						try {
+							all2 = (ArrayList<Patient>) pat.getAll();
+						} catch (EmptyResultSetException e3) {
+							e3.printStackTrace();
+						}
+						
+						//Setting an object variable where patient objects id matches id from referral
+						for(Patient x: all2){
+							if(x.getId()==refobj.getPatID()){
+								patobj = x;
+								patName = x.getFirstName() + " " + x.getLastName();
+							}
+						}
+						
+						//Building letters
+						try {
+							SendLetters.buildConsultantsLetter(""+ refid, consult.getFName(), consult.getLName(), ""+refobj.getDocId(), ""+consult.getId(), consult.getAddress(), patName, r.getTotal());
+						} catch (IOException e2) {
+							JOptionPane.showMessageDialog(null,  "No Such Doctor");
+						}
+						try {
+							TextFiles.buildPatientsLetter(""+ refid, patobj.getFirstName(), patobj.getLastName(), patobj.getAddress(), ""+refobj.getDocId(), ""+consult.getId(), consult.getFName() + 
+									consult.getLName(), consult.getAddress(), ""+r.getId(), r.getTotal(), ""+consult.getNum());
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					
+						
+					}catch(Exception exx){
+						//If data isn't successfully converted
+						JOptionPane.showMessageDialog(null, "Bad data, please check fields");
 					}
 					
-					for(Patient x: all2){
-						if(x.getId()==refobj.getPatID()){
-							patobj = x;
-							patName = x.getFirstName() + " " + x.getLastName();
-						}
-					}
-					/*
-					try {
-						SendLetters.buildConsultantsLetter(""+ refid, consult.getFName(), consult.getLName(), ""+refobj.getDocId(), ""+consult.getId(), consult.getAddress(), patName, r.getTotal());
-					} catch (IOException e2) {
-						JOptionPane.showMessageDialog(null,  "No Such Doctor");
-					}
-					try {
-						TextFiles.buildPatientsLetter(""+ refid, patobj.getFirstName(), patobj.getLastName(), patobj.getAddress(), ""+refobj.getDocId(), ""+consult.getId(), consult.getFName() + 
-								consult.getLName(), consult.getAddress(), ""+r.getId(), r.getTotal(), ""+consult.getNum());
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					*/
+					//Set window hidden
 					setVisible(false);
 					
 			}else{
+				//Catches any eros with data input
 				JOptionPane.showMessageDialog(null, "Missing data");
 			}
 		}
 	}
 }
-//60% Screen size
 

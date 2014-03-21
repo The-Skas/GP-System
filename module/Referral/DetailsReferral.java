@@ -127,7 +127,7 @@ public class DetailsReferral extends JFrame {
 		
 		//Is paid or not
 		InvoiceDMO invoiceDMO = InvoiceDMO.getInstance();
-		GPSISDataMapper.connectToDatabase();
+		
 		List<InvoiceObject> set1;
 		try {
 			set1 = invoiceDMO.getAll();
@@ -143,7 +143,7 @@ public class DetailsReferral extends JFrame {
 		}
 		
 		ReferralDMO referralDMO2 = ReferralDMO.getInstance();
-		GPSISDataMapper.connectToDatabase();
+		
 		//Make a referralObject called r2 (using parseInt to turn text to an int)
 		try {
 			ReferralObject r2 = referralDMO2.getById(Integer.parseInt(searchValue.trim()));
@@ -171,7 +171,7 @@ public class DetailsReferral extends JFrame {
 	
 		PaymentDMO paymentDMO = PaymentDMO.getInstance();
 		//Connect to database
-		GPSISDataMapper.connectToDatabase();
+		
 		//Make a set and store all the payment objects in it
 		List<PaymentObject> payObj;
 		try {
