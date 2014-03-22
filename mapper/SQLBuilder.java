@@ -2,7 +2,10 @@ package mapper;
 
 /**
  * The SQLBuilder class serves to abstract the unnecessary work in creating a 
- * SQL Statement. 
+ * PREPARED SQL Statement using the JDBC library.
+ * 
+ * At a glance, the class may seem as an overhead for simple querying.
+ * Though this is specifically made to abstract out PreparedStatement
  * 
  * To use the class, look into an example used in the LoginModule.
  * Where the StaffMemberDMO getByAttributes takes an SQLBuilder object as a 
@@ -16,10 +19,22 @@ package mapper;
  *                      //Column  //Comparison //Value
  *       new SQLBuilder("username","=","vj")
  *              //Logic //Column  //Comparison //Value
- *                   .Q("OR", "username", "=","salman")
- *                   .Q("AND", "age",">=","18");
+ *                   .OR("username", "=","salman")
+ *                   .AND("AND", "age",">=","18");
  * 
- * Look at the main function for examples of uses.
+ * The equivilant query would be:
+ *                  "Select * From table WHERE username = vj OR 
+ *                              username = salman AND age >= 18;
+ * 
+ * The table is irrelvant for this class. This classes job is to merely 
+ * replace every occurance of a value (salman, vj, 18) to question marks.
+ * 
+ * The equivilant PreparedStatement Query would be:
+ *                  "Select * From table WHERE username = ? OR 
+ *                              username = ? AND age >= ?;
+ * 
+ * (This PreparedStatement prevents SQLInjections!)
+ *                  
  * 
  * @author Salman Khalifa
  */
@@ -42,7 +57,7 @@ public class SQLBuilder {
     public ArrayList<String []> qBlocks;
     
     /**
-     * Constructuter:
+     * Constructor:
      * With three parameters, logic is ignored as the first statement
      * in a SQL Query has no Logic
      * 
@@ -52,7 +67,7 @@ public class SQLBuilder {
      */
     public SQLBuilder()
     {
-        //Hacky but works for abstraction. This sets a default query.
+        //Hacky but works for abstraction. This sets a default query. 
       this("1","=","1");
     }
     public SQLBuilder(String column, String compr, String value)
@@ -67,6 +82,20 @@ public class SQLBuilder {
        
        qBlocks.add(block);
     }
+     /**
+     * The 'AND' function is used to construct AND queries, taking into account
+     * logical operators.
+     * 
+     *      ie: new SQLBuilder("username","=","vj")
+     *                      .AND("age",">=", "18")
+     *                      .AND("sex", "=", "m");
+     * 
+     * @param logic
+     * @param column
+     * @param compr
+     * @param value
+     * @return SQLBuilder
+     */
     
     public SQLBuilder AND(String column, String compr, String value)
     {
@@ -80,6 +109,66 @@ public class SQLBuilder {
         qBlocks.add(block);
         return this;
     }
+    
+    /**
+     * The 'OR' function is used to construct OR queries, taking into account
+     * logical operators.
+     * 
+     *      ie: new SQLBuilder("username","=","vj")
+     *                      .OR("age",">=", "18")
+     *                      .OR("sex", "=", "m");
+     * 
+     * @param logic
+     * @param column
+     * @param compr
+     * @param value
+     * @return SQLBuilder
+     */
+    public SQLBuilder OR(String column, String compr, String value)
+    {
+        String [] block = new String[SIZE];
+        
+        block[LOGIC]  = "OR";
+        block[COLUMN] = column;
+        block[COMPR]  = compr;
+        block[VALUE]  = value;
+        
+        qBlocks.add(block);
+        return this;
+    } 
+    
+    /**
+     * The 'SET' function is used to construct Update/Insert queries. It can
+     * only be assigned values, making the comparison operator redundant.
+     * This is kept to make it easier on the user to remember the syntax for
+     * using all three functions (OR,AND,SET)
+     * 
+     * 
+     * 
+     *      ie: new SQLBuilder("username","=","skas")
+     *                      .SET("age","=", "24")
+     *                      .SET("sex", "=", "m");
+     * 
+     * @param logic
+     * @param column
+     * @param compr
+     * @param value
+     * @return SQLBuilder
+     */
+    
+    public SQLBuilder SET(String column, String compr, String value)
+    {
+        String [] block = new String[SIZE];
+        
+        block[LOGIC]  = ",";
+        block[COLUMN] = column;
+        block[COMPR]  = compr;
+        block[VALUE]  = value;
+        
+        qBlocks.add(block);
+        return this;
+    }
+    
     
     //Executes A statement, returning a result set. Check JDBC Documentation for
     //what a result Set is :)
@@ -96,18 +185,8 @@ public class SQLBuilder {
         return pS.executeQuery();
         
     } 
-    public SQLBuilder OR(String column, String compr, String value)
-    {
-        String [] block = new String[SIZE];
-        
-        block[LOGIC]  = "OR";
-        block[COLUMN] = column;
-        block[COMPR]  = compr;
-        block[VALUE]  = value;
-        
-        qBlocks.add(block);
-        return this;
-    } 
+    
+    
     
     public void prepare(PreparedStatement pS) throws SQLException
     {
@@ -135,32 +214,6 @@ public class SQLBuilder {
         return query;
     }
     
-    /**
-     * The 'Q' function is used to construct logical queries, taking into account
-     * logical operators.
-     * 
-     *      ie: new SQLBuilder("username","=","vj")
-     *                      .Q("AND","age",">=", "18");
-     * 
-     * @param logic
-     * @param column
-     * @param compr
-     * @param value
-     * @return SQLBuilder
-     */
-    
-    public SQLBuilder SET(String column, String compr, String value)
-    {
-        String [] block = new String[SIZE];
-        
-        block[LOGIC]  = ",";
-        block[COLUMN] = column;
-        block[COMPR]  = compr;
-        block[VALUE]  = value;
-        
-        qBlocks.add(block);
-        return this;
-    }
     public String toPreparedStatement(String query)
     {
       for(String[] qBlock : this.qBlocks)
