@@ -1,5 +1,7 @@
-/**
+/** GPSISPopup
+ * All Popup windows should extend this class in order to retain access to Framework variables
  * 
+ * @author Vijendra Patel (vp302)
  */
 package framework;
 
@@ -14,10 +16,6 @@ import javax.swing.JFrame;
 
 import object.StaffMember;
 
-/**
- * @author VJ
- *
- */
 public class GPSISPopup extends JDialog {
 
 	private static final long serialVersionUID = 1L;
@@ -25,12 +23,18 @@ public class GPSISPopup extends JDialog {
 	protected static Map<String, Font> fonts = GPSISFramework.getFonts();
 	protected static List<Date> publicHolidays = GPSISFramework.getPublicHolidays();
 	
+	/** GPSISPopup
+	 * @param title
+	 */
 	public GPSISPopup(String title)
 	{
 		super(new JFrame(),title+ " - " + GPSISFramework.APPTITLE);
 		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
 		this.setIconImage((icon.getImage()));
 	}
-	
-	
 }
+
+/**
+ * End of File: GPSISPopup.java
+ * Location: framework
+ */

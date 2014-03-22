@@ -1,13 +1,9 @@
-package framework;
-
 /** GPSIS
  * Initial loading Class.
  * 
- * TODO
- * Finish 
- * 
- * @author Vijendra Patel
+ * @author Vijendra Patel (vp302)
  */
+package framework;
 
 public class GPSIS {
 	
@@ -24,5 +20,5 @@ public class GPSIS {
 
 /**
  * End of File: GPSIS.java
- * Location: gpsis/framework
+ * Location: framework
  */

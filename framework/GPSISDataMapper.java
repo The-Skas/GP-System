@@ -1,11 +1,12 @@
-package framework;
 /** GPSISFramework
  * Superclass for every Data Mapper in GPSIS. Data Mappers will be children of this node.
  * NOTE: Every class that extends this model SHOULD be appended with DMO. e.g PatientDMO, CareProgrammeDMO etc.
  * 
- * @author Vijendra Patel
+ * @author Vijendra Patel (vp302)
  * @author Salman Khalifa
  */
+package framework;
+
 import static mapper.SQLBuilder.VALUE;
 
 import java.sql.Connection;
@@ -41,12 +42,7 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
 		String password = "wv7PBUZBMXH88NP6";
 		String dbName = "GPSIS_GROUPJ";
 		String url = "jdbc:mysql://alineofcode.co.uk:3306/" + dbName + "?useUnicode=true&characterEncoding=UTF-8";
-    	
-//    	String username = "gpsisj";
-//    	String password = "gpsisj";
-//    	String dbName = "gpsisj";
-//    	String url = "jdbc:mysql://db4free.net:3306/" + dbName + "?useUnicode=true&characterEncoding=UTF-8";
-    	
+
 		try
 		{
 			Class.forName("com.mysql.jdbc.Driver");
@@ -236,5 +232,5 @@ public abstract class GPSISDataMapper<T> extends GPSISFramework {
 
 /**
  * End of File: GPSISDataMapper.java
- * Location: gpsis/framework
+ * Location: framework
  */

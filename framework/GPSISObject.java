@@ -1,27 +1,30 @@
-package framework;
-/** GPSISObject
- * All first level Objects should extend this class. 
+/** GPSISObject 
+ * All first level Objects should extend this class.
  * 
- * @author Vijendra Patel
- * @version 2
- *
+ * @author Vijendra Patel (vp302)
+ * 
  */
+package framework;
 
 public abstract class GPSISObject extends GPSISFramework {
 	protected int id;
-	
-	public int getId()
-	{
-            return this.id;
+
+	/** getId
+	 * @return
+	 */
+	public int getId() {
+		return this.id;
 	}
-        
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+
+	/** setId
+	 * @param id
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
 }
 
 /**
- * End of File: GPSISObject.java
- * Location: gpsis/framework
+ * End of File: GPSISObject.java 
+ * Location: framework
  */
