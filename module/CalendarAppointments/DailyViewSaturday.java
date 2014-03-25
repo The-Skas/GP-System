@@ -1,4 +1,5 @@
 package module.CalendarAppointments;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,8 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -28,38 +28,25 @@ import object.RoutineAppointment;
   public class DailyViewSaturday {
       
         JLabel l = new JLabel("", JLabel.CENTER);
-       // Jframe frame;
-        JFrame frame;
+        JDialog d;
         JButton[] button = new JButton[12];
         String[] times = new String[12];
         String hour = "";
         
         List<CalendarAppointment> doctorAppointments;     
-
         Calendar cal = Calendar.getInstance();                  
 
     public DailyViewSaturday(int doctorId, String day) throws ParseException {
      
-     this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsByDoctorId(doctorId);     
-      
+           
      List<CalendarAppointment> newList = new ArrayList<>();
 
     SimpleDateFormat sDF = new SimpleDateFormat("yyyy/MM/dd");      
     SimpleDateFormat sDF2 = new SimpleDateFormat("HH:mm");
     
-    /*
-         for(int i = 0; i<doctorAppointments.size(); i++)
-         {                       
-             String testingDate = sDF.format((doctorAppointments.get(i)).getStartTime());       
-             if(testingDate.equals(day) && doctorAppointments.get(i) instanceof RoutineAppointment)
-                 newList.add((RoutineAppointment) doctorAppointments.get(i));
-         }
-     */
-    
     try {
     	
 		this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsOfDoctorIdByDay(doctorId, sDF.parse(day));
-		
 		newList = this.doctorAppointments;
 		
 	} catch (EmptyResultSetException e) {
@@ -78,14 +65,17 @@ import object.RoutineAppointment;
         DateFormat sDF1 = new SimpleDateFormat("EEE dd MMMM yyyy");
         String s = sDF1.format(date);    
         
-         frame = new JFrame();
+        // frame = new JFrame();
        //  frame.setModal(true);
+        
+        d = new JDialog();
+        d.setModal(true);
          
          JPanel p = new JPanel();
          p.setPreferredSize(new Dimension(460, 30));
          p.setBackground(Color.WHITE);
          
-         JLabel test = new JLabel(s);
+         JLabel test = new JLabel("<html><b>"+s+"</b></html>");
          test.setForeground(blueishInk);
          p.add(test);
 
@@ -112,7 +102,7 @@ import object.RoutineAppointment;
                  {
                 	 if((sDF2.format(newListAppointment.getStartTime()).equals(sDF2.format(d.getTime())))){
                 		 // appointment is found
-                		 System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
+                		 //System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
                 		 button[x] = new JButton();
                 		 button[x].setFocusPainted(false);
                 		 button[x].setText("" + sDF2.format(d.getTime()) + " - " + sDF2.format(d1.getTime()) + "   Appointment!   Patient: "+((RoutineAppointment) newListAppointment).getPatient());
@@ -153,11 +143,11 @@ import object.RoutineAppointment;
         	}
         }
 
-         frame.add(p, BorderLayout.NORTH);
-         frame.add(p1, BorderLayout.SOUTH);
-         frame.pack();
-         frame.setLocationRelativeTo(null);
-         frame.setTitle("View Daily Appointments");
-         frame.setVisible(true);
+         d.add(p, BorderLayout.NORTH);
+         d.add(p1, BorderLayout.SOUTH);
+         d.pack();
+         d.setLocationRelativeTo(null);
+         d.setTitle("View Daily Appointments");
+         d.setVisible(true);
  }
 }

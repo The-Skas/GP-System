@@ -18,18 +18,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+
+import exception.EmptyResultSetException;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import mapper.CalendarAppointmentDMO;
 import mapper.CareProgrammeDMO;
+import mapper.HolidaysDMO;
 import mapper.MedicineDMO;
 import mapper.PatientDMO;
 import mapper.PrescriptionDMO;
 import mapper.ReferralDMO;
 import mapper.RegisterDMO;
 import mapper.RoomDMO;
+import mapper.SQLBuilder;
 import mapper.SpecialityDMO;
 import mapper.StaffMemberDMO;
 import mapper.TaxFormDMO;
@@ -82,6 +88,7 @@ public class GPSISFramework {
 	 */
 	public void initialise()
 	{
+			
 		splashWindow = new GPSISSplash();
 			
 		splashWindow.addText("\nNote: Connecting to Database may take 3-4 tries in the ITL.");
@@ -129,6 +136,17 @@ public class GPSISFramework {
 			e.printStackTrace();
 		}
 		
+		try {
+		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
+		} catch (Exception e) {
+		    // If Nimbus is not available, set the GUI to another look and feel.
+		}
+			
 		
 		LoginModule m = new LoginModule();
 		currentUser = m.showLogin();
@@ -140,7 +158,7 @@ public class GPSISFramework {
 		
 		splashWindow.addText("\nPre-loading Modules:");
 		// Set the modules to load
-		String[] modulesToLoad = {"Patient Records", "Staff Records", "Calendar Appointments", "Prescriptions", "Specialist Referrals", "Care Programme Management"};
+		String[] modulesToLoad = {"Patient Records", "Staff Records", "Calendar Appointments", "Prescriptions", "Specialist Referrals"};
 		for (String module : modulesToLoad) {
 			if (module.length() < 15)
 				splashWindow.addText("\n\t" + module + "\t");
@@ -159,7 +177,7 @@ public class GPSISFramework {
 		
 		splashWindow.dispose();
 		
-		MainInterface.getInstance().createAndShowGUI();		
+		MainInterface.getInstance().createAndShowGUI();	
 	}
 		
 	/** loadFonts
@@ -247,16 +265,23 @@ public class GPSISFramework {
 	 * quickly checks if a given Date is a holiday
 	 * @param d
 	 * @return true if the given date is a holiday, false otherwise
+	 * TODO : Test isHoliday function (Add Training Days and check if they're listed)
 	 */
 	public boolean isHoliday(Date d)
 	{
 		SimpleDateFormat sDF = new SimpleDateFormat("yyyy-MM-dd");
-		for (Date pubD : publicHolidays)
-		{
+		for (Date pubD : publicHolidays) {
 			if (sDF.format(pubD).equals(sDF.format(d)))
 				return true;
 		}
-		return false;
+		
+		// check if the Date is a Training Day
+		try {
+			HolidaysDMO.getInstance().getByProperties(new SQLBuilder("date", "=", sDF.format(d)));
+			return true;
+		} catch (EmptyResultSetException e) {
+			return false;
+		}
 	}
 	
 }

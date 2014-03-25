@@ -27,11 +27,8 @@ public class CalendarAppointment extends GPSISObject
          
          
         /*
- * 
- * Actually, it makes more sense to create new RoutineAppointments and new CareManagementAppointments
- * than creating a CalendarAppointment...
- * 
- * 
+
+
         public CalendarAppointment makeNewAppointment(){
             // TODO - check if it is in the opening hours of the surgery Mon-Fri 9am to 5.30pm and Sat 9am-12 noon
             // check if the day is not a public or bank holiday or a training day (determined by office manager)
@@ -41,10 +38,6 @@ public class CalendarAppointment extends GPSISObject
             return newAppointment;
         }
 */
-        public void determineTrainingDays(){ //this method should only be available for Office Managers
-            // check if the logged in user is an Office Manager
- 
-        }
          
          
         public Date getEndTime()
@@ -73,11 +66,6 @@ public class CalendarAppointment extends GPSISObject
         		return "Routine";
         	else
         		return "Care Management";
-        }
- 
-        public void WriteAppointmentSummary(){ // doctors are supposed to write a summary of an appointment so that appointment history is available for each patient
-            // check if the logged in user is an Doctor
- 
         }
  
     } 

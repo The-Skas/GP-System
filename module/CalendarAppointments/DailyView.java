@@ -12,24 +12,26 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import exception.EmptyResultSetException;
 import mapper.CalendarAppointmentDMO;
+import mapper.StaffMemberDMO;
 import object.CalendarAppointment;
+import object.CareManagementAppointment;
 import object.RoutineAppointment;
+import object.StaffMember;
 
   public class DailyView {
       
         JLabel l = new JLabel("", JLabel.CENTER);
-       // Jframe frame;
-        JFrame frame;
+        JDialog d;
         JButton[] button = new JButton[34];
         String[] times = new String[34];
         String hour = "";
@@ -39,6 +41,17 @@ import object.RoutineAppointment;
         Calendar cal = Calendar.getInstance();                  
 
     public DailyView(int doctorId, String day) throws ParseException {
+    	
+    // use my favourite method 
+    	/*
+    	SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd"); 
+    	Date availableDate = fm.parse(day);
+    	try {
+			HashMap<Date, Date> availableTimes = StaffMemberDMO.getInstance().getAvailableTimes(StaffMemberDMO.getInstance().getById(doctorId), availableDate);
+		} catch (EmptyResultSetException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} */
      
      //this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsByDoctorId(doctorId); 
       
@@ -60,17 +73,6 @@ import object.RoutineAppointment;
 	} catch (SQLException e) {
 		e.printStackTrace();
 	}
-    
-    /*
-    // instead of this loop i need the method getAppointmentsOfDoctorIdByDay
-         for(int i = 0; i<doctorAppointments.size(); i++)
-         {                       
-             String testingDate = sDF.format((doctorAppointments.get(i)).getStartTime());       
-             if(testingDate.equals(day) && doctorAppointments.get(i) instanceof RoutineAppointment)
-                 newList.add((RoutineAppointment) doctorAppointments.get(i)); // the getAppointmentsOfDoctorIdByDay returns Calendar Appointments
-             																  // not only Routine...
-         }
-         */
 
      Color lightRed = new Color(237, 199, 199);
      Color blueishInk = new Color(69, 65, 107);
@@ -82,14 +84,17 @@ import object.RoutineAppointment;
         DateFormat sDF1 = new SimpleDateFormat("EEE dd MMMM yyyy");
         String s = sDF1.format(date);    
         
-         frame = new JFrame();
+         //frame = new JFrame();
        //  frame.setModal(true);
+        
+        d = new JDialog();
+        d.setModal(true);
          
          JPanel p = new JPanel();
          p.setPreferredSize(new Dimension(460, 30));
          p.setBackground(Color.WHITE);
          
-         JLabel test = new JLabel(s);
+         JLabel test = new JLabel("<html><b>"+s+"</b></html>");
          test.setForeground(blueishInk);
          p.add(test);
 
@@ -115,15 +120,15 @@ import object.RoutineAppointment;
                  
                  for(CalendarAppointment newListAppointment : newList)
                  {
-                	 System.out.println(sDF2.format(newListAppointment.getStartTime()) + " ?= " + (sDF2.format(d.getTime())));
+                	 //System.out.println(sDF2.format(newListAppointment.getStartTime()) + " ?= " + (sDF2.format(d.getTime())));
                 	 if((sDF2.format(newListAppointment.getStartTime()).equals(sDF2.format(d.getTime())))){
                 		 // appointment is found
-                		 System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
+                		 //System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
                 		 button[x] = new JButton();
                 		 button[x].setFocusPainted(false);
                 		 if (newListAppointment instanceof RoutineAppointment)                			 
                 			 button[x].setText("" + sDF2.format(d.getTime()) + " - " + sDF2.format(d1.getTime()) + "   Appointment!   Patient: "+((RoutineAppointment) newListAppointment).getPatient());
-                		 else
+                		 else if (newListAppointment instanceof CareManagementAppointment) 
                 			 button[x].setText("" + sDF2.format(d.getTime()) + " - " + sDF2.format(d1.getTime()) + "   Care Management Appointment!");
                 		 button[x].setBackground(lightRed);
                 		 button[x].setForeground(blueishInk);
@@ -162,11 +167,11 @@ import object.RoutineAppointment;
         	}
         }
 
-         frame.add(p, BorderLayout.NORTH);
-         frame.add(p1, BorderLayout.SOUTH);
-         frame.pack();
-         frame.setLocationRelativeTo(null);
-         frame.setTitle("View Daily Appointments");
-         frame.setVisible(true);
+         d.add(p, BorderLayout.NORTH);
+         d.add(p1, BorderLayout.SOUTH);
+         d.pack();
+         d.setLocationRelativeTo(null);
+         d.setTitle("View Daily Appointments");
+         d.setVisible(true);
  }
 }

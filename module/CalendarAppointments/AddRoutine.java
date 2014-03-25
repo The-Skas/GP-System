@@ -1,7 +1,8 @@
 package module.CalendarAppointments;
 
 import java.awt.Color;
-import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
@@ -25,27 +26,28 @@ import object.RoutineAppointment;
 import object.StaffMember;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
-import net.sourceforge.jdatepicker.JDateComponentFactory;
-import net.sourceforge.jdatepicker.JDatePicker;
 import exception.EmptyResultSetException;
+import exception.UserDidntSelectException;
 import framework.GPSISFramework;
 import framework.GPSISPopup;
+import mapper.CalendarAppointmentDMO;
 import mapper.StaffMemberDMO;
 import mapper.PatientDMO;
-import module.Broadcastable;
-import module.SearchTable;
-import module.StaffMemberModule;
-import module.Patient.AddPatient;
-import module.Patient.PatientATM;
-import module.StaffMember.StaffMemberATM;
+import module.CalendarAppointmentsModule;
 
-public class AddRoutine extends GPSISPopup implements ActionListener, Broadcastable{
+public class AddRoutine extends GPSISPopup implements ActionListener{
 	
 	private static final long serialVersionUID = 1L;
-	private JTextField patientField;
-	private JTextField doctorField;
+//	private JTextField patientField;
+//	private JTextField doctorField;
 	//private JDatePicker dateField;
 	private Date date;
+	
+	static StaffMember selectedDoctor;
+	static Patient selectedPatient;
+	
+	final JTextField patientField;
+	final JTextField staffMemberField;
 	
 	private JTextField dynamicField;
 	private JButton dynamicBtn;
@@ -74,19 +76,61 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 		
 		JPanel addRoutinePanel = new JPanel(new MigLayout());
 		
-		// patient id Label
-		JLabel patientLabel = new JLabel("Patient ID: ");
-		addRoutinePanel.add(patientLabel);
-		// patient Component
-		this.patientField = new JTextField(10);
-		addRoutinePanel.add(this.patientField, new CC().wrap());
+		JButton patientButton = new JButton("Select Patient");
+		patientField = new JTextField(10);
+		patientField.setEditable(false);
 		
-		// doctor id Label
-		JLabel doctorLabel = new JLabel("Doctor ID: ");
-		addRoutinePanel.add(doctorLabel);
-		// doctor Component
-		this.doctorField = new JTextField(10);
-		doctorField.getDocument().addDocumentListener(new DocumentListener(){
+		JButton staffMemberButton = new JButton("Select Staff Member");
+		staffMemberField = new JTextField(10);
+		staffMemberField.setEditable(false);
+		
+		try {
+			selectedPatient = PatientDMO.getInstance().getById(1);
+			selectedDoctor = CalendarAppointmentsModule.getSelectedDoctor();
+			
+			String pName = selectedPatient.getFirstName() + " " + selectedPatient.getLastName();
+			String dName = selectedDoctor.getName();
+			
+			patientField.setText(pName);
+			staffMemberField.setText(dName);
+			
+		} catch (EmptyResultSetException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+        staffMemberButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+            	try {
+            		StaffMember sM = module.StaffMember.SearchPane.doSearch();
+            		staffMemberField.setText(sM.getName());
+            		selectedDoctor = sM;
+            		// More Logic here
+            		} catch (UserDidntSelectException e) {
+            		System.out.println("User Didnt Select a Staff Member");
+            		} catch (EmptyResultSetException e) {
+            		System.out.println("No Staff Members in Table");
+            		}
+            }
+    });
+        
+        patientButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+            	try {
+            		Patient p = module.Patient.SearchPane.doSearch();
+            		patientField.setText(p.getFirstName()+" "+p.getLastName());
+            		selectedPatient = p;
+            		// More Logic here
+            		} catch (UserDidntSelectException e) {
+            		System.out.println("User Didnt Select a Staff Member");
+            		} catch (EmptyResultSetException e) {
+            		System.out.println("No Staff Members in Table");
+            		}
+            }
+    });
+		
+		staffMemberField.getDocument().addDocumentListener(new DocumentListener(){
 
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {
@@ -108,19 +152,14 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 			}
 			
 		}); 
-		addRoutinePanel.add(this.doctorField, new CC().wrap());
 		
-		// select a date label
-		//JLabel dateLabel = new JLabel("Select Date: ");
-		//addRoutinePanel.add(dateLabel);
-		
-		// select a date component
-		//this.dateField = JDateComponentFactory.createJDatePicker(JDateComponentFactory.createDateModel(new Date()));
-		//addRoutinePanel.add((Component) this.dateField, new CC().wrap());
-		
-		
+		addRoutinePanel.add(patientButton);
+		addRoutinePanel.add(patientField, "Wrap");
+		addRoutinePanel.add(staffMemberButton);
+		addRoutinePanel.add(staffMemberField, "wrap");
+
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-		// dynamicTesting...
+		
 		dynamicBtn = new JButton("Please select a date");
 		this.dynamicField = new JTextField(10);
 		this.dynamicField.setEditable(false);
@@ -175,8 +214,14 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 		addBtn.setActionCommand("Add Appointment");
 		
 		this.add(addRoutinePanel, new CC());
+		/*
+	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+	    int x = (int) ((dimension.getWidth() - this.getWidth()) / 2);
+	    int y = (int) ((dimension.getHeight() - this.getHeight()) / 2);
+	    this.setLocation(x, y);
 		
-		//this.setLocationRelativeTo(null); 
+		this.setLocationRelativeTo(null); 
+		*/
 		this.pack();
 		this.setVisible(true);	
 	}
@@ -185,23 +230,21 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 	public void actionPerformed(ActionEvent ae) {
 		
 		// get the values 
-		String patientId = this.patientField.getText().trim();
-		String doctorId = this.doctorField.getText().trim();
+		String patientId = selectedPatient.getFirstName();
+		String doctorId = selectedDoctor.getFirstName();
 		
 		String summary = summaryTextArea.getText();
-		
-		//////////////////////////////////////// if ID fields not filled with ints, will throw an error TODO
 
-		int pId = Integer.parseInt(patientId);
-		int dId = Integer.parseInt(doctorId);
+		int pId = selectedPatient.getId();
+		int dId = selectedDoctor.getId();
 		
-		//Date d = (Date) this.dateField.getModel().getValue();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date d = now;
+		
 		try {
 			d = dateFormat.parse(dynamicField.getText());
 		} catch (ParseException e2) {
-			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(this, "ParseException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
 			e2.printStackTrace();
 		}
 		
@@ -211,6 +254,7 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 		DateFormat sundayChecker = new SimpleDateFormat("EEE");
 		String isItSunday = sundayChecker.format(d);
 		
+		
 		switch (ae.getActionCommand())
 		{
 			case "D":
@@ -219,27 +263,35 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 				
 				break;
 			case "Select Slot":
+				
+				if(selectedDoctor.isDoctor() || selectedDoctor.isNurse()) { // make sure selected staff member is a doctor or nurse
+				
 				//make sure all necessary fields are filled
 				if (patientId.isEmpty() || doctorId.isEmpty())
 				{
 					JOptionPane.showMessageDialog(this, "Please fill in all necessary fields.", "Blank Input", JOptionPane.WARNING_MESSAGE);
+				} else if(GPSISFramework.getInstance().isHoliday(d)) { // make sure selected date is not a holiday or training day 
+					JOptionPane.showMessageDialog(this, "There are no opening hours on Holidays and Training days. Please, select another day.", "No opening hours on Holidays and Training Days", JOptionPane.WARNING_MESSAGE);
 				} else if(isItSunday.equals("Sun")) { // make sure selected date isn't Sunday
 					JOptionPane.showMessageDialog(this, "There are no opening hours on Sundays. Please, select another day.", "No opening hours on Sundays", JOptionPane.WARNING_MESSAGE);
 				} else if(isItSunday.equals("Sat")) {
 					try {							  // open a Saturday time slot picker
 						slotField.setText(new HourTableSaturday(dId, dateString2).setPickedHour());						
 					} catch (ParseException e1) {
-						System.out.println("Parse exception");
+						JOptionPane.showMessageDialog(this, "ParseException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
 						e1.printStackTrace();
 					}				
 				} else {
 					try {							 // open a regular ordinary time slot picker 
 						slotField.setText(new HourTable(dId, dateString2).setPickedHour());						
 					} catch (ParseException e1) {
-						System.out.println("Parse exception");
+						JOptionPane.showMessageDialog(this, "ParseException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
 						e1.printStackTrace();
 					}
 						}
+				} else {
+					JOptionPane.showMessageDialog(this, "Appointments can only be scheduled with doctors or nurses. Please select another Staff Member.", "Wrong Staff Member", JOptionPane.WARNING_MESSAGE);
+				}
 				break;
 				
 			case "Add Appointment":																
@@ -250,15 +302,23 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 				String dateTimeString = dateString + " " + slotField.getText(); // concatenate the formatted date and time 
 																				// now I have a String with the date and time in a format similar to the timestamp format											
 				String[] hourParts = slotField.getText().split(":");
+				
 				// convert the dateTimeString to Date
 				SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 				
+				// respect availability of doctors and nurses
+				int a = 3; // int for availability - either 0, 1, 2 or 3, assume it's ALLDAY (3) if not set  
 				
 				try {	 
 					 date = newFormatter.parse(dateTimeString);
-			 
 				} catch (ParseException e) {
 					e.printStackTrace();
+				}
+				
+				try {
+					a  = StaffMemberDMO.getInstance().getRegister(selectedDoctor, date).getAvailability();
+				} catch (EmptyResultSetException e1) {
+					e1.printStackTrace();
 				}
 				
 				final long minuteMilliseconds = 60000; //millisecs
@@ -275,13 +335,20 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 					 //if selected hour isn't less than 12
 						slotField.setText(null);
 						JOptionPane.showMessageDialog(this, "There are no afternoon surgery hours on Saturdays. Please select another date/time", "No afternoon surgery hours on Saturdays", JOptionPane.WARNING_MESSAGE);	
+				} else if(a==0) {
+					JOptionPane.showMessageDialog(this, "The doctor's personal availability is set to HOLIDAY for this particular date. Please select another date.", "Doctor is on Holiday today!", JOptionPane.WARNING_MESSAGE);
+				} else if(a==1 && !(Integer.parseInt(hourParts[0])<12)) { // if doctor's availability is set to MORNING but an afternoon hour is selected
+					JOptionPane.showMessageDialog(this, "The doctor's personal availability is set to MORNING for this particular date. Please select another date/time.", "Doctor is available in the morning today!", JOptionPane.WARNING_MESSAGE);
+				} else if(a==2 && (Integer.parseInt(hourParts[0])<12)) { // if doctor's availability is set to AFTERNOON but a morning hour is selected
+					JOptionPane.showMessageDialog(this, "The doctor's personal availability is set to AFTERNOON for this particular date. Please select another date/time.", "Doctor is available in the afternoon today!", JOptionPane.WARNING_MESSAGE);
 				}
+				
 				else
 				{
 					// add the Routine Appointment
 					try {
 						 if(date.after(now)){ // make sure appointment is in the future
-							new RoutineAppointment(date, fifteenMinutesLater, PatientDMO.getInstance().getById(pId), StaffMemberDMO.getInstance().getById(dId), summary);
+							CalendarAppointmentDMO.getInstance().put(new RoutineAppointment(date, fifteenMinutesLater, PatientDMO.getInstance().getById(pId), StaffMemberDMO.getInstance().getById(dId), summary));
 							JOptionPane.showMessageDialog(this, "Successfully added a new Routine Appointment.");
 							dispose();
 						} else {
@@ -289,7 +356,7 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 							slotField.setText(null); 
 						}
 					} catch (EmptyResultSetException e) {
-						System.out.println("EmptyResultException");
+						JOptionPane.showMessageDialog(this, "EmptyResultSetException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
 						e.printStackTrace();
 					}
 				}				
@@ -298,49 +365,4 @@ public class AddRoutine extends GPSISPopup implements ActionListener, Broadcasta
 		
 	}
 
-
-
-	@Override
-	public void broadcast(Object obj) {
-		if(obj instanceof SearchTable)
-        {
-			//TODO AddPatient has been changed, revert the changes!
-            SearchTable st =(SearchTable) obj;
-            //do some stuff to st
-            System.out.println("In PatientModule, the row is"+st.getSelectedRow());
-
-            //If you would have multiple searchTables that search in different
-            //DMO's then use this method to diffrentiate types and construct
-            //the relevant object.
-            if(st.tbl.getModel() instanceof StaffMemberATM)
-            {
-                System.out.println("Its a StaffMemberATM");
-                
-                //Ive re-edited getStaffMembers to be a static method, that way
-                //we can use a single instance. 
-                //TODO: GetAll to store all objects. This is to avoid the overhead
-                //of querying everytime.
-                /*
-                List<StaffMember> smembers = StaffMemberModule.getStaffMembers();
-                AddPatient.doctor = smembers.get(st.getSelectedRow());
-                AddPatient.selDoctorButton.setText("Change Doctor");
-                AddPatient.doctorNameLbl.setText(AddPatient.doctor.getFirstName()+" "
-                                          +AddPatient.doctor.getLastName());
-                ((Component) this.doctorNameLbl).setVisible(true);*/
-            }  
-            else if(st.tbl.getModel() instanceof PatientATM)
-            {
-                PatientATM pATM = (PatientATM)st.tbl.getModel();
-                
-                Patient patient = pATM.getData().get(st.getSelectedRow());
-                st.getSelectedRow();
-               
-            }
-        }		
-	}
-
 }
-
-
-//TODO I really need a method which checks the doctors' availability taking into account the CareManagement appointments
-// as well! That's part of the specifications so even though TAs tell me not to worry I NEED IT!!!

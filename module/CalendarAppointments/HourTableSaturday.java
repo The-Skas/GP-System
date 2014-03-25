@@ -37,12 +37,7 @@ import object.RoutineAppointment;
     public HourTableSaturday(int doctorId, String day) throws ParseException {
      
      this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsByDoctorId(doctorId);     
-     
-     /*
-      temporarily getting the appointments for a particular day here,
-      but this should normally be done through a method getAppointmentsByDoctorIdAndDate
-      SQLBuilder's syntax is confusing...
-      */        
+           
     ArrayList<RoutineAppointment> newList = new ArrayList<>();
      
     SimpleDateFormat sDF = new SimpleDateFormat("dd/MM/yyyy");      

@@ -23,7 +23,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import exception.EmptyResultSetException;
+import framework.GPSISFramework;
 import mapper.CalendarAppointmentDMO;
+import module.CalendarAppointmentsModule;
 import object.CalendarAppointment;
 import object.RoutineAppointment;
 
@@ -45,29 +47,66 @@ public class WeeklyView {
 	
 	String[] dates = new String[7]; // holds the dates of the current week
 	
-	public WeeklyView(int doc) throws ParseException{
+	public WeeklyView(int doc, String day) throws ParseException{
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		Date appDate = format.parse(day);
+		
+		SimpleDateFormat yearF = new SimpleDateFormat("yyyy");
+		SimpleDateFormat monthF = new SimpleDateFormat("MM");
+		SimpleDateFormat dayF = new SimpleDateFormat("dd");
+		
+		int yearA = Integer.parseInt(yearF.format(appDate));
+		int monthA = Integer.parseInt(monthF.format(appDate));
+		int dayA = Integer.parseInt(dayF.format(appDate));
+		
+		//System.out.println("year, month, day: " + yearA + " " + monthA + " " + dayA);
+		
+		nowCal.set(yearA, monthA-1, dayA); // works YAY!
 		
 	    int delta = -nowCal.get(GregorianCalendar.DAY_OF_WEEK) + 2; //add 2 if your week start on monday
 	    
 	    nowCal.add(Calendar.DAY_OF_MONTH, delta );
-	    
-	    SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-	    
+	    	      
 	    for (int i = 0; i < 7; i++)
 	    {
 	        dates[i] = format.format(nowCal.getTime());
 	        nowCal.add(Calendar.DAY_OF_MONTH, 1);
 	    }
-	    System.out.println("YAY!"+Arrays.toString(dates));
+	    //System.out.println("YAY!"+Arrays.toString(dates));
 		
 		mainFrame.setLayout(new FlowLayout());
 		
-		p1 = dailyPanel(doc, dates[0]);
-		p2 = dailyPanel(doc, dates[1]);
-		p3 = dailyPanel(doc, dates[2]);
-		p4 = dailyPanel(doc, dates[3]);
-		p5 = dailyPanel(doc, dates[4]);
-		p6 = dailyPanelSaturday(doc, dates[5]);
+		if(GPSISFramework.getInstance().isHoliday(format.parse(dates[0])))
+			p1 = holidayPanel(dates[0]);
+		else
+			p1 = dailyPanel(doc, dates[0]);
+
+		if(GPSISFramework.getInstance().isHoliday(format.parse(dates[1])))
+			p2 = holidayPanel(dates[1]);
+		else
+			p2 = dailyPanel(doc, dates[1]);
+		
+		if(GPSISFramework.getInstance().isHoliday(format.parse(dates[2])))
+			p3 = holidayPanel(dates[2]);
+		else
+			p3 = dailyPanel(doc, dates[2]);
+		
+		if(GPSISFramework.getInstance().isHoliday(format.parse(dates[3])))
+			p4 = holidayPanel(dates[3]);
+		else
+			p4 = dailyPanel(doc, dates[3]);
+
+		if(GPSISFramework.getInstance().isHoliday(format.parse(dates[4])))
+			p5 = holidayPanel(dates[4]);
+		else
+			p5 = dailyPanel(doc, dates[4]);
+		
+		if(GPSISFramework.getInstance().isHoliday(format.parse(dates[5])))
+			p6 = holidayPanel(dates[5]);
+		else
+			p6 = dailyPanelSaturday(doc, dates[5]);
+		
 		
 		mainFrame.add(p1);
 		mainFrame.add(p2);
@@ -83,11 +122,8 @@ public class WeeklyView {
 	
 	public JPanel dailyPanel(int doctorId, String day) throws ParseException{
 		
-		//JLabel l = new JLabel("", JLabel.CENTER);
         JButton[] button = new JButton[34];
-        
-        
-        doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsByDoctorId(doctorId);
+                
         List<CalendarAppointment> newList = new ArrayList<>();
 
         SimpleDateFormat sDF = new SimpleDateFormat("yyyy/MM/dd");      
@@ -95,8 +131,7 @@ public class WeeklyView {
         
         try {
         	
-    		this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsOfDoctorIdByDay(doctorId, sDF.parse(day));
-    		
+    		this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsOfDoctorIdByDay(doctorId, sDF.parse(day));	
     		newList = this.doctorAppointments;
     		
     	} catch (EmptyResultSetException e) {
@@ -145,7 +180,7 @@ public class WeeklyView {
                  {
                 	 if((sDF2.format(newListAppointment.getStartTime()).equals(sDF2.format(d.getTime())))){
                 		 // appointment is found
-                		 System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
+                		 //System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
                 		 button[x] = new JButton();
                 		 button[x].setFocusPainted(false);
                 		 button[x].setText("" + sDF2.format(d.getTime()) + " - " + " Patient: "+((RoutineAppointment) newListAppointment).getPatient());
@@ -204,7 +239,6 @@ public JPanel dailyPanelSaturday(int doctorId, String day) throws ParseException
         try {
         	
     		this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsOfDoctorIdByDay(doctorId, sDF.parse(day));
-    		
     		newList = this.doctorAppointments;
     		
     	} catch (EmptyResultSetException e) {
@@ -253,7 +287,7 @@ public JPanel dailyPanelSaturday(int doctorId, String day) throws ParseException
                  {
                 	 if((sDF2.format(newListAppointment.getStartTime()).equals(sDF2.format(d.getTime())))){
                 		 // appointment is found
-                		 System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
+                		 //System.out.println("Appointment!"+sDF2.format(newListAppointment.getStartTime()));
                 		 button[x] = new JButton();
                 		 button[x].setFocusPainted(false);
                 		 button[x].setText("" + sDF2.format(d.getTime()) + " - " + " Patient: "+((RoutineAppointment) newListAppointment).getPatient());
@@ -295,5 +329,30 @@ public JPanel dailyPanelSaturday(int doctorId, String day) throws ParseException
         }
         
 		return p1;
+	}
+
+	public JPanel holidayPanel(String day) throws ParseException{
+		
+		Color blueishInk = new Color(69, 65, 107);
+		
+        SimpleDateFormat sDF = new SimpleDateFormat("yyyy/MM/dd");  
+		DateFormat sDF1 = new SimpleDateFormat("EEE dd MMMM yyyy");
+		
+        JPanel p = new JPanel();
+        p.setBackground(Color.WHITE);
+        p.setPreferredSize(new Dimension(160, 620));
+        
+        Date date = sDF.parse(day);
+        String s = sDF1.format(date); 
+        
+        JLabel test = new JLabel(s);
+        test.setForeground(blueishInk);
+        test.setHorizontalAlignment( JLabel.CENTER );
+        JLabel holidayLabel = new JLabel("<html><div style=\"text-align: center;\"><b>Holiday or Training Day </b></html>!");
+        holidayLabel.setForeground(blueishInk);
+        p.add(test);
+        p.add(holidayLabel);
+		
+		return p;
 	}
 }

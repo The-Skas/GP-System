@@ -12,7 +12,8 @@ import object.RoutineAppointment;
 public class CalendarAppointmentATM extends AbstractTableModel{
 	
 	private static final long serialVersionUID = 1L; // is it me or does this improve speed?
-	private String[] columnNames = {"ID", "Type", "Doctor", "Start Time", "End Time", "Patient(s)"};
+	//private String[] columnNames = {"ID", "Type", "Doctor", "Start Time", "End Time", "Patient(s)"};
+	private String[] columnNames = {"ID", "Type", "Doctor", "Start Time", "End Time"};
 	private List<CalendarAppointment> data;
 
 	public CalendarAppointmentATM(List<CalendarAppointment> d)
@@ -56,11 +57,11 @@ public class CalendarAppointmentATM extends AbstractTableModel{
         		return new SimpleDateFormat("EEE MMM dd HH:mm yyyy").format(cA.getStartTime());
         	case 4:
         		return new SimpleDateFormat("EEE MMM dd HH:mm yyyy").format(cA.getEndTime());
-        	case 5:
-        		if(cA.isRoutine())
-        			return ((RoutineAppointment) cA).getPatient();
-        		else
-        			return null;
+//        	case 5:
+//        		if(cA.isRoutine())
+//        			return ((RoutineAppointment) cA).getPatient();
+//        		else
+//        			return null;
         		
         }
         return null;

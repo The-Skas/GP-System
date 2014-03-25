@@ -25,18 +25,6 @@ import framework.GPSISDataMapper;
 
 public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment> {
 	
-	//TODO
-	/*
-	 * I really need a method like this:
-	 * // check for duplicates in StaffMember table
-		SQLBuilder sql = new SQLBuilder("username", "=", u);
-		try 
-		{
-			staffMemberDMO.getByProperties(sql);
-			throw new DuplicateEntryException();
-		} 
-	 */
-	
 	// table names used by put and getter methods
 	private static String tblRoutine = "RoutineAppointment";
 	private static String tblCareManagement = "CareManagementAppointment";
@@ -122,7 +110,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
     	while(res.next())
     	{
     		SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    		System.out.println("!!!!!!!!!!!!!!!!"+fm.format(res.getDate("start_time")));
+    		//System.out.println("!!!!!!!!!!!!!!!!"+fm.format(res.getDate("start_time")));
     		Date startTime, endTime; 
     		cal.setTime(res.getTimestamp("start_time"));
     		startTime = cal.getTime();

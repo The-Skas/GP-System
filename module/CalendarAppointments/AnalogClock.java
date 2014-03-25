@@ -14,7 +14,7 @@ public class AnalogClock extends JComponent implements ActionListener {
         timer.start();
     }
     
-    /* tried to make a clock a separate thread, unsuccessfully
+    /* tried to make the clock a separate thread, unsuccessfully
      * gonna work on that later! 
 	@Override
 	public void run() {

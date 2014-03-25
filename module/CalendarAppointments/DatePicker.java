@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -44,7 +46,7 @@ import javax.swing.JPanel;
                  button[x].setBackground(lightRed);
                  else
                 	 button[x].setBackground(Color.white);
-                 if (x > 6) // make button inactive i guess
+                 if (x > 6)
                          button[x].addActionListener(new ActionListener() {
                                  public void actionPerformed(ActionEvent ae) {
                                          day = button[selection].getActionCommand();
@@ -91,8 +93,10 @@ import javax.swing.JPanel;
  }
  
  public void displayDate() {
-     for (int x = 7; x < button.length; x++)
+     for (int x = 7; x < button.length; x++){
              button[x].setText("");
+     	button[x].setBackground(Color.WHITE); // had a weird bug with the color here!
+     }
      java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
                      "MMMM yyyy");
      java.util.Calendar cal = java.util.Calendar.getInstance();
@@ -102,18 +106,38 @@ import javax.swing.JPanel;
      int dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK);
      int daysInMonth = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
      
-
+     
      java.util.Calendar cal2 = java.util.Calendar.getInstance();
      java.text.SimpleDateFormat dateF = new java.text.SimpleDateFormat(
                      "dd MMMM yyyy");
      Date today = new Date();
      cal2.setTime(today);
-     System.out.println(dateF.format(today));
+     //System.out.println(dateF.format(today));
      
+     DateFormat dayF = new SimpleDateFormat("dd");
+     DateFormat monthF = new SimpleDateFormat("MM");
+     DateFormat yearF = new SimpleDateFormat("yyyy");
      
+     String nowDayString = dayF.format(now);
+     String nowMonthString = monthF.format(now);
+     String nowYearString = yearF.format(now);
+     
+     int nowDayInt = Integer.parseInt(nowDayString);
+     int nowMonthInt = Integer.parseInt(nowMonthString);
+     int nowYearInt = Integer.parseInt(nowYearString);
+          
      for (int x = 6 + dayOfWeek, day = 1; day <= daysInMonth; x++, day++)
      {
              button[x].setText("" + day);
+             
+             //System.out.println(nowDayInt+" "+nowMonthInt+" "+nowYearInt);
+             //System.out.println(day+" "+month+" "+year);
+             
+             if(nowDayInt == day && nowMonthInt-1 == month && nowYearInt == year){
+            	 Color todayYellow = new Color(177, 229, 237);
+				button[x].setBackground(todayYellow);
+            	 //System.out.println("TODAY IS THE DAY!");
+             }
      }  
      l.setText(sdf.format(cal.getTime()));
      d.setTitle("Date Picker");

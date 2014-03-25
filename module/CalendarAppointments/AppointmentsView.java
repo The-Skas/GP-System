@@ -108,7 +108,7 @@ public class AppointmentsView extends GPSISPopup implements ActionListener, List
 		switch (ae.getActionCommand())
 		{
 			case "Add an Appointment":
-				new AddAppointment();
+				new AddRoutine();
 				break;
 			case "View/Edit":
 				CalendarAppointment cA = calendarAppointments.get(calendarAppointmentsTable.getSelectedRow());				
@@ -128,25 +128,25 @@ public class AppointmentsView extends GPSISPopup implements ActionListener, List
 			
 			// set column widths
 			cAT.getColumnModel().getColumn(0).setMinWidth(30);
-			cAT.getColumnModel().getColumn(0).setMaxWidth(30);
-			cAT.getColumnModel().getColumn(0).setPreferredWidth(30);			
+			cAT.getColumnModel().getColumn(0).setMaxWidth(50);
+			cAT.getColumnModel().getColumn(0).setPreferredWidth(40);			
 			
-			cAT.getColumnModel().getColumn(1).setMinWidth(50);
-			cAT.getColumnModel().getColumn(1).setMaxWidth(50);
-			cAT.getColumnModel().getColumn(1).setPreferredWidth(50);
+			cAT.getColumnModel().getColumn(1).setMinWidth(30);
+			cAT.getColumnModel().getColumn(1).setMaxWidth(70);
+			cAT.getColumnModel().getColumn(1).setPreferredWidth(70);
 			
 			cAT.getColumnModel().getColumn(2).setMinWidth(40);
-			cAT.getColumnModel().getColumn(2).setMaxWidth(40);
-			cAT.getColumnModel().getColumn(2).setPreferredWidth(40);
-			/*
-			cAT.getColumnModel().getColumn(3).setMinWidth(300);
-			cAT.getColumnModel().getColumn(3).setMaxWidth(300);
-			cAT.getColumnModel().getColumn(3).setPreferredWidth(300);
+			cAT.getColumnModel().getColumn(2).setMaxWidth(50);
+			cAT.getColumnModel().getColumn(2).setPreferredWidth(50);
 			
-			cAT.getColumnModel().getColumn(4).setMinWidth(300);
-			cAT.getColumnModel().getColumn(4).setMaxWidth(300);
-			cAT.getColumnModel().getColumn(4).setPreferredWidth(300);
-			*/
+			cAT.getColumnModel().getColumn(3).setMinWidth(150);
+			cAT.getColumnModel().getColumn(3).setMaxWidth(150);
+			cAT.getColumnModel().getColumn(3).setPreferredWidth(150);
+			
+			cAT.getColumnModel().getColumn(4).setMinWidth(150);
+			cAT.getColumnModel().getColumn(4).setMaxWidth(150);
+			cAT.getColumnModel().getColumn(4).setPreferredWidth(150);
+			
 			
 			return cAT;
 		} catch (EmptyResultSetException e) {

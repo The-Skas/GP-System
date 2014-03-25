@@ -108,11 +108,11 @@ public class SlotPicker extends GPSISPopup implements ActionListener, ListSelect
 		switch (ae.getActionCommand())
 		{
 			case "Add an Appointment":
-				new AddAppointment();
+				new AddRoutine();
 				break;
 			case "View/Edit":
 				CalendarAppointment cA = calendarAppointments.get(slotsTable.getSelectedRow());				
-				new ViewAppointment(cA);
+				new ViewEditAppointment(cA);
 				break;
 		}
 	}
