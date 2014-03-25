@@ -42,6 +42,7 @@ import mapper.TaxFormDMO;
 import mapper.TaxOfficeDMO;
 import module.LoginModule;
 import module.MainInterface;
+import object.Holidays;
 import object.StaffMember;
 
 public class GPSISFramework {
@@ -280,6 +281,7 @@ public class GPSISFramework {
 			HolidaysDMO.getInstance().getByProperties(new SQLBuilder("date", "=", sDF.format(d)));
 			return true;
 		} catch (EmptyResultSetException e) {
+			//e.printStackTrace();
 			return false;
 		}
 	}

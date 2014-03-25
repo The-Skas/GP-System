@@ -63,7 +63,9 @@ public class HolidaysDMO extends GPSISDataMapper<Holidays> {
 			throws EmptyResultSetException {
 		try {
 			ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
-			return new Holidays(res.getInt("id"),res.getDate("date"));
+			if (res.next()) {
+				return new Holidays(res.getInt("id"),res.getDate("date"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
