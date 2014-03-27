@@ -12,16 +12,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import object.Patient;
 import object.PermanentPatient;
-import object.StaffMember;
 import object.MedicalCondition;
 /**
  *
@@ -91,6 +87,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     
     public List<Patient> getPatientSiblings(Patient p)
     {
+        
         SQLBuilder sql = new SQLBuilder("father_id","=",""+p.getFatherId())
                                     .AND("father_id","!=", "NULL")
                                     .AND("father_id","!=", "0")
@@ -102,7 +99,12 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                                     .AND("mother_id", "!=", ""+p.getId())
                                     .AND("id", "!=", ""+p.getId());
         System.out.println("Get siblings!: "+ sql);
-        return this.getAllByProperties(sql);
+        try {
+            return this.getAllByProperties(sql);
+        } catch (EmptyResultSetException ex) {
+            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ArrayList<Patient>();
         
     }
     
@@ -110,7 +112,13 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     {
         SQLBuilder sql = new SQLBuilder("father_id","=",""+p.getId())
                                     .OR("mother_id","=",""+p.getId());
-        return this.getAllByProperties(sql);
+        try {
+            return this.getAllByProperties(sql);
+        } catch (EmptyResultSetException ex) {
+            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ArrayList<Patient>();
+
     }
     
     /*** MEDICAL CONDITIONS ***/
@@ -222,27 +230,12 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     
     //** END MEDICAL CONDITIONS **//
     
-    public List<PermanentPatient> getAllPermanentPatientsByDoctorId(int id) throws EmptyResultSetException
+    public List<Patient> getAllPermanentPatientsByDoctorId(int id) throws EmptyResultSetException
     {
-        List<PermanentPatient> permPatients = new ArrayList<>();
-        ResultSet rs;
-		try {
-			rs = GPSISDataMapper.getResultSet
-			    (
-			        new SQLBuilder("doctor_id","=",""+id), this.tblPermenant
-			    );
-			while(rs.next())
-	        {
-	            permPatients.add(getPermanentPatientById(rs.getInt("patient_id")));
-	        }
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
         
-		if (permPatients.isEmpty())  
-			throw new EmptyResultSetException();
-		else
-			return permPatients;
+        return this.getAllByProperties(new SQLBuilder("doctor_id","=",""+id));
+
+	        
     }
     
     public PermanentPatient getPermanentPatientById(int id)
@@ -314,24 +307,16 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     @Override
     public Patient getByProperties(SQLBuilder query) {
     try {
-            
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
+             String joinTbl = this.tableName 
+                    + " Left Outer Join PermanentPatient on Patient.id = PermanentPatient.patient_id";
+            ResultSet res = GPSISDataMapper.getResultSet(query, joinTbl);
             
             if (res.next()) { // if found, create a the StaffMember object
-                
-                Patient patient = new Patient( res.getInt("id"), 
-                                    res.getString("first_name"), 
-                                    res.getString("last_name"),
-                                    res.getString("sex").charAt(0),
-                                    res.getString("postcode"), 
-                                    res.getString("address"),
-                                    res.getString("phone"),
-                                    res.getDate("dob"),
-                                    res.getInt("father_id"),
-                                    res.getInt("mother_id"));
+                res.getInt("NHS_number");
+            
+                return (res.wasNull() ? this.buildPatient(res) : this.buildPermanentPatient(res));
                 
                 
-                return this.getPermanentPatientOrPatient(patient);
                 ///patient = PatientDMO.getPermenantPatientById(int id);
                 
             } else {
@@ -340,12 +325,14 @@ public class PatientDMO extends GPSISDataMapper<Patient>
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (EmptyResultSetException ex) {
+            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }    
 
    
-    public List<Patient> getAllByProperties(SQLBuilder query) {
+    public List<Patient> getAllByProperties(SQLBuilder query) throws EmptyResultSetException {
         List<Patient> patients = new ArrayList<>();
         
         try {
@@ -358,11 +345,9 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 //Before I add it, surely I would want a refrence to set
                 //its NHS Number for the permenant Patients.
                 res.getInt("NHS_number");
-                try {
-                    patients.add( (res.wasNull() ? this.buildPatient(res) : this.buildPermanentPatient(res)));
-                } catch (EmptyResultSetException ex) {
-                    Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
-                }
+               
+                patients.add( (res.wasNull() ? this.buildPatient(res) : this.buildPermanentPatient(res)));
+                
                         
             }
 

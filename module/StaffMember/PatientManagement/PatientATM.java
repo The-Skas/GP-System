@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+import object.Patient;
 
 import object.PermanentPatient;
 
@@ -19,9 +20,9 @@ public class PatientATM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 	private String[] columnNames = {"NHS Number", "First Name", "Last Name", "Sex", "Address", "Phone", "Date of Birth"};
-	private List<PermanentPatient> data;
+	private List<Patient> data;
 	
-	public PatientATM(List<PermanentPatient> d)
+	public PatientATM(List<Patient> d)
 	{
 		this.data = d;
 	}
@@ -42,7 +43,7 @@ public class PatientATM extends AbstractTableModel {
     	switch(col)
     	{
     		case 0:
-    			return data.get(row).getNHSNumber();
+    			return ((PermanentPatient)data.get(row)).getNHSNumber();
     		case 1:
     			return data.get(row).getFirstName();
     		case 2:

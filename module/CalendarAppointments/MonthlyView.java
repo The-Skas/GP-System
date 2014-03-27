@@ -39,7 +39,7 @@ import object.StaffMember;
     	JDialog d;
     	JButton[] button = new JButton[49];
     	Date now = new Date();
-    	
+    	public static int counterHoliday = 0;
     	String doctorName;
     	StaffMember doctor;
     	
@@ -94,6 +94,7 @@ import object.StaffMember;
                                          	 String appDateString = sDF.format(appDate);
                                          	
                                          		//System.out.println("appString is: "+appString);
+                                                        counterHoliday++;
                                          		if(GPSISFramework.getInstance().isHoliday(appDate))
                                          			new HolidayPanel(appDateString);
                                          		else if(appString.equals("Sat"))
@@ -196,7 +197,7 @@ import object.StaffMember;
              Date appDate = cal1.getTime();
              
      	    try { 
-    			
+                                counterHoliday++;
 				this.doctorAppointments = CalendarAppointmentDMO.getInstance().getAppointmentsOfDoctorIdByDay(this.doc, appDate);
     			this.appNum = doctorAppointments.size(); // get number of appointments for each particular day
 				
@@ -215,6 +216,7 @@ import object.StaffMember;
      	     String appString = format.format(cal1.getTime());
              
      	     // make training days visible on monthly view
+             counterHoliday++;
      	     if(GPSISFramework.getInstance().isHoliday(appDate))
      	     button[x].setText("<html><div style=\"text-align: center;\"><b>" + day + "</b><br> Holiday or Training Day!</html>");
      	     else if(!appString.equals("Sun"))
@@ -231,7 +233,7 @@ import object.StaffMember;
              }
              
      }  
-
+     System.out.println("Amount of times called is : "+ counterHoliday);
      l.setText("<html><div style=\"text-align: center;\"><b>" + sdf.format(cal.getTime()) + "</b><br> Monthly appoinments of doctor <b>"+doctorName+"</b></html>");     
      d.setTitle("Date Picker");
 }

@@ -16,10 +16,10 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
-import object.PermanentPatient;
 import object.StaffMember;
 import exception.EmptyResultSetException;
 import framework.GPSISPopup;
+import object.Patient;
 
 public class ViewPatients extends GPSISPopup {
 
@@ -27,7 +27,7 @@ public class ViewPatients extends GPSISPopup {
 	private static StaffMember staffMember;
 	private static PatientATM pM;
 	private static JTable PatientTable;
-	private static List<PermanentPatient> Patients;
+	private static List<Patient> Patients;
 
 	public ViewPatients(StaffMember sM) {
 		super(sM.getName() + " Patients");
