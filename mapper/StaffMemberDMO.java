@@ -106,14 +106,14 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember> {
 		{
 			// check if temporary staff entry exists in database. SELECT * FROM
 			// TempStaffMember WHERE TempStaffMember.staff_member_id = res.getInt("id")
-			ResultSet tempCheckRes = GPSISDataMapper.getResultSet(
-					new SQLBuilder("staff_member_id", "=", ""
-							+ res.getInt("id")), "TempStaffMember");
+			//ResultSet tempCheckRes = GPSISDataMapper.getResultSet(
+				//	new SQLBuilder("staff_member_id", "=", ""
+						//	+ res.getInt("id")), "TempStaffMember");
 			Calendar cal = Calendar.getInstance();
-
+                        res.getDate("end_date");
 			Date endDate = null;
-			if (tempCheckRes.first()) {
-				cal.setTime(tempCheckRes.getDate("end_date"));
+			if (!res.wasNull()) {
+				cal.setTime(res.getDate("end_date"));
 				// temp contract and on full time
 				endDate = cal.getTime();
 			}
@@ -284,7 +284,8 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember> {
 		List<StaffMember> staffMembers = new ArrayList<>();
 
 		try {
-			ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
+                        String sqlJoin = this.tableName + " left outer join TempStaffMember on StaffMember.id = TempStaffMember.staff_member_id";
+			ResultSet res = GPSISDataMapper.getResultSet(query, sqlJoin);
 			while (res.next()) // While there's a StaffMember, create a the
 								// StaffMember object and add it to a Set
 			{
@@ -416,7 +417,9 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember> {
 	public StaffMember getByProperties(SQLBuilder query)
 			throws EmptyResultSetException {
 		try {
-			ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
+                        String sqlJoin = this.tableName + 
+                                " left outer join TempStaffMember on StaffMember.id = TempStaffMember.staff_member_id";
+			ResultSet res = GPSISDataMapper.getResultSet(query, sqlJoin);
 
 			if (res.next()) // if found, create a the StaffMember object
 			{
