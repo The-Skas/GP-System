@@ -27,7 +27,9 @@ import object.InvoiceObject;
 import object.ReferralObject;
 import object.SpecialityTypeObject;
 import exception.EmptyResultSetException;
+import exception.UserDidntSelectException;
 import framework.GPSISDataMapper;
+import java.awt.HeadlessException;
 
 //Main window for referrals option
 public class Referral extends JFrame {
@@ -83,6 +85,7 @@ public class Referral extends JFrame {
 			pan4.add(lab1);
 			text1 = new JTextField(10);
 			pan4.add(text1);
+                        text1.setEnabled(false);
 			text1.setBorder(border);
 			but1 = new JButton("Search");
 			pan4.add(but1);
@@ -158,24 +161,25 @@ public class Referral extends JFrame {
 				
 				//Button to find referral, the if statement also determines if the corresponding-
 				//-text box is empty or not
-				else if((e.getSource()== but1)&&(text1.getText().length()>=1)){
+				else if(e.getSource()== but1){
 					
 					//String selection = (String)combo1.getSelectedItem();
 					//Search when the drop-down selection = Referral ID.
 					
 						String searchValue = text1.getText();
+                                                
 						//Insert number at the end as the other method has 2 string arguments
 						try{
-							//Connecting to database
-							ReferralDMO referralDMO = ReferralDMO.getInstance();
-							// 
-							//Make a referralObject called r2 (using parseInt to turn text to an int)
-							ReferralObject r2 = referralDMO.getById(Integer.parseInt(searchValue));
-							//The GUI DetailReferral is constructed
-							DetailsReferral r = new DetailsReferral(searchValue,r2);
+//							//Connecting to database
+//							ReferralDMO referralDMO = ReferralDMO.getInstance();
+//							// 
+//							//Make a referralObject called r2 (using parseInt to turn text to an int)
+							ReferralObject r2 = module.Referral.SearchPane.doSearch();
+//							//The GUI DetailReferral is constructed
+							DetailsReferral r = new DetailsReferral(r2.getId()+"",r2);
 							Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 					    	//Centre Window on screen
-							
+						
 							int x = (int) ((dimension.getWidth() - r.getWidth()) / 3);
 							int y = (int) ((dimension.getHeight() - r.getHeight()) / 4);
 							r.setLocation(x, y);
@@ -183,8 +187,9 @@ public class Referral extends JFrame {
 							r.setTitle("Found Referral");
 							r.setSize(600, 350);
 							//Catch errors
-							}catch(Exception eee){
+							}catch(UserDidntSelectException | EmptyResultSetException | HeadlessException ex){
 								//Pop-up message
+                                                                System.out.println("Error is"+ex.getMessage());
 								JOptionPane.showMessageDialog(null, "ERROR");
 							}
 				}

@@ -24,7 +24,10 @@ import mapper.StaffMemberDMO;
 import module.Consultant.Consultant.Event;
 import object.*;
 import exception.EmptyResultSetException;
+import exception.UserDidntSelectException;
 import framework.GPSISDataMapper;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MakeReferral extends JFrame {
 	private JComboBox combo1;
@@ -34,7 +37,7 @@ public class MakeReferral extends JFrame {
 	private String[] choicesB;
 	private JLabel lab1, lab2, lab3,sp,sp2,findinv,findinv2,space1,space2,space3,space4,space5,space6;
 	private JButton but1, but2, but3;
-	private JTextField text1, text2;
+	private JButton staffButton, patientButton;
 	private int con = 0,pat = 0,pay = 0,conId = 0; 
 	private Double price = 0.0;
 	private JPanel Main, pan1,pan2,pan3,pan4,pan5,pan6;
@@ -42,7 +45,8 @@ public class MakeReferral extends JFrame {
 	private JMenuItem itm;
 	private JMenuBar mb;
 	private boolean staffExists = false,patientExists = false;
-	
+        private Patient patient;
+        private StaffMember staffMember;
 	//GUI for Make Referral form
 	public MakeReferral(){
 		Border border = BorderFactory.createLineBorder(Color.BLACK);
@@ -124,23 +128,26 @@ public class MakeReferral extends JFrame {
 		
 		//Name
 		pan2 = new JPanel();
-		lab2 = new JLabel("                                                           Enter Staff ID: ");
+		lab2 = new JLabel("                                                           Search for Staff: ");
 		pan2.add(lab2);
-		text1 = new JTextField(10);
-		pan2.add(text1);
+                //Change JtextField to search
+		staffButton = new JButton("Search Staff");
+                staffButton.addActionListener(e);
+		pan2.add(staffButton);
 		space2 = new JLabel("                                                            ");
 		pan2.add(space2);
-		text1.setBorder(border);
+//		staffButton.setBorder(border);
 		pan2.setBorder(BorderFactory.createEtchedBorder());
 		Main.add(pan2);
 		
 		//Add Patient ID
 		pan3 = new JPanel();
-		lab3 = new JLabel("                                                       Enter Patient ID: ");
+		lab3 = new JLabel("                                                       Search for Patient: ");
 		pan3.add(lab3);
-		text2 = new JTextField(10);
-		text2.setBorder(border);
-		pan3.add(text2);
+		patientButton = new JButton("Search Patient");
+                patientButton.addActionListener(e);
+//		patientButton.setBorder(border);
+		pan3.add(patientButton);
 		space3 = new JLabel("                                                            ");
 		pan3.add(space3);
 		pan3.setBorder(BorderFactory.createEtchedBorder());
@@ -165,7 +172,7 @@ public class MakeReferral extends JFrame {
 			//Create a referral
 			if(e.getSource()== but1){
 				//Making sure the text fields contain data
-				if((text1.getText().length() >=1)&&(text2.getText().length() >=1)){
+				if((staffButton.getText().length() >=1)&&(patientButton.getText().length() >=1)){
 					
 				ReferralDMO referralDMO = ReferralDMO.getInstance();
 				//Creates Date
@@ -193,30 +200,19 @@ public class MakeReferral extends JFrame {
 						}
 						
 						//Confirming staff-member exists
-						StaffMemberDMO staffmemberDMO = StaffMemberDMO.getInstance();
-						List<StaffMember> set2;
-							set2 = staffmemberDMO.getAll();
-							for(StaffMember x: set2){
-								
-								if(x.getId()==Integer.parseInt(text1.getText())){
-									staffExists = true;
-								}
-							}
+                                                        if(staffMember != null)
+                                                        {
+                                                            staffExists = true;
+                                                        }
 							if(staffExists == false){
 								JOptionPane.showMessageDialog(null, "Staff Memeber doesn't exist!");
 							}
 						
 						//Confirming patient exists
-						PatientDMO patientDMO = PatientDMO.getInstance();
-						List<Patient> set3;
-		
-							set3 = patientDMO.getAll();
-							for(Patient x: set3){
-								if(x.getId()==Integer.parseInt(text2.getText())){
-									patientExists = true;
-								}
-							}
-							
+                                                        if(patient != null)
+                                                        {
+                                                            patientExists = true;
+                                                        }
 							if(patientExists == false){
 								JOptionPane.showMessageDialog(null, "Patient doesn't exist!");
 							}
@@ -228,27 +224,26 @@ public class MakeReferral extends JFrame {
 						//and payment
 						//Have to convert boolean to tiny int (1 and zero)
 						if((patientExists==true)&&(staffExists==true)){
-					    	ReferralObject r = new ReferralObject(dt, Integer.parseInt(text1.getText()), con, Integer.parseInt(text2.getText()),1);//last 2 have to be different
-					    	referralDMO.put(r);
-					    	//Prints out id number to use for adding Speciality's
-					    	JOptionPane.showMessageDialog(null, "Your Referral ID is: "+ r.getId());
-							//Create payment GUI Form
-					    	
-							Payment r3 = new Payment(r.getId(),con);
-					    	Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-							int x = (int) ((dimension.getWidth() - r3.getWidth()) / 3);
-							int y = (int) ((dimension.getHeight() - r3.getHeight()) / 4);
-							r3.setLocation(x+60, y+50);
-							r3.setVisible(true);
-							r3.setTitle("Payment");
-							r3.setSize(600, 360);
-							
-							//Turn string to an integer willing that it is correct data (otherwise caught in catch)
-							pat = Integer.parseInt(text2.getText());
-							setVisible(false);
+                                                    ReferralObject r = new ReferralObject(dt, staffMember.getId(), con, patient.getId(),1);//last 2 have to be different
+                                                    referralDMO.put(r);
+                                                    //Prints out id number to use for adding Speciality's
+                                                    JOptionPane.showMessageDialog(null, "Your Referral ID is: "+ r.getId());
+                                                            //Create payment GUI Form
+
+                                                            Payment r3 = new Payment(r.getId(),con);
+                                                    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+                                                            int x = (int) ((dimension.getWidth() - r3.getWidth()) / 3);
+                                                            int y = (int) ((dimension.getHeight() - r3.getHeight()) / 4);
+                                                            r3.setLocation(x+60, y+50);
+                                                            r3.setVisible(true);
+                                                            r3.setTitle("Payment");
+                                                            r3.setSize(600, 360);
+
+                                                            //Turn string to an integer willing that it is correct data (otherwise caught in catch)
+                                                            setVisible(false);
 						}
 					}
-					catch (NumberFormatException | EmptyResultSetException nfe)
+					catch (EmptyResultSetException nfe)
 					{
 						JOptionPane.showMessageDialog(null,  "BAD DATA");
 					}		
@@ -256,15 +251,32 @@ public class MakeReferral extends JFrame {
 				}
 			
 				//Catches if data entered into text fields is null if so the corresponding pop-up is shown
-				else if(text1.getText().length() <1){
+				else if(staffButton.getText().length() <1){
 						JOptionPane.showMessageDialog(null, "Enter Your ID!");
 				}
-				else if(text2.getText().length() <1){
+				else if(patientButton.getText().length() <1){
 						JOptionPane.showMessageDialog(null, "Enter Patients ID!");
 				}
-		}
+		}else if(e.getSource() == patientButton)
+                {
+                    try {
+                        patient = module.Patient.SearchPane.doSearch();
+                    } catch ( UserDidntSelectException | EmptyResultSetException ex) {
+                        Logger.getLogger(MakeReferral.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }else if(e.getSource() == staffButton)
+                {
+                    try {
+                        staffMember = module.StaffMember.SearchPane.doSearch();
+                    } catch (UserDidntSelectException ex) {
+                        Logger.getLogger(MakeReferral.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (EmptyResultSetException ex) {
+                        Logger.getLogger(MakeReferral.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+       
 	}
-}
+    }
 	//Testing
 	public static void main(String[] args){
 		

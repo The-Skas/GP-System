@@ -51,7 +51,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         }
         return instance;
     }
-    public PermanentPatient buildPermanentPatient(ResultSet res) throws SQLException
+    public PermanentPatient buildPermanentPatient(ResultSet res) throws SQLException, EmptyResultSetException
     {
         PermanentPatient permPatient;
         permPatient = new PermanentPatient( res.getInt("id"), 
@@ -63,7 +63,9 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                                     res.getString("phone"),
                                     res.getDate("dob"),
                                     res.getInt("father_id"),
-                                    res.getInt("mother_id"));
+                                    res.getInt("mother_id"),
+                                    res.getInt("doctor_id"),
+                                    res.getString("NHS_number"));
         return permPatient;
         
     }
@@ -80,9 +82,8 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                                 res.getDate("dob"),
                                 res.getInt("father_id"),
                                 res.getInt("mother_id"));
-                
-             //Returns either a permanent derived from Patient or the patient
-        return getPermanentPatientOrPatient(patient);
+     
+        return patient;
     }
     
    
@@ -313,10 +314,11 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     @Override
     public Patient getByProperties(SQLBuilder query) {
     try {
+            
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
             
             if (res.next()) { // if found, create a the StaffMember object
-
+                
                 Patient patient = new Patient( res.getInt("id"), 
                                     res.getString("first_name"), 
                                     res.getString("last_name"),
@@ -327,6 +329,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                                     res.getDate("dob"),
                                     res.getInt("father_id"),
                                     res.getInt("mother_id"));
+                
                 
                 return this.getPermanentPatientOrPatient(patient);
                 ///patient = PatientDMO.getPermenantPatientById(int id);
@@ -346,27 +349,21 @@ public class PatientDMO extends GPSISDataMapper<Patient>
         List<Patient> patients = new ArrayList<>();
         
         try {
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
+            String joinTbl = this.tableName 
+                    + " Left Outer Join PermanentPatient on Patient.id = PermanentPatient.patient_id";
+            ResultSet res = GPSISDataMapper.getResultSet(query, joinTbl);
             while(res.next()) 
             { // if found, create a the patient object
                 System.out.println("Heres patient id: "+res.getInt("id"));
                 //Before I add it, surely I would want a refrence to set
                 //its NHS Number for the permenant Patients.
-                patients.add(
-                            this.getPermanentPatientOrPatient(
-                       new Patient( res.getInt("id"), 
-                                    res.getString("first_name"), 
-                                    res.getString("last_name"),
-                                    res.getString("sex").charAt(0),
-                                    res.getString("postcode"), 
-                                    res.getString("address"),
-                                    res.getString("phone"),
-                                    res.getDate("dob"),
-                                    res.getInt("father_id"),
-                                    res.getInt("mother_id")
-                                    )
-                            )
-                );
+                res.getInt("NHS_number");
+                try {
+                    patients.add( (res.wasNull() ? this.buildPatient(res) : this.buildPermanentPatient(res)));
+                } catch (EmptyResultSetException ex) {
+                    Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                        
             }
 
         } catch (SQLException e) {

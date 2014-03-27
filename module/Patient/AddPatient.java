@@ -3,7 +3,6 @@
  * @author Salman Khalifa (skas)
  */
 package module.Patient;
-import module.JTextFieldLimit;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
