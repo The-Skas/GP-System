@@ -22,6 +22,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import object.Patient;
+import object.Register;
 import object.RoutineAppointment;
 import object.StaffMember;
 import net.miginfocom.layout.CC;
@@ -318,7 +319,7 @@ public class AddRoutine extends GPSISPopup implements ActionListener{
 				try {
 					a  = StaffMemberDMO.getInstance().getRegister(selectedDoctor, date).getAvailability();
 				} catch (EmptyResultSetException e1) {
-					e1.printStackTrace();
+					a = Register.ALLDAY;
 				}
 				
 				final long minuteMilliseconds = 60000; //millisecs
@@ -348,7 +349,8 @@ public class AddRoutine extends GPSISPopup implements ActionListener{
 					// add the Routine Appointment
 					try {
 						 if(date.after(now)){ // make sure appointment is in the future
-							CalendarAppointmentDMO.getInstance().put(new RoutineAppointment(date, fifteenMinutesLater, PatientDMO.getInstance().getById(pId), StaffMemberDMO.getInstance().getById(dId), summary));
+							RoutineAppointment app = new RoutineAppointment(date, fifteenMinutesLater, PatientDMO.getInstance().getById(pId), StaffMemberDMO.getInstance().getById(dId), summary);
+							((CalendarAppointmentATM) CalendarAppointmentsModule.getAppointmentsTable().getModel()).addRow(app);
 							JOptionPane.showMessageDialog(this, "Successfully added a new Routine Appointment.");
 							dispose();
 						} else {

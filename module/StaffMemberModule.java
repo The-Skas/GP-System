@@ -27,7 +27,9 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import module.CalendarAppointments.CalendarAppointmentATM;
 import module.StaffMember.*;
+import object.CalendarAppointment;
 import object.StaffMember;
 import exception.EmptyResultSetException;
 import framework.GPSISModuleMain;
@@ -60,11 +62,12 @@ public class StaffMemberModule extends GPSISModuleMain implements ActionListener
 			sorter = new TableRowSorter<StaffMemberATM>(sMM);
 			staffMemberTable.setRowSorter(sorter);
 			staffMemberTable.getSelectionModel().addListSelectionListener(this);
+			leftPanel.add(new JScrollPane(staffMemberTable), new CC().span().grow());
 		} catch (EmptyResultSetException e) {
-			return null;
+			staffMemberTable = new JTable(new StaffMemberATM(new ArrayList<StaffMember>()));
 		}
 
-		leftPanel.add(new JScrollPane(staffMemberTable), new CC().span().grow());
+		
 		staffMemberModuleView.add(leftPanel, new CC().span().grow());
 
 		// Controls (RIGHT PANE)

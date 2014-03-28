@@ -84,8 +84,9 @@ public class CalendarAppointmentsModule extends GPSISModuleMain implements Actio
 			sorter = new TableRowSorter<CalendarAppointmentATM>(cAM);
 			calendarAppointmentsTable.setRowSorter(sorter);
 			calendarAppointmentsTable.getSelectionModel().addListSelectionListener(this);
+			
 		} catch (EmptyResultSetException e) {
-			return null;
+			calendarAppointmentsTable = new JTable(new CalendarAppointmentATM(new ArrayList<CalendarAppointment>()));
 		}
 
 		leftPanel.add(new JScrollPane(calendarAppointmentsTable), new CC().span().grow());
@@ -290,14 +291,15 @@ public class CalendarAppointmentsModule extends GPSISModuleMain implements Actio
 		textQuery.getDocument().addDocumentListener(this);
 		
 		// set column widths
-		calendarAppointmentsTable.getColumnModel().getColumn(0).setMinWidth(30);
-		calendarAppointmentsTable.getColumnModel().getColumn(0).setMaxWidth(50);
-		calendarAppointmentsTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-		
-		calendarAppointmentsTable.getColumnModel().getColumn(1).setMinWidth(50);
-		calendarAppointmentsTable.getColumnModel().getColumn(1).setMaxWidth(150);
-		calendarAppointmentsTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		
+		if (calendarAppointmentsTable != null) {
+			calendarAppointmentsTable.getColumnModel().getColumn(0).setMinWidth(30);
+			calendarAppointmentsTable.getColumnModel().getColumn(0).setMaxWidth(50);
+			calendarAppointmentsTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+			
+			calendarAppointmentsTable.getColumnModel().getColumn(1).setMinWidth(50);
+			calendarAppointmentsTable.getColumnModel().getColumn(1).setMaxWidth(150);
+			calendarAppointmentsTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		}
 		return appointmentsModuleView;
 	}
 
@@ -312,7 +314,7 @@ public class CalendarAppointmentsModule extends GPSISModuleMain implements Actio
 	 * @return the CalendarAppointments table
 	 */
 	public static JTable getAppointmentsTable() {
-		return CalendarAppointmentsModule.calendarAppointmentsTable;
+		return calendarAppointmentsTable;
 	}
 
 	/* (non-Javadoc)
