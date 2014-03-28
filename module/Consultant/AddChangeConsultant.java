@@ -105,7 +105,6 @@ public class AddChangeConsultant extends JFrame {
 					//Turns String into an int
 					id = Integer.parseInt(jb.getText());
 					ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
-					GPSISDataMapper.connectToDatabase();
 					
 					String s = consultantDMO.getById(id).getTitle();
 					Consultant consul = new Consultant(id,consultantDMO.getById(id).getTitle(),consultantDMO.getById(id).getFName(),

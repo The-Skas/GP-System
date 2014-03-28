@@ -161,7 +161,6 @@ public class AddSpecialistType extends JFrame {
 				//Add speciality from text-area to speciality sql table.
 				//Speciality get by name and add by select* from Speciality where 
 				SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
-				GPSISDataMapper.connectToDatabase();
 				//Put in get consultantID once get works(where 4 is)
 				SpecialityTypeObject r = new SpecialityTypeObject(tlb1.getText().trim(), ConID);
 				specialityTypeDMO.put(r);
@@ -173,7 +172,6 @@ public class AddSpecialistType extends JFrame {
 			}
 			if(e.getSource()==but2){
 				SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
-				GPSISDataMapper.connectToDatabase();
 				//Put in get consultantID once get works(where 4 is)
 				//Turn choice into String
 				String s = (String) jcb.getSelectedItem();

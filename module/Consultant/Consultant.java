@@ -439,7 +439,6 @@ public class Consultant extends JFrame{
 				//
 				
 				ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
-				GPSISDataMapper.connectToDatabase();
 				//have to convert boolean to tiny int
 				
 				ConsultantObject r = new ConsultantObject(jb1.getText(), jb2.getText(), jb3.getText(), jb4.getText(),
