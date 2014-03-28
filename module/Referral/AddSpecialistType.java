@@ -38,19 +38,14 @@ public class AddSpecialistType extends JFrame {
 	private JMenuItem itm;
 	private JMenuBar mb;
 	
-	//Adding speciality to specialist, takes consultant id (to match speciality to)
 	public AddSpecialistType(int ConID){
 		
-		//Text box border colour
 		Border border = BorderFactory.createLineBorder(Color.BLACK);
-		//Making event e fo action listener
 		Event e = new Event();
-		//Setting class vaiable
 		this.ConID = ConID;
 		//Menu
 		mb = new JMenuBar();
 		setJMenuBar(mb);
-		//Menu drop-down
 		men = new JMenu("File");
 		mb.add(men);
 		
@@ -60,25 +55,28 @@ public class AddSpecialistType extends JFrame {
 		Main.setLayout(new FlowLayout());
 		add(Main);
 		
+		//Set ID for later use
+		
 		//Spacing Panel
 		SpacingPan = new JPanel();
 		BigSpace1 = new JLabel("                                                                                              ");
 		SpacingPan.add(BigSpace1);
 		Main.add(SpacingPan);
 		
+		SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
+		GPSISDataMapper.connectToDatabase();
+	
 		try {
-			//making 2 lists that contain all speciality type objects and consultant objects
-			SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
+	
 			List<SpecialityTypeObject> set1 = specialityTypeDMO.getAll();
 			ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
 			List<ConsultantObject> set2 = consultantDMO.getAll();
 			
-			//
 			for(SpecialityTypeObject x:set1){
 				int temp = x.getConID();
 				
 				for(ConsultantObject y:set2){
-					//Only if consultant is active will the consultant speciality be added to the list
+					
 					if(y.isActive()==0){
 						arr1.add(x.getName());
 					}
@@ -110,7 +108,6 @@ public class AddSpecialistType extends JFrame {
 		pan1.add(space1);
 		lab1 = new JLabel("Select Speciality: ");
 		pan1.add(lab1);
-		//Adding the array to the combo box
 		jcb = new JComboBox(array);
 		pan1.add(jcb);
 		pan1.setBorder(BorderFactory.createEtchedBorder());
@@ -153,28 +150,31 @@ public class AddSpecialistType extends JFrame {
 		but4.setToolTipText("Enter Type into textbox");
 		but4.addActionListener(e);
 		
+	
 		
 	}
 	public class Event implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//If added from text box
 			if((e.getSource()==but4)&&(tlb1.getText().length() !=0)){
-				
+				//Add speciality from text-area to speciality sql table.
+				//Speciality get by name and add by select* from Speciality where 
 				SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
+				GPSISDataMapper.connectToDatabase();
+				//Put in get consultantID once get works(where 4 is)
 				SpecialityTypeObject r = new SpecialityTypeObject(tlb1.getText().trim(), ConID);
 				specialityTypeDMO.put(r);
 				JOptionPane.showMessageDialog(null, "Added");
 				setVisible(false);
 			}
-			//If no data is in text box and from text box is selected
 			else if((e.getSource()==but4)&&(tlb1.getText().length() ==0)){
 				JOptionPane.showMessageDialog(null, "Enter into text box or use Drop Down!");
 			}
-			//Add speciality from drop-down
 			if(e.getSource()==but2){
 				SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
+				GPSISDataMapper.connectToDatabase();
+				//Put in get consultantID once get works(where 4 is)
 				//Turn choice into String
 				String s = (String) jcb.getSelectedItem();
 				//Insert String as type argument
@@ -182,7 +182,25 @@ public class AddSpecialistType extends JFrame {
 				specialityTypeDMO.put(r);
 				JOptionPane.showMessageDialog(null, "Added");
 				setVisible(false);
+				
+				
 			}
+		}
+		
+	}
+	public static void main(String[] args){
+		
+		SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
+		GPSISDataMapper.connectToDatabase();
+		SpecialityTypeObject r = new SpecialityTypeObject("Heart", 6);
+		specialityTypeDMO.put(r);
+		try {
+			ArrayList<SpecialityTypeObject> ar = (ArrayList<SpecialityTypeObject>) specialityTypeDMO.getAll();
+			for(SpecialityTypeObject x: ar){
+				System.out.print(x.getName());
+			}
+		} catch (EmptyResultSetException e) {
+			e.printStackTrace();
 		}
 	}
 }

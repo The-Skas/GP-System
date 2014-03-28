@@ -26,28 +26,23 @@ import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 
 public class Consultant extends JFrame{
-	//Class variables
 	private JLabel lab1,lab2,lab3,lab4,lab5,lab6,lab7,lab8,lab9,lab10,lab11,lab12,lab13,AccountName,AccountNum,SortNum;
 	private JLabel space1, space2, space3, space4, space5, space6, space7,space8,space9,space10,space11;
 	private JButton but1,but2,but3;
 	private JButton butt1,butt2,butt3,butt4;
 	private String[] speciality;
-	private JTextField jb1,jb2,jb3,jb4,jb5,jb6,jb7,jb8,jb9,AccountNa,AccountNu,SortNu;
-	//private JTextArea jb9;
+	private JTextField jb1,jb2,jb3,jb4,jb5,jb6,jb7,jb8,AccountNa,AccountNu,SortNu;
+	private JTextArea jb9;
 	private int counter = 0;
 	private int ID;
 	private JPanel pan1,pan2,pan3, pan4, pan5, pan6, pan7, pan8, pan9,pan10,pan11,pan12;
 	private JMenuBar mb;
 	private JMenu men;
 	private JMenuItem itm;
-	private ConsultantObject object;
 	
-	//Consultant constructor
-	public Consultant(int s, ConsultantObject obj){
-		//Setting border line colour
+	public Consultant(int s, String title, String fn, String ln, String add, String email, String conn,String price){
 		Border border = BorderFactory.createLineBorder(Color.BLACK);
 		Event e = new Event();
-		object = obj;
 		
 		//Menu
 		mb = new JMenuBar();
@@ -74,10 +69,11 @@ public class Consultant extends JFrame{
 		jb1 = new JTextField(15);
 		pan2.add(jb1);
 		jb1.setEditable(false);
-		//Text box set to string corresponding to object passed in
-		jb1.setText(obj.getTitle());
+		jb1.setText(title);
 		jb1.setBorder(border);
 		pan2.setBorder(BorderFactory.createEtchedBorder());
+		
+		
 		
 		//FirstName
 		pan3 = new JPanel();
@@ -89,7 +85,7 @@ public class Consultant extends JFrame{
 		jb2 = new JTextField(15);
 		pan3.add(jb2);
 		jb2.setEditable(false);
-		jb2.setText(obj.getFName());
+		jb2.setText(fn);
 		jb2.setBorder(border);
 		pan3.setBorder(BorderFactory.createEtchedBorder());
 		
@@ -103,7 +99,7 @@ public class Consultant extends JFrame{
 		jb3 = new JTextField(15);
 		pan4.add(jb3);
 		jb3.setEditable(false);
-		jb3.setText(obj.getLName());
+		jb3.setText(ln);
 		jb3.setBorder(border);
 		pan4.setBorder(BorderFactory.createEtchedBorder());
 		
@@ -117,7 +113,7 @@ public class Consultant extends JFrame{
 		jb4 = new JTextField(15);
 		pan5.add(jb4);
 		jb4.setEditable(false);
-		jb4.setText(obj.getAddress());
+		jb4.setText(add);
 		jb4.setBorder(border);
 		pan5.setBorder(BorderFactory.createEtchedBorder());
 	
@@ -131,7 +127,7 @@ public class Consultant extends JFrame{
 		jb5 = new JTextField(15);
 		pan6.add(jb5);
 		jb5.setEditable(false);
-		jb5.setText(obj.getEmail());
+		jb5.setText(email);
 		jb5.setBorder(border);
 		pan6.setBorder(BorderFactory.createEtchedBorder());
 	
@@ -146,7 +142,7 @@ public class Consultant extends JFrame{
 		jb6 = new JTextField(15);
 		pan7.add(jb6);
 		jb6.setEditable(false);
-		jb6.setText(obj.getNum());
+		jb6.setText(conn);
 		jb6.setBorder(border);
 		pan7.setBorder(BorderFactory.createEtchedBorder());
 		
@@ -160,9 +156,11 @@ public class Consultant extends JFrame{
 		jb8 = new JTextField(15);
 		pan8.add(jb8);
 		jb8.setEditable(false);
-		jb8.setText(""+obj.getPrice());
+		jb8.setText(price);
 		jb8.setBorder(border);
 		pan8.setBorder(BorderFactory.createEtchedBorder());
+		
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<COPY to other constructor<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<!!!!!!!!
 		
 		//Account Name
 		pan10 = new JPanel();
@@ -172,7 +170,6 @@ public class Consultant extends JFrame{
 		space9 = new JLabel("                                                                                                ");
 		pan10.add(space9);
 		AccountNa = new JTextField(15);
-		AccountNa.setText(obj.getAccName());
 		pan10.add(AccountNa);
 		AccountNa.setEditable(false);
 		AccountNa.setBorder(border);
@@ -186,7 +183,6 @@ public class Consultant extends JFrame{
 		space10 = new JLabel("                                                                                          ");
 		pan11.add(space10);
 		AccountNu = new JTextField(15);
-		AccountNu.setText(""+obj.getAccNum());
 		pan11.add(AccountNu);
 		AccountNu.setEditable(false);
 		AccountNu.setBorder(border);
@@ -200,7 +196,6 @@ public class Consultant extends JFrame{
 		space11 = new JLabel("                                                                                                       ");
 		pan12.add(space11);
 		SortNu = new JTextField(15);
-		SortNu.setText(""+obj.getSortCode());
 		pan12.add(SortNu);
 		SortNu.setEditable(false);
 		SortNu.setBorder(border);
@@ -213,18 +208,17 @@ public class Consultant extends JFrame{
 		pan9.add(lab9);
 		space8 = new JLabel("                                                                                        ");
 		pan9.add(space8);
-		jb9 = new JTextField(15);
+		jb9 = new JTextArea(3,15);
 		pan9.add(jb9);
 		jb9.setEditable(false);
 		jb9.setBorder(border);
 		pan9.setBorder(BorderFactory.createEtchedBorder());
 	
-		//Search speciality by id and make a string a combination of the speciality's and add them to the jb9 text box
+		//Search speciality by id and make a string a combination of the specialitys and add them to the jb9
 		String spec = "";
 		SpecialityTypeDMO specialityTypeDMO = SpecialityTypeDMO.getInstance();
-		//Adding speciality to text box (so is displayed with consultant details )
+		GPSISDataMapper.connectToDatabase();
 		List<SpecialityTypeObject> tempset;
-		
 		try {
 			tempset = specialityTypeDMO.getAll();
 			for(SpecialityTypeObject x:tempset){
@@ -233,49 +227,32 @@ public class Consultant extends JFrame{
 				}
 			}
 		} catch (EmptyResultSetException e1) {
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
 		jb9.setText(spec);
 		jb9.setEditable(false);
 		
-		//Telling user if consultant is active or not 
-		JLabel Active = new JLabel("");
-		pan1.add(Active);
-		if(obj.isActive()!=0){
-			String act = "NOT ACTIVE";
-			Active.setText(act);
-		}
-		else if(obj.isActive()==0){
-			
-			//Edit
-			butt1 = new JButton("Edit");
-			pan1.add(butt1);
-			butt1.addActionListener(e);
-			
-			//Save
-			butt3 = new JButton("Save");
-			pan1.add(butt3);
-			butt3.addActionListener(e);
-			
-			//Delete
-			butt2 = new JButton("Delete");
-			pan1.add(butt2);
-			butt2.addActionListener(e);
-			
-			//Add
-			butt4 = new JButton("Add Speciality: ");
-			pan1.add(butt4);
-			butt4.addActionListener(e);
-			
-		}
+		butt1 = new JButton("Edit");
+		pan1.add(butt1);
+		butt1.addActionListener(e);
+		
+		butt3 = new JButton("Save");
+		pan1.add(butt3);
+		butt3.addActionListener(e);
+		
+		butt2 = new JButton("Delete");
+		pan1.add(butt2);
+		butt2.addActionListener(e);
+		
+		butt4 = new JButton("Add Speciality: ");
+		pan1.add(butt4);
+		butt4.addActionListener(e);
 		
 	}
 	
-	//Constructor 2
 	public Consultant(){
-		
-		//Creating line border
 		Border border = BorderFactory.createLineBorder(Color.BLACK);
 		Event e = new Event();
 		
@@ -288,7 +265,6 @@ public class Consultant extends JFrame{
 		//Main panel
 		pan1 = new JPanel();
 		add(pan1);
-		//Creating titled border for main panel
 		pan1.setBorder(BorderFactory.createTitledBorder("ADD Consultant"));
 		pan1.setLayout(new FlowLayout());
 		
@@ -430,7 +406,6 @@ public class Consultant extends JFrame{
 			//Editing
 		if((e.getSource()==butt1)){
 			
-			//Set all the text field editable (apart from speciality)
 				jb1.setEditable(true);
 				jb2.setEditable(true);
 				jb3.setEditable(true);
@@ -445,40 +420,38 @@ public class Consultant extends JFrame{
 				jb9.setEditable(false);
 				
 			}
-		
-		//Add consultant
 		else if((e.getSource()==but1)&&(counter<1)){
 			
 				counter+=1;
 				double amo =0;
 				
-				try{	
-					if((AccountNa.getText().trim().length()>2)&&(AccountNu.getText().trim().length()==8)&&(SortNu.getText().trim().length()==6)&&(jb1.getText().trim().length()!=0)&&
-							( jb2.getText().trim().length()!=0)&&( jb5.getText().trim().length()!=0)&&( jb3.getText().trim().length()!=0)&&( jb4.getText().trim().length()!=0)
-							&&( jb6.getText().trim().length()!=0)){
-						//Checking data can be converted if not will result in an exception thrown (bad data)
-						amo= Double.parseDouble(jb7.getText().trim());
-						ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
-						
-						String acc = (AccountNa.getText());
-						int acc2 = Integer.parseInt(AccountNu.getText());
-						int acc3 =Integer.parseInt(SortNu.getText());
-						//have to convert boolean to tiny int
-						
-						//Constructing consultant
-						ConsultantObject r = new ConsultantObject(jb1.getText(), jb2.getText(), jb3.getText(), jb4.getText(),
-																  jb5.getText(), jb6.getText(), amo, acc, acc2,acc3,0);
-						//Added consultant
-						consultantDMO.put(r);
-						
-						//Return message with added consultants ID
-						JOptionPane.showMessageDialog(null, "Consultant ("+ r.getFName().toUpperCase() + " "+ r.getLName().toUpperCase() + "'s) ID: "+ r.getId());
-						//Set window not visible
-						setVisible(false);
-					}
-					else{
-						JOptionPane.showMessageDialog(null, "Please enter correct data into fields");
-					}
+				try{
+				amo= Double.parseDouble(jb7.getText().trim());
+				
+				//
+				//
+				//
+				//
+				//change account-name, num. and sort-code
+				//
+				//
+				//
+				//
+				
+				ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
+				GPSISDataMapper.connectToDatabase();
+				//have to convert boolean to tiny int
+				
+				ConsultantObject r = new ConsultantObject(jb1.getText(), jb2.getText(), jb3.getText(), jb4.getText(),
+														  jb5.getText(), jb6.getText(), amo, "AccountName", 1234584, 403635,0);
+				consultantDMO.put(r);
+				
+				//Return messege with added consultants ID
+				JOptionPane.showMessageDialog(null, "Consultant ("+ r.getFName().toUpperCase() + " "+ r.getLName().toUpperCase() + "'s) ID: "+ r.getId());
+				setVisible(false);
+				
+				//Close current window here
+				//JOptionPane.showMessageDialog(null,""+consultantDMO.getById(4).getEmail());
 				
 				}catch(NumberFormatException eee){
 						JOptionPane.showMessageDialog(null, "Please Enter valid data" );
@@ -488,70 +461,48 @@ public class Consultant extends JFrame{
 		else if((e.getSource()==butt3)&&(counter<1)){
 			//need to update as not making new entry every time just changing info
 			ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
-			//Doing the same as above, making sue data is valid before updating consultant details
-			try{
-				double tNum = Double.parseDouble(jb8.getText());
-				String acc = (AccountNa.getText());
-				int acc2 = Integer.parseInt(AccountNu.getText());
-				int acc3 =Integer.parseInt(SortNu.getText());
-				
-				//Set details to be over written
-				ConsultantObject r = object;
-				r.setTitle(jb1.getText());
-				r.setFName(jb2.getText());
-				r.setLName(jb3.getText());
-				r.setAddress(jb4.getText());
-				r.setEmail(jb5.getText());
-				r.setNum(jb6.getText());
-				r.setPrice(tNum);
-				r.setAccName(acc);
-				r.setAccNum(acc2);
-				r.setSortCode(acc3);
-				//set is still active 
-				r.setisActive(0);
-				//Update/overwrite entry
-				consultantDMO.put(r);
-				//Saved confirmation message
-				JOptionPane.showMessageDialog(null, "Saved!");
-				
-			}catch(NumberFormatException eee){
-				JOptionPane.showMessageDialog(null, "Please Enter valid data" );
-			}
+			GPSISDataMapper.connectToDatabase();
+			double tNum = Double.parseDouble(jb8.getText());
+			ConsultantObject r = new ConsultantObject(jb1.getText(),jb2.getText(),jb3.getText(),jb4.getText(),jb5.getText(),jb6.getText(),tNum,"AccountName", 1234567784, 403635,0);
+			consultantDMO.put(r);
 		}
 		
-        //making inactive
+        //Removed by ID
 		if(e.getSource()==butt2){
-			//Doesn't delete consultant details from database as referrals made contain details related. To combat this i have just made the
-			//-consultant inactive once deleted.
-			//Making sue the user wants to delete the consultant
+			
 			String string = JOptionPane.showInputDialog("Are you sure?(Y or y for yes)");
 			if((string.equals("y"))||(string.equals("Y"))){
-				//Deleted (inactive)
+				
 				JOptionPane.showMessageDialog(null, "Deleted" );
 				ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
-				ConsultantObject r = object;
-				
-				/*
-				r.setAccName("INACTIVE");
-				r.setAccNum(0);
-				r.setPrice(0.0);
-				r.setSortCode(0);
-				*/
-				
-				r.setisActive(1);
-				consultantDMO.put(r);
-				setVisible(false);
+				GPSISDataMapper.connectToDatabase();
+				double tNum = Double.parseDouble(jb8.getText());
+				ConsultantObject r = new ConsultantObject(jb1.getText(),jb2.getText(),jb3.getText(),jb4.getText(),jb5.getText(),jb6.getText(),tNum,"AccountName", 1234567784, 403635,1);
+				consultantDMO.put(r);;
 			}
 			
 		}
 		
-		//Adding a speciality to the consultant
+		
+		/*
+		if(e.getSource()==butt2){
+			JOptionPane.showMessageDialog(null, "Deleted" );
+			ConsultantDMO consultantDMO = ConsultantDMO.getInstance();
+			GPSISDataMapper.connectToDatabase();
+			consultantDMO.removeById(ID);
+			butt2.setText("Removed");
+			setVisible(false);
+			//close current window here 
+
+		}
+			 */
+		
 		else if(e.getSource()==butt4){
-			
-			//Construct window
+			//SpecialityDMO specialityDMO = SpecialityDMO.getInstance();
+			//GPSISDataMapper.connectToDatabase();
+			//SpecialityObject r = new SpecialityObject();
 			AddSpecialistType as = new AddSpecialistType(ID);
 			Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-			//Centre the window
 			int x = (int) ((dimension.getWidth() - as.getWidth()) / 3);
 			int y = (int) ((dimension.getHeight() - as.getHeight()) / 4);
 			as.setLocation(x, y);
@@ -563,4 +514,15 @@ public class Consultant extends JFrame{
 		}
 	}
 }
+	public static void main(String[] args){
+		Consultant consul = new Consultant(2,"MR", "MATT", "SHARP", "BA", "BAA", "BAAA", "2.30");
+		consul.setVisible(true);
+		consul.setTitle("Add Consultant");
+		consul.setSize(600,560);	
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - consul.getWidth()) / 3);
+		int y = (int) ((dimension.getHeight() - consul.getHeight()) / 4);
+		consul.setLocation(x+250, y+140);
+		consul.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 }

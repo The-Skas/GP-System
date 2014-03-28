@@ -142,7 +142,7 @@ public class AddTaxForm extends GPSISPopup implements ActionListener {
 			} else {
 				salary = (Double) salaryFld.getValue();
 			}
-			((TaxFormATM) ViewTaxForms.getTable().getModel()).addRow(new TaxForm(selectedStaffMember,	(TaxOffice) taxOfficeFld.getSelectedItem(), taxCode, salary));
+			((TaxFormATM) ViewTaxForms.taxFormTable.getModel()).addRow(new TaxForm(selectedStaffMember,	(TaxOffice) taxOfficeFld.getSelectedItem(), taxCode, salary));
 			dispose();
 		}
 	}

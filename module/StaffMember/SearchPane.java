@@ -184,3 +184,8 @@ public class SearchPane implements ListSelectionListener, DocumentListener, Acti
             SwingUtilities.getWindowAncestor(button).dispose();			
 		}
 }
+
+/**
+ * End of File: SearchPane.java 
+ * Location: module/StaffMember
+ */

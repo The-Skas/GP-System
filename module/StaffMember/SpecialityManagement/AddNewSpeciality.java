@@ -1,5 +1,7 @@
-/**
+/** AddNewSpeciality 
+ * Displays a Window with a form to Add a new Speciality
  * 
+ * @author Vijendra Patel (vp302)
  */
 package module.StaffMember.SpecialityManagement;
 
@@ -19,32 +21,37 @@ import net.miginfocom.swing.MigLayout;
 import exception.DuplicateEntryException;
 import framework.GPSISPopup;
 
-/**
- * @author VJ
- *
- */
 public class AddNewSpeciality extends GPSISPopup implements ActionListener {
 
-	private static final long serialVersionUID = -5525990171496965465L;
-	private static JTextField newSpeciality;
-	private static JButton addNewSpecialityBtn;
+	private static final long	serialVersionUID	= 1L;
+	private static JTextField	newSpeciality;
+	private static JButton		addNewSpecialityBtn;
+
+	/** AddNewSpeciality Constructor
+	 * Builds and shows a Window with a form to add a New Speciality
+	 */
 	public AddNewSpeciality() {
 		super("Add New Speciality");
 		this.setLayout(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
-		
+
 		this.add(new JLabel("Add Speciality"), new CC().grow().alignX("center"));
-		
+
 		newSpeciality = new JTextField(25);
 		this.add(newSpeciality);
-		
+
 		addNewSpecialityBtn = new JButton("Add!");
 		addNewSpecialityBtn.addActionListener(this);
 		this.add(addNewSpecialityBtn);
-		
+
 		this.pack();
-		this.setLocationRelativeTo(null); // center window
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
+
+
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		try {
@@ -53,9 +60,15 @@ public class AddNewSpeciality extends GPSISPopup implements ActionListener {
 			((SpecialityALM) ViewSpecialities.specialityFld.getModel()).addSpeciality(nS);
 			dispose();
 		} catch (DuplicateEntryException e) {
-			JOptionPane.showMessageDialog(this, "Speciality already exists!", "Speciality already exists!", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Speciality already exists!", "Speciality already exists!",
+					JOptionPane.WARNING_MESSAGE);
 		}
-		
+
 	}
 
 }
+
+/**
+ * End of File: AddNewSpeciality.java 
+ * Location: module/StaffMember/SpecialityManagement
+ */

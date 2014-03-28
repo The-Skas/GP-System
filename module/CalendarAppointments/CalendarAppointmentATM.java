@@ -13,7 +13,7 @@ public class CalendarAppointmentATM extends AbstractTableModel{
 	
 	private static final long serialVersionUID = 1L; // is it me or does this improve speed?
 	//private String[] columnNames = {"ID", "Type", "Doctor", "Start Time", "End Time", "Patient(s)"};
-	private String[] columnNames = {"ID", "Type", "Doctor", "Start Time", "End Time"};
+	private String[] columnNames = {"ID", "Type", "Doctor", "Start Time", "End Time", "Patient"};
 	private List<CalendarAppointment> data;
 
 	public CalendarAppointmentATM(List<CalendarAppointment> d)
@@ -50,7 +50,7 @@ public class CalendarAppointmentATM extends AbstractTableModel{
         		return cA.getType();
         	case 2:
         		if(cA instanceof RoutineAppointment)  
-        			return ((RoutineAppointment) cA).getDoctor();  
+        			return ((RoutineAppointment) cA).getDoctorObject().getName();  
         		else
         			return (((CareManagementAppointment) cA).getCareProgramme().getDoctor());
         	case 3:

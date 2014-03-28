@@ -90,8 +90,6 @@ import module.CalendarAppointmentsModule;
                                     		TrainingDayDMO holiTbl=TrainingDayDMO.getInstance();
                                     		
                                     		holiTbl.put(new TrainingDay(trainingDay));
-                                    		
-                                    		CalendarAppointmentsModule.loadHolidays();
                          					
                         					JOptionPane.showMessageDialog( d, "Day set as Training Day.");
                         				}

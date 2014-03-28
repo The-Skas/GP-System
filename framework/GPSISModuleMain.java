@@ -5,7 +5,6 @@
  */
 package framework;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public abstract class GPSISModuleMain extends GPSISFramework {
