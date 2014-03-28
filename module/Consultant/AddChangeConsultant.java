@@ -144,7 +144,6 @@ public class AddChangeConsultant extends JFrame {
 		int y = (int) ((dimension.getHeight() - a.getHeight()) / 4);
 		a.setLocation(x, y);
 		a.setVisible(true);
-		a.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		a.setSize(600,350);
 		a.setTitle("Menu");
 	}

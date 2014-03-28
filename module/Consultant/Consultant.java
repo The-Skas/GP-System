@@ -523,6 +523,6 @@ public class Consultant extends JFrame{
 		int x = (int) ((dimension.getWidth() - consul.getWidth()) / 3);
 		int y = (int) ((dimension.getHeight() - consul.getHeight()) / 4);
 		consul.setLocation(x+250, y+140);
-		consul.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+
+        }
 }

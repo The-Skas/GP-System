@@ -46,8 +46,7 @@ public class Prescription extends GPSISObject
         this.endDate = endDate;
         this.payOrFree = payOrFree;
         this.medicalCondition = medicalCondition; 
-        this.listofMedicine = PrescriptionDMO.getInstance().getMedicinesByPrescriptionById(this.id);
-        
+        this.listofMedicine = null;
     }
     
     public Prescription(int patientID, int doctorID,Date startDate, Date endDate, List<Medicine> listofMedicine, int frequency, String payOrFree,String medicalCondition)
@@ -169,7 +168,9 @@ public class Prescription extends GPSISObject
     
     public List<Medicine> getlistofMedicine()
     {
-        
+        if(this.listofMedicine == null)
+            this.listofMedicine = PrescriptionDMO.getInstance().getMedicinesByPrescriptionById(this.id);
+
         return listofMedicine;
     }
     

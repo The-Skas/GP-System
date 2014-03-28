@@ -60,9 +60,6 @@ public class SpecialistReferralsModule extends GPSISModuleMain {
 			specialistReferralsModuleView.add(space,gbC);
 			specialistReferralsModuleView.add(MakeRef,gbC);
 			
-			search = new JButton("Search");
-			specialistReferralsModuleView.add(search);
-			search.addActionListener(e);
 			
 			
 			
@@ -100,19 +97,8 @@ public class SpecialistReferralsModule extends GPSISModuleMain {
 					refer.setTitle("Referral");
 					refer.setSize(600,350);
 					//Closes all windows after referral main window is closed
-					refer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					refer.setResizable(false);
 				} catch (EmptyResultSetException e1) {
-					e1.printStackTrace();
-				}
-				
-			}
-			else if(e.getSource()== search){
-				
-				try {
-					 p = module.Patient.SearchPane.doSearch();
-					 JOptionPane.showMessageDialog(null, p.getFirstName() + "'s ID: " + p.getId());
-				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 				

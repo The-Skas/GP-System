@@ -48,7 +48,6 @@ public class Referral extends JFrame {
 	private JList list;
 	
 		public Referral() throws EmptyResultSetException{
-			GPSISDataMapper.connectToDatabase();
 			//Border line colour
 			Border border = BorderFactory.createLineBorder(Color.BLACK);
 			//ActionListener class
@@ -258,7 +257,6 @@ public class Referral extends JFrame {
 			refer.setTitle("Referral");
 			refer.setSize(600,350);
 			//Closes all windows after referral main window is closed
-			refer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			refer.setResizable(false);
 		
 		}
