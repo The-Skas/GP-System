@@ -150,7 +150,6 @@ public class AppointmentsView extends GPSISPopup implements ActionListener, List
 			
 			return cAT;
 		} catch (EmptyResultSetException e) {
-			System.out.println("EMPTY SET");
 			return null;
 		}
 		

@@ -17,14 +17,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 
-  public class HolidayPanel {
+  public class TrainingDayPanel {
       
         JLabel l = new JLabel("", JLabel.CENTER);
         JDialog d;
              
         Calendar cal = Calendar.getInstance();                  
 
-    public HolidayPanel(String day) throws ParseException {
+    public TrainingDayPanel(String day) throws ParseException {
      
 
     SimpleDateFormat sDF = new SimpleDateFormat("yyyy/MM/dd");      

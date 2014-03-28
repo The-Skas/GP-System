@@ -148,20 +148,17 @@ public class PatientModule extends GPSISModuleMain implements ActionListener, Li
                     @Override
                     public void insertUpdate(DocumentEvent e) {
                         newFilter();
-                        System.out.println("In insert.");
                     }
 
                     @Override
                     public void removeUpdate(DocumentEvent e) {
-                        newFilter();       
-                        System.out.println("In remove.");
+                        newFilter();
 
                     }
 
                     @Override
                     public void changedUpdate(DocumentEvent e) {
-                        newFilter(); 
-                        System.out.println("In update.");
+                        newFilter();
 
                     }
                    
@@ -185,7 +182,6 @@ public class PatientModule extends GPSISModuleMain implements ActionListener, Li
             table.getModel();
             
             PatientATM tempATM = (PatientATM)table.getModel();
-            System.out.println(tempATM.columnNames[0]);
             //init patientTable
             PatientModule.patientTable = table;
             return table;
@@ -218,7 +214,6 @@ public class PatientModule extends GPSISModuleMain implements ActionListener, Li
 
      @Override
     public void valueChanged(ListSelectionEvent e) {
-        System.out.println("ENTER Value is changed");
         if(PatientModule.patientTable.getSelectedRow() != -1)
         {
             this.viewPatientBtn.setVisible(true);
@@ -229,7 +224,6 @@ public class PatientModule extends GPSISModuleMain implements ActionListener, Li
             this.viewPatientBtn.setVisible(false);
             this.delPatientBtn.setVisible(false);
         }
-        System.out.println("EXIT Value is changed");
 
     }
     

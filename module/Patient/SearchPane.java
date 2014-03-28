@@ -76,7 +76,7 @@ public class SearchPane implements ListSelectionListener, DocumentListener, Acti
             // build Header
 	    		JPanel header = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().shrink()));
 	    			JLabel hTitle = new JLabel(dialogTitle);
-	    			hTitle.setFont(GPSISFramework.getFonts().get("Ubuntu").deriveFont(24f));
+	    			hTitle.setFont(GPSISFramework.getFonts().get("OpenSans").deriveFont(24f));
 	    		header.add(hTitle);	    		
     		content.add(header, new CC().wrap());
 	    		

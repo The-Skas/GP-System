@@ -100,50 +100,39 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember> {
 	 * @throws SQLException
 	 * @throws EmptyResultSetException
 	 */
-	private StaffMember buildStaffMember(ResultSet res) throws SQLException,
+	public StaffMember buildStaffMember(ResultSet res) throws SQLException,
 			EmptyResultSetException {
 		if (res != null) // if found, create a the StaffMember object
 		{
-			// check if temporary staff entry exists in database. SELECT * FROM
-			// TempStaffMember WHERE TempStaffMember.staff_member_id = res.getInt("id")
-			//ResultSet tempCheckRes = GPSISDataMapper.getResultSet(
-				//	new SQLBuilder("staff_member_id", "=", ""
-						//	+ res.getInt("id")), "TempStaffMember");
+
 			Calendar cal = Calendar.getInstance();
-                        res.getDate("end_date");
 			Date endDate = null;
-			if (!res.wasNull()) {
+			if (res.getDate("end_date") != null) {
 				cal.setTime(res.getDate("end_date"));
-				// temp contract and on full time
 				endDate = cal.getTime();
 			}
 
 			cal.setTime(res.getDate("start_date"));
 			Date startDate = cal.getTime();
 
-			if (res.getString("role").equals("Receptionist")) // if the Staff
-																// Member is a
-																// Receptionist
-			{
-				Receptionist r = new Receptionist(res.getInt("id"),
+			if (res.getString("role").equals("Receptionist")) {
+				Receptionist r = new Receptionist(res.getInt("StaffMember.id"),
 						res.getString("username"),
 						res.getString("enc_password"),
-						res.getString("first_name"),
-						res.getString("last_name"),
+						res.getString("StaffMember.first_name"),
+						res.getString("StaffMember.last_name"),
 						res.getBoolean("full_time"), startDate,
 						res.getBoolean("office_manager"),
 						res.getInt("holiday_allowance"));
 				if (endDate != null)
 					r.setTemporary(endDate);
 				return r;
-			} else // if the Staff Member is a MedicalStaffMember (Doctor or
-					// Nurse)
-			{
+			} else {
 				MedicalStaffMember mSM = new MedicalStaffMember(
-						res.getInt("id"), res.getString("username"),
+						res.getInt("StaffMember.id"), res.getString("username"),
 						res.getString("enc_password"),
-						res.getString("first_name"),
-						res.getString("last_name"),
+						res.getString("StaffMember.first_name"),
+						res.getString("StaffMember.last_name"),
 						res.getBoolean("full_time"), startDate,
 						res.getBoolean("office_manager"),
 						res.getString("role"), res.getInt("holiday_allowance"));
@@ -233,7 +222,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember> {
 	public List<CalendarAppointment> getAppointments(StaffMember o)
 			throws EmptyResultSetException {
 		return calendarAppointmentDMO.getAllByProperties(new SQLBuilder(
-				"staff_member_id", "=", "" + o.getId()));
+				"StaffMember.id", "=", "" + o.getId()));
 	}
 	
 	/** getReferrals
@@ -302,7 +291,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember> {
 	}
 
 	/** getHolidays 
-	 * retrieves all of the Holidays for a Staff Member in the past
+	 * retrieves all of the TrainingDay for a Staff Member in the past
 	 * year
 	 * 
 	 * @param
@@ -418,7 +407,7 @@ public class StaffMemberDMO extends GPSISDataMapper<StaffMember> {
 			throws EmptyResultSetException {
 		try {
                         String sqlJoin = this.tableName + 
-                                " left outer join TempStaffMember on StaffMember.id = TempStaffMember.staff_member_id";
+                                " LEFT OUTER JOIN TempStaffMember on StaffMember.id = TempStaffMember.staff_member_id";
 			ResultSet res = GPSISDataMapper.getResultSet(query, sqlJoin);
 
 			if (res.next()) // if found, create a the StaffMember object

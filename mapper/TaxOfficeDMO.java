@@ -52,7 +52,7 @@ public class TaxOfficeDMO extends GPSISDataMapper<TaxOffice> {
 					res.getString("locality"), res.getString("town"), res.getString("postcode_area"),
 					res.getString("postcode_district"));
 		} else {
-			System.err.println("EMPTY SET - No Staff Member Found matching the criteria");
+			System.err.println("EMPTY SET - No Tax Office Found matching the criteria");
 		}
 		return null;
 	}

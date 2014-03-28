@@ -85,20 +85,17 @@ public class SearchTable<T extends AbstractTableModel> extends GPSISPopup implem
                     @Override
                     public void insertUpdate(DocumentEvent e) {
                         newFilter();
-                        System.out.println("In insert.");
                     }
 
                     @Override
                     public void removeUpdate(DocumentEvent e) {
-                        newFilter();       
-                        System.out.println("In remove.");
+                        newFilter();
 
                     }
 
                     @Override
                     public void changedUpdate(DocumentEvent e) {
-                        newFilter(); 
-                        System.out.println("In update.");
+                        newFilter();
 
                     }
                    
@@ -118,14 +115,12 @@ public class SearchTable<T extends AbstractTableModel> extends GPSISPopup implem
             @Override
             public void windowClosing(WindowEvent e)
             {
-                System.out.println("Closed window");
                 ((Component)parent).setEnabled(true);
             }
            
             @Override
             public void windowClosed(WindowEvent e)
             {
-                System.out.println("Closed window");
                 ((Component)parent).setEnabled(true);
             }
             
@@ -177,7 +172,6 @@ public class SearchTable<T extends AbstractTableModel> extends GPSISPopup implem
                     this.selectedRow = tbl.convertRowIndexToModel(row);
                     this.parent.broadcast(this);
                     ((Component)this.parent).setEnabled(true);
-                    System.out.println(this.getSelectedRow()+ " is selected");
                     this.dispose();
                 }
             break;

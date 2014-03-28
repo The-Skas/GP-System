@@ -15,13 +15,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import module.CalendarAppointments.AnalogClock;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -35,6 +35,7 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	private static JPanel view;
 	private static JLabel headerTitle;
 	private static JPanel navigationBtns;
+	private static Thread hClockThread;
 
 	private static MainInterface instance;
 
@@ -80,24 +81,27 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 
 		GPSISModuleMain mM = null;
 		switch (m) {
-		case "Patient Records":
-			mM = new PatientModule();
-			break;
-		case "Staff Records":
-			mM = new StaffMemberModule();
-			break;
-		case "Calendar Appointments":
-			mM = new CalendarAppointmentsModule();
-			break;
-		case "Prescriptions":
-			mM = new PrescriptionsModule();
-			break;
-		case "Specialist Referrals":
-			mM = new SpecialistReferralsModule();
-			break;
-		case "Care Programme Management":
-			mM = new CareProgrammeManagementModule();
-			break;
+			case "Patient Records":
+				mM = new PatientModule();
+				break;
+			case "Staff Records":
+				mM = new StaffMemberModule();
+				break;
+			case "Calendar Appointments":
+				mM = new CalendarAppointmentsModule();
+				break;
+			case "Prescriptions":
+				mM = new PrescriptionsModule();
+				break;
+			case "Specialist Referrals":
+				mM = new SpecialistReferralsModule();
+				break;
+			case "Care Programme Management":
+				mM = new CareProgrammeManagementModule();
+				break;
+			case "Welcome":
+				mM = new WelcomeModule();
+				break;
 		}
 		if (mM != null) {
 			view.add(mM.getModuleView(), m);
@@ -116,12 +120,12 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 				+ " | " + currentUser.getRole());
 		if (currentUser.isOfficeManager())
 			fTitle.setText(fTitle.getText() + " | Office Manager.");
-		fTitle.setFont(fonts.get("Ubuntu").deriveFont(12f));
+		fTitle.setFont(fonts.get("OpenSans").deriveFont(12f));
 		f.add(fTitle, new CC().dockWest());
 
 		JLabel fCredits = new JLabel(
 				"Created by: VJ, Salman, Milka, Oshan, Matt and Seun");
-		fCredits.setFont(fonts.get("Ubuntu").deriveFont(10f));
+		fCredits.setFont(fonts.get("OpenSans").deriveFont(10f));
 		f.add(fCredits, new CC().dockEast());
 
 		f.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
@@ -133,38 +137,41 @@ public class MainInterface extends GPSISFramework implements ActionListener {
 	 */
 	private JPanel buildHeader() {
 		// set Header
-		JPanel h = new JPanel(new MigLayout(new LC(), new AC().grow(),
-				new AC().shrink()));
+		JPanel h = new JPanel(new MigLayout(new LC().insets("0px").gridGap("0px", "0px"), new AC().grow().gap("0px"),
+				new AC().shrink().gap("0px")));
 		h.setBackground(new Color(51, 51, 51));
 		h.setForeground(new Color(235, 235, 235));
-
-		JLabel hLogo = new JLabel(GPSISModuleMain.getGPSISLogo());
-		hLogo.setForeground(new Color(235, 235, 235));
-		h.add(hLogo, new CC().span(1));
-
+		
+		// add Milka's Clock
+		AnalogClock hClock = new AnalogClock();
+		hClock.setMinimumSize(new Dimension(64, 64));
+		h.add(hClock, new CC().span(1));
+		hClockThread = new Thread(hClock);
+		hClockThread.start();
+		
+		JPanel hRight = new JPanel(new MigLayout(new LC().insets("0px").gridGap("0px", "0px"), new AC().grow().gap("0px"),
+				new AC().shrink().gap("0px")));
+		hRight.setBackground(new Color(51,51,51));
 		headerTitle = new JLabel("GP-SIS");
-		headerTitle.setFont(fonts.get("Ubuntu").deriveFont(24f));
+		headerTitle.setFont(fonts.get("OpenSans").deriveFont(24f));
+		headerTitle.setBackground(new Color(51, 51, 51));
 		headerTitle.setForeground(new Color(235, 235, 235));
-		h.add(headerTitle, new CC().pad("5px").span().wrap());
-
-		// h.add(buildNavigation(),
-		// new CC().span().dockSouth().alignX("center"));
-		h.add(navigationBtns, new CC().span().dockSouth().alignX("center"));
-
+		hRight.add(headerTitle, new CC().alignX("center").wrap());
+		
+		hRight.add(navigationBtns, new CC().alignX("center").span());
+		
+		h.add(hRight, new CC().span());
 		return h;
 	}
-
+	
 	/** createAndShowGUI
 	 * 
 	 */
 	public void createAndShowGUI() {
 
-		JFrame gpsisMainFrame = new JFrame(
-				"General Practitioner's Surgery Information System");
+		JFrame gpsisMainFrame = new JFrame(APPTITLE);
 		// Set Icon
-		ImageIcon icon = new ImageIcon(this.getClass().getResource(
-				"/image/favicon.jpg"));
-		gpsisMainFrame.setIconImage((icon.getImage()));
+		gpsisMainFrame.setIconImage(getGPSISLogo().getImage());
 		gpsisMainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gpsisMainFrame.setLayout(new MigLayout(new LC(), new AC().grow(),
 				new AC().grow()));

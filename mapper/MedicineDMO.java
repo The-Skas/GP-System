@@ -61,7 +61,6 @@ public class MedicineDMO extends GPSISDataMapper<Medicine>{
                 
                 
             } else {
-                System.err.println("EMPTY SET");
             }
 
         } catch (SQLException e) {
@@ -86,8 +85,6 @@ public class MedicineDMO extends GPSISDataMapper<Medicine>{
                                 res.getString("relevant_amount"));
                 
                 
-            } else {
-                System.err.println("EMPTY SET");
             }
 
         } catch (SQLException e) {

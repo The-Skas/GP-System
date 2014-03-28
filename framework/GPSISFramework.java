@@ -18,8 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import exception.EmptyResultSetException;
 import net.fortuna.ical4j.data.CalendarBuilder;
@@ -28,7 +28,7 @@ import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import mapper.CalendarAppointmentDMO;
 import mapper.CareProgrammeDMO;
-import mapper.HolidaysDMO;
+import mapper.TrainingDayDMO;
 import mapper.MedicineDMO;
 import mapper.PatientDMO;
 import mapper.PrescriptionDMO;
@@ -42,7 +42,6 @@ import mapper.TaxFormDMO;
 import mapper.TaxOfficeDMO;
 import module.LoginModule;
 import module.MainInterface;
-import object.Holidays;
 import object.StaffMember;
 
 public class GPSISFramework {
@@ -62,6 +61,9 @@ public class GPSISFramework {
 //	etc.
 	
 	protected static final String APPTITLE = "General Practitioner's Surgery Information System";
+	private final ImageIcon GPSISLOGO = new ImageIcon(this.getClass().getResource("/image/favicon.gif"));
+	
+	
 	protected static StaffMember currentUser;
 	private static final GPSISFramework instance = new GPSISFramework();
 	
@@ -79,6 +81,8 @@ public class GPSISFramework {
 		return instance;
 	}	
     
+	
+	
 	/** initialise
 	 * Initialises the Framework
 	 * Initialisation List: 
@@ -138,14 +142,9 @@ public class GPSISFramework {
 		}
 		
 		try {
-		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		        if ("Nimbus".equals(info.getName())) {
-		            UIManager.setLookAndFeel(info.getClassName());
-		            break;
-		        }
-		    }
+		    UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
-		    // If Nimbus is not available, set the GUI to another look and feel.
+		    e.printStackTrace();
 		}
 			
 		
@@ -159,7 +158,7 @@ public class GPSISFramework {
 		
 		splashWindow.addText("\nPre-loading Modules:");
 		// Set the modules to load
-		String[] modulesToLoad = {"Patient Records", "Staff Records", "Calendar Appointments", "Prescriptions", "Specialist Referrals"};
+		String[] modulesToLoad = {"Welcome", "Patient Records", "Staff Records", "Calendar Appointments", "Prescriptions", "Specialist Referrals"};
 		for (String module : modulesToLoad) {
 			if (module.length() < 15)
 				splashWindow.addText("\n\t" + module + "\t");
@@ -179,6 +178,14 @@ public class GPSISFramework {
 		splashWindow.dispose();
 		
 		MainInterface.getInstance().createAndShowGUI();	
+	}
+	
+	/** getGPSISLogo
+	 * @return the GPSISLogo
+	 */
+	public static ImageIcon getGPSISLogo()
+	{
+		return GPSISFramework.getInstance().GPSISLOGO;
 	}
 		
 	/** loadFonts
@@ -212,7 +219,7 @@ public class GPSISFramework {
 	}
 	
 	/** loadHolidays
-	 * parses an External iCS file containing the Dates of British Public Holidays into an ArrayList of Dates, 
+	 * parses an External iCS file containing the Dates of British Public TrainingDay into an ArrayList of Dates, 
 	 * this is accessible via the publicHolidays variable
 	 */
 	private void loadHolidays()
@@ -247,7 +254,7 @@ public class GPSISFramework {
 	}
 	
 	/** getPublicHolidays
-	 * @return a List of Dates representing the Public Holidays
+	 * @return a List of Dates representing the Public TrainingDay
 	 */
 	public static List<Date> getPublicHolidays()
 	{
@@ -278,7 +285,7 @@ public class GPSISFramework {
 		
 		// check if the Date is a Training Day
 		try {
-			HolidaysDMO.getInstance().getByProperties(new SQLBuilder("date", "=", sDF.format(d)));
+			TrainingDayDMO.getInstance().getByProperties(new SQLBuilder("date", "=", sDF.format(d)));
 			return true;
 		} catch (EmptyResultSetException e) {
 			//e.printStackTrace();

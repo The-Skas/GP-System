@@ -6,24 +6,16 @@ import java.awt.geom.*;
 import java.util.*;
 import javax.swing.*;
 
-public class AnalogClock extends JComponent implements ActionListener {
-    final static double TWOPI = Math.PI * 2.0;
+public class AnalogClock extends JPanel implements ActionListener, Runnable {
+
+	private static final long serialVersionUID = 1L;
+	final static double TWOPI = Math.PI * 2.0;
     
     public AnalogClock() {
-        javax.swing.Timer timer = new javax.swing.Timer(1000,this);
-        timer.start();
+//    	javax.swing.Timer timer = new javax.swing.Timer(1000,this);
+//        timer.start();
     }
     
-    /* tried to make the clock a separate thread, unsuccessfully
-     * gonna work on that later! 
-	@Override
-	public void run() {
-        javax.swing.Timer timer = new javax.swing.Timer(1000,this);
-        timer.start();
-		
-	}
-	*/
-
     public void actionPerformed(ActionEvent ae) {
         repaint();
     }
@@ -34,7 +26,7 @@ public class AnalogClock extends JComponent implements ActionListener {
          RenderingHints.VALUE_ANTIALIAS_ON);
 
         // draw the background
-        g.setColor(Color.WHITE);
+        g.setColor(new Color(51, 51, 51));
         g.fillRect(0,0,getWidth(),getHeight());
         
         Calendar calendar = Calendar.getInstance();
@@ -49,7 +41,7 @@ public class AnalogClock extends JComponent implements ActionListener {
         AffineTransform at = g.getTransform();
         
         // draw minute ticks
-        g.setColor(Color.BLACK);
+        g.setColor(Color.GRAY);
         for (int i=0; i<60; i++) {
             g.drawLine(center,center/25,center,center/50);
             g.rotate(TWOPI * (6.0 / 360.0),center,center);
@@ -67,7 +59,7 @@ public class AnalogClock extends JComponent implements ActionListener {
         int[] x,y;
 
         // draw hour hand
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.rotate(TWOPI * (((hours * 3600.0) + (mins * 60.0) + secs) / 43200.0),
          center,center);
         x = new int[] { center,center+center/16,center,center-center/16 };
@@ -76,7 +68,7 @@ public class AnalogClock extends JComponent implements ActionListener {
         g.setTransform(at);
         
         // draw minute hand
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.rotate(TWOPI * ((mins * 60.0 + secs) / 3600.0),center,center);
         x = new int[] { center,center+center/20,center,center-center/20 };
         y = new int[] { center+center/5,center,center/20,center };
@@ -84,7 +76,7 @@ public class AnalogClock extends JComponent implements ActionListener {
         g.setTransform(at);
         
         // draw second hand
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.fillOval(center-center/50,center-center/50,center/25,center/25);
         g.rotate(TWOPI * (secs/ 60.0),center,center);
         x = new int[] { center,center-center/100,center,center+center/100 };
@@ -93,4 +85,10 @@ public class AnalogClock extends JComponent implements ActionListener {
         g.drawLine(center,center+center/4,center,center/15);
         g.setTransform(at);
     }
+    
+
+	public void run() {
+		javax.swing.Timer timer = new javax.swing.Timer(500,this);
+        timer.start();
+	}
 }

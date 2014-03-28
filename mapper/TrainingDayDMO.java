@@ -10,61 +10,61 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import object.CalendarAppointment;
-import object.Holidays;
+import object.TrainingDay;
 import object.Patient;
 import exception.EmptyResultSetException;
 import framework.GPSISDataMapper;
 
-// access the tables with Holidays and Training Days
+// access the tables with TrainingDay and Training Days
 
-public class HolidaysDMO extends GPSISDataMapper<Holidays> {
+public class TrainingDayDMO extends GPSISDataMapper<TrainingDay> {
 	
-    private HolidaysDMO(String tableName)
+    private TrainingDayDMO(String tableName)
     {
         this.tableName = tableName;
     }
     
-    private static HolidaysDMO instance; // singleton 
+    private static TrainingDayDMO instance; // singleton 
 
-    public static HolidaysDMO getInstance() // make it a singleton
+    public static TrainingDayDMO getInstance() // make it a singleton
     {
         if(instance == null)
         {
-            instance = new HolidaysDMO("Holidays");
+            instance = new TrainingDayDMO("TrainingDay");
         }
         return instance;
     }
     
 
 	@Override
-	public List<Holidays> getAllByProperties(SQLBuilder query)
+	public List<TrainingDay> getAllByProperties(SQLBuilder query)
 			throws EmptyResultSetException 
 	{
-		List<Holidays> holidays = new ArrayList<>();
+		List<TrainingDay> trainingDay = new ArrayList<>();
 		ResultSet res;
 		try {
 			res = GPSISDataMapper.getResultSet(query, this.tableName);
 			while(res.next())
 	        {
-	        	holidays.add(new Holidays(res.getInt("id"),res.getDate("date")));
+	        	trainingDay.add(new TrainingDay(res.getInt("id"),res.getDate("date")));
 	        }			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		if (!holidays.isEmpty())
-			return holidays;
+		if (!trainingDay.isEmpty())
+			return trainingDay;
 		else
 			throw new EmptyResultSetException();
 	}
 
 	@Override
-	public Holidays getByProperties(SQLBuilder query)
+	public TrainingDay getByProperties(SQLBuilder query)
 			throws EmptyResultSetException {
 		try {
 			ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);
 			if (res.next()) {
-				return new Holidays(res.getInt("id"),res.getDate("date"));
+				return new TrainingDay(res.getInt("id"),res.getDate("date"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -73,7 +73,7 @@ public class HolidaysDMO extends GPSISDataMapper<Holidays> {
 	}
 
 	@Override
-	public void put(Holidays o) {
+	public void put(TrainingDay o) {
 	       String date = new SimpleDateFormat("yyyy-MM-dd").format(o.getDate());
 	       
 	       SQLBuilder sql = new SQLBuilder("id", "=", ""+o.getId())
@@ -86,33 +86,6 @@ public class HolidaysDMO extends GPSISDataMapper<Holidays> {
 	        }
 
 	}
-	
-	
-	/*
-	public static void main(String [] args)
-	{
-		GPSISDataMapper.connectToDatabase();
-		
-		HolidaysDMO holiTbl=HolidaysDMO.getInstance();
-		
-		holiTbl.put(new Holidays(new Date()));
-		
-		try {
-			System.out.println(holiTbl.getAll());
-		} catch (EmptyResultSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-				holiTbl.removeById(1);
-				
-				try {
-					System.out.println(holiTbl.getAll());
-				} catch (EmptyResultSetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
-	}
-	*/
 	
 }

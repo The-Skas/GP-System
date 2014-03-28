@@ -167,7 +167,7 @@ public class Prescription extends GPSISObject
         endDate = input;
     }   
     
-    public List getlistofMedicine()
+    public List<Medicine> getlistofMedicine()
     {
         
         return listofMedicine;

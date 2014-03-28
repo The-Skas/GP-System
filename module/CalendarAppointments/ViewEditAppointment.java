@@ -31,6 +31,7 @@ import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import object.CalendarAppointment;
 import object.Patient;
+import object.Register;
 import object.RoutineAppointment;
 import object.StaffMember;
 import exception.EmptyResultSetException;
@@ -75,8 +76,7 @@ public class ViewEditAppointment implements ActionListener {
 		
 		// initialize selectedPatient and selectedDoctor
 		
-		selectedDoctor = ((RoutineAppointment) cA).getDoctorObject();
-		selectedPatient = ((RoutineAppointment) cA).getPatientObject();
+		
 		
 		d = new JDialog();
 		d.setTitle("View/Edit Routine Calendar Appointment");
@@ -91,7 +91,8 @@ public class ViewEditAppointment implements ActionListener {
 		JPanel viewEditPanel = new JPanel(new MigLayout());
 		
 		if (cA instanceof RoutineAppointment){ // if appointment is routine
-		
+		selectedDoctor = ((RoutineAppointment) cA).getDoctorObject();
+		selectedPatient = ((RoutineAppointment) cA).getPatientObject();
 		this.selectedCalendarAppointment = (RoutineAppointment) cA;
 		
 		 patientButton = new JButton("Change Patient");
@@ -300,7 +301,7 @@ public class ViewEditAppointment implements ActionListener {
 				{
 					JOptionPane.showMessageDialog(  dateBtn, "Please fill in all necessary fields.", "Blank Input", JOptionPane.WARNING_MESSAGE);
 				} else if(GPSISFramework.getInstance().isHoliday(d)) { // make sure selected date is not a holiday or training day 
-					JOptionPane.showMessageDialog(dateBtn, "There are no opening hours on Holidays and Training days. Please, select another day.", "No opening hours on Holidays and Training Days", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(dateBtn, "There are no opening hours on TrainingDay and Training days. Please, select another day.", "No opening hours on TrainingDay and Training Days", JOptionPane.WARNING_MESSAGE);
 				} else if(isItSunday.equals("Sun")) { // make sure selected date isn't Sunday
 					JOptionPane.showMessageDialog(dateBtn, "There are no opening hours on Sundays. Please, select another day.", "No opening hours on Sundays", JOptionPane.WARNING_MESSAGE);
 				} else if(isItSunday.equals("Sat")) {
@@ -334,21 +335,21 @@ public class ViewEditAppointment implements ActionListener {
 																				// now I have a String with the date and time in a format similar to the timestamp format											
 				String[] hourParts = slotField.getText().split(":");
 				// convert the dateTimeString to Date
-				SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+				SimpleDateFormat newDateFormatter = new SimpleDateFormat("yyyy/MM/dd");
 				
 				// respect availability of doctors and nurses
 				int a = 3; // int for availability - either 0, 1, 2 or 3, assume it's ALLDAY (3) if not set  
 				
 				try {	 
-					 date = newFormatter.parse(dateTimeString);
+					 date = newDateFormatter.parse(dateTimeString.trim());
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
 				
 				try {
 					a  = StaffMemberDMO.getInstance().getRegister(selectedDoctor, date).getAvailability();
-				} catch (EmptyResultSetException e1) {
-					e1.printStackTrace();
+				} catch (EmptyResultSetException e1) { // If there is no current Availability set, set as Full Availability
+					a = Register.ALLDAY;
 				}
 				
 				final long minuteMilliseconds = 60000; //millisecs
@@ -376,15 +377,11 @@ public class ViewEditAppointment implements ActionListener {
 				{
 					if(date.after(now)){ // make sure appointment is in the future
 						//new RoutineAppointment(date, fifteenMinutesLater, PatientDMO.getInstance().getById(pId), StaffMemberDMO.getInstance().getById(dId), summary);
-						//StaffMemberDMO.getInstance().removeById(selectedStaffMember.getId()); 
+						//StaffMemberDMO.getInstance().removeById(selectedStaffMember.getId());
+						System.out.println("Removing Appointment: " + selectedCalendarAppointment.getId());
 						CalendarAppointmentDMO.getInstance().removeById(selectedCalendarAppointment.getId());	
-						try {
-							CalendarAppointmentDMO.getInstance().put(new RoutineAppointment(date, fifteenMinutesLater, PatientDMO.getInstance().getById(pId), StaffMemberDMO.getInstance().getById(dId), summary));
-							JOptionPane.showMessageDialog( dateBtn, "Appointment saved successfully.");
-						} catch (EmptyResultSetException e) {
-							JOptionPane.showMessageDialog(dateBtn, "EmptyResultSetException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
-							e.printStackTrace();
-						}						 
+						new RoutineAppointment(date, fifteenMinutesLater, selectedPatient, selectedDoctor, summary);
+						JOptionPane.showMessageDialog( dateBtn, "Appointment saved successfully.");						 
 						this.d.dispose();
 					} else {
 						JOptionPane.showMessageDialog(dateBtn, "Appointments can only be made in the future. Please select another date/time.", "Appointment time", JOptionPane.WARNING_MESSAGE);

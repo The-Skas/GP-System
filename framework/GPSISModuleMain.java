@@ -5,20 +5,11 @@
  */
 package framework;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public abstract class GPSISModuleMain extends GPSISFramework {
 
-	private static final String GPSISLOGO = "GP-SIS"; //ImageIcon icon = new ImageIcon("", ""); USE LATER WHEN WE HAVE A LOGO	
-	
-	/** getGPSISLogo
-	 * @return the GPSISLogo
-	 */
-	public static String getGPSISLogo()
-	{
-		return GPSISLOGO;
-	}
-	
 	/** getModuleView
 	 * @return a JPanel for the module
 	 */

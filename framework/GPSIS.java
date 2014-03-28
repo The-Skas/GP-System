@@ -12,7 +12,7 @@ public class GPSIS {
 	 */
 	public static void main(String[] args)
 	{
-		GPSISFramework GPSIS = new GPSISFramework();		
+		GPSISFramework GPSIS = GPSISFramework.getInstance();
 		GPSIS.initialise();		
 		
 	}

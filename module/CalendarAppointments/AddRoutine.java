@@ -271,7 +271,7 @@ public class AddRoutine extends GPSISPopup implements ActionListener{
 				{
 					JOptionPane.showMessageDialog(this, "Please fill in all necessary fields.", "Blank Input", JOptionPane.WARNING_MESSAGE);
 				} else if(GPSISFramework.getInstance().isHoliday(d)) { // make sure selected date is not a holiday or training day 
-					JOptionPane.showMessageDialog(this, "There are no opening hours on Holidays and Training days. Please, select another day.", "No opening hours on Holidays and Training Days", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this, "There are no opening hours on TrainingDay and Training days. Please, select another day.", "No opening hours on TrainingDay and Training Days", JOptionPane.WARNING_MESSAGE);
 				} else if(isItSunday.equals("Sun")) { // make sure selected date isn't Sunday
 					JOptionPane.showMessageDialog(this, "There are no opening hours on Sundays. Please, select another day.", "No opening hours on Sundays", JOptionPane.WARNING_MESSAGE);
 				} else if(isItSunday.equals("Sat")) {

@@ -18,9 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import object.Holidays;
+import object.TrainingDay;
 import mapper.CalendarAppointmentDMO;
-import mapper.HolidaysDMO;
+import mapper.TrainingDayDMO;
 import module.CalendarAppointmentsModule;
 
     public class TrainingDaysPicker{
@@ -85,11 +85,11 @@ import module.CalendarAppointmentsModule;
                                             // add that date to holidays and training days ArrayList                                           
                                              */
                                             
-                                            // add selected Date to HolidaysDMO
+                                            // add selected Date to TrainingDayDMO
                                             
-                                    		HolidaysDMO holiTbl=HolidaysDMO.getInstance();
+                                    		TrainingDayDMO holiTbl=TrainingDayDMO.getInstance();
                                     		
-                                    		holiTbl.put(new Holidays(trainingDay));
+                                    		holiTbl.put(new TrainingDay(trainingDay));
                                     		
                                     		CalendarAppointmentsModule.loadHolidays();
                          					

@@ -31,16 +31,17 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
-import mapper.HolidaysDMO;
+import mapper.TrainingDayDMO;
 import module.CalendarAppointments.AddRoutine;
 import module.CalendarAppointments.AppointmentsView;
 import module.CalendarAppointments.DailyView;
 import module.CalendarAppointments.DailyViewSaturday;
-import module.CalendarAppointments.DatePicker;
-import module.CalendarAppointments.HolidayPanel;
-import module.CalendarAppointments.TrainingDaysPicker;
-import module.CalendarAppointments.WeeklyView;
-import module.CalendarAppointments.MonthlyView;
+import module.CalendarAppointments.TrainingDayPanel;
+import module.CalendarAppointments.ViewEditAppointment;
+import module.StaffMember.*;
+import object.CalendarAppointment;
+import object.TrainingDay;
+import object.StaffMember;
 import exception.EmptyResultSetException;
 import exception.UserDidntSelectException;
 import framework.*;
@@ -207,11 +208,9 @@ try {
 		// otherwise, he CAN'T determine training days
 		
 		if(currentUser.isOfficeManager()){
-			System.out.println("Staff Member is office manager");
 			determineTrainingDays.setEnabled(true);
 		}	
 		else {
-			System.out.println("Staff Member is NOT office manager");
 			determineTrainingDays.setEnabled(false);
 		}
 			
@@ -257,29 +256,81 @@ try {
                     	Date appDate = yMD.parse(dateField.getText());
            			 String appString = sundayChecker.format(appDate);
 
-           		    SimpleDateFormat sDF = new SimpleDateFormat("yyyy/MM/dd");  
-           		    String appDateString = sDF.format(appDate);
-           		     
-           		     Color blueishInk = new Color(69, 65, 107);
-           		         
-           		        // convert a String to a Date
-           		       // Date date = sDF.parse(day);
-           		        
-           		        // convert a Date to a String
-           		        DateFormat sDF1 = new SimpleDateFormat("EEE dd MMMM yyyy");
-           		        String s = sDF1.format(appDate);  
-                    	
-                    		//System.out.println("appString is: "+appString);
-                     		if(isHoliday(appDate))
-                     			new HolidayPanel(appDateString);
-                     		else if(appString.equals("Sat"))
-                    			new DailyViewSaturday(selectedDoctor.getId(), dateField.getText());
-                    		else if(appString.equals("Sun"))
-                    			JOptionPane.showMessageDialog( dateField, "There are no opening hours on Sundays. Please, select another day.", "No opening hours on Sundays", JOptionPane.WARNING_MESSAGE);
-                    		else
-                    			new DailyView(selectedDoctor.getId(), dateField.getText());
-					} catch (NumberFormatException | ParseException e) {
-						JOptionPane.showMessageDialog( dateField, "NumberFormatException or ParseException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
+	            		if(selectedDoctor.isDoctor() || selectedDoctor.isNurse()) { // Receptionists and Office Managers don't have appointments
+	            			dailyView.setEnabled(true);
+	            			weeklyView.setEnabled(true);
+	            			monthlyView.setEnabled(true);
+	            		} else {
+	            			dailyView.setEnabled(false);
+	            			weeklyView.setEnabled(false);
+	            			monthlyView.setEnabled(false);
+	            		}
+	            		
+	            		
+	            		} catch (UserDidntSelectException e) {
+	            		System.out.println("User Didnt Select a Staff Member");
+	            		} catch (EmptyResultSetException e) {
+	            		System.out.println("No Staff Members in Table");
+	            		}
+	            }
+	    });
+			
+	        dailyView.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent ae) {
+	                    try { 
+	                    	Date appDate = yMD.parse(dateField.getText());
+	           			 String appString = sundayChecker.format(appDate);
+
+	           		    SimpleDateFormat sDF = new SimpleDateFormat("yyyy/MM/dd");  
+	           		    String appDateString = sDF.format(appDate);
+	           		     
+	           		     Color blueishInk = new Color(69, 65, 107);
+	           		         
+	           		        // convert a String to a Date
+	           		       // Date date = sDF.parse(day);
+	           		        
+	           		        // convert a Date to a String
+	           		        DateFormat sDF1 = new SimpleDateFormat("EEE dd MMMM yyyy");
+	           		        String s = sDF1.format(appDate);  
+	                    	
+	                     		if(GPSISFramework.getInstance().isHoliday(appDate))
+	                     			new TrainingDayPanel(appDateString);
+	                     		else if(appString.equals("Sat"))
+	                    			new DailyViewSaturday(selectedDoctor.getId(), dateField.getText());
+	                    		else if(appString.equals("Sun"))
+	                    			JOptionPane.showMessageDialog( dateField, "There are no opening hours on Sundays. Please, select another day.", "No opening hours on Sundays", JOptionPane.WARNING_MESSAGE);
+	                    		else
+	                    			new DailyView(selectedDoctor.getId(), dateField.getText());
+						} catch (NumberFormatException e) {
+							JOptionPane.showMessageDialog( dateField, "NumberFormatException or ParseException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
+							e.printStackTrace();
+						} catch (java.text.ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	            }
+	    });
+	        
+	        weeklyView.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent ae) {
+	                
+	                			try {
+									new WeeklyView(selectedDoctor.getId(), dateField.getText());
+								} catch (java.text.ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+
+	        }
+	});
+			
+	        monthlyView.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent ae) {
+	                
+	    			try {
+						new MonthlyView(selectedDoctor.getId());
+					} catch (NumberFormatException e) {
+						JOptionPane.showMessageDialog( dateField, "NumberFormatException, please try with different values", "Exception!", JOptionPane.WARNING_MESSAGE);
 						e.printStackTrace();
 					}
             }

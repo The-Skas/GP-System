@@ -110,7 +110,6 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
     	while(res.next())
     	{
     		SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    		//System.out.println("!!!!!!!!!!!!!!!!"+fm.format(res.getDate("start_time")));
     		Date startTime, endTime; 
     		cal.setTime(res.getTimestamp("start_time"));
     		startTime = cal.getTime();
@@ -136,53 +135,36 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
     		
 		return a;
     	
- 	
-//    	List<CalendarAppointment> appointments = new ArrayList<>();
-//    	
-//    	SQL
-//    	
-//    	try {
-//			ResultSet rs = getResultSet
-//					(
-//							new SQLBuilder("staff_member_id","=", ""+id), CalendarAppointmentDMO.tblRoutine
-//					);
-//			
-//			while(rs.next())
-//			{
-//					
-//				appointments.add(getById(rs.getInt("ca_id")));
-//
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    			
-//    	return appointments;
     }
     
     
 	
 	 // getter method for RoutineAppointment
-	public RoutineAppointment getRoutineAppointmentById(int id) throws EmptyResultSetException, SQLException
+	public RoutineAppointment getRoutineAppointmentById(int id) throws EmptyResultSetException
 	{
 		CalendarAppointment ca = this.getById(id);
 		
-		ResultSet rs = getResultSet
-                (
-                        new SQLBuilder("ca_id","=",""+id),CalendarAppointmentDMO.tblRoutine
-                );
-        
-        //Returns a RoutineAppointment if found
-        if(rs.next())
-        {
-        	Patient p = PatientDMO.getInstance().getById(rs.getInt("patient_id"));
-        	StaffMember d = StaffMemberDMO.getInstance().getById(rs.getInt("doctor_id"));
-        	
-    		return new RoutineAppointment(id, ca.getStartTime(), ca.getEndTime(), p, d, rs.getString("summary"));
+		ResultSet rs;
+		try {
+			rs = getResultSet
+			        (
+			                new SQLBuilder("ca_id","=",""+id),CalendarAppointmentDMO.tblRoutine
+			        );
+			//Returns a RoutineAppointment if found
+	        if(rs.next())
+	        {
+	        	Patient p = PatientDMO.getInstance().getById(rs.getInt("patient_id"));
+	        	StaffMember d = StaffMemberDMO.getInstance().getById(rs.getInt("doctor_id"));
+	        	
+	    		return new RoutineAppointment(id, ca.getStartTime(), ca.getEndTime(), p, d, rs.getString("summary"));
 
-        }
-		return null;
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        
+        
+		throw new EmptyResultSetException();
 	}
 	
 	 // getter method for CareManagementAppointment
@@ -210,37 +192,48 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 	
 	public CalendarAppointment getByProperties(SQLBuilder query) throws EmptyResultSetException
 	{
+		
+		String sql = this.tableName 
+				+ " LEFT OUTER JOIN " + tblRoutine + " ON "
+				+ this.tableName + ".id = " + tblRoutine + ".ca_id"
+				+ " LEFT OUTER JOIN " + tblCareManagement + " ON "
+				+ this.tableName + ".id = " + tblCareManagement + ".ca_id"
+				+ " LEFT OUTER JOIN Patient ON " + tblRoutine + ".patient_id = Patient.id"
+				+ " LEFT OUTER JOIN PermanentPatient ON Patient.id = PermanentPatient.patient_id"
+				+ " LEFT OUTER JOIN StaffMember ON " + tblRoutine + ".staff_member_id = StaffMember.id"
+				+ " LEFT OUTER JOIN TempStaffMember ON StaffMember.id = TempStaffMember.staff_member_id"
+				+ " LEFT OUTER JOIN CareProgramme ON " + tblCareManagement + ".care_programme_id = CareProgramme.id";
+		
 		try {
 			
-			ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblRoutine + " ON " + this.tableName + ".id = " + tblRoutine + ".ca_id");
-			ResultSet res1 = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblCareManagement + " ON " + this.tableName + ".id = " + tblCareManagement + ".ca_id");  
+			ResultSet res = GPSISDataMapper.getResultSet(query, sql);
+			//ResultSet res1 = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblCareManagement + " ON " + this.tableName + ".id = " + tblCareManagement + ".ca_id");  
 			
             if (res.next()) 
-            { 
+            {
+            	if ((res.getInt("care_programme_id") == 0) && res.getInt("patient_id") != 0) { // Routine Appointment
             		Date startTime; 
             		cal.setTime(res.getTimestamp("start_time"));
             		startTime = cal.getTime();
             		cal.add(Calendar.MINUTE, 15);
             		Date endTime = cal.getTime();
             		
-            		Patient p = patientDMO.getById(res.getInt("patient_id"));
-            		StaffMember sm = staffMemberDMO.getById(res.getInt("staff_member_id"));
+            		Patient p = patientDMO.buildPermanentPatient(res);
+            		StaffMember sm = staffMemberDMO.buildStaffMember(res);
             		
             		return new RoutineAppointment(res.getInt("id"),startTime, endTime, p, sm, res.getString("summary"));
+            	} else if (res.getInt("care_programme_id") != 0) {// Care Management Appointment
+			      		
+		    		cal.setTime(res.getTime("start_time"));
+		    		Date startTime = cal.getTime();
+		    		cal.setTime(res.getTime("end_time"));
+		    		Date endTime = cal.getTime();
+		    	
+		    		CareProgramme cp = careProgrammeDMO.getById(res.getInt("care_programme_id"));
+		        
+		    		return new CareManagementAppointment(startTime, endTime, cp);
+            	}
             }
-            	
-            	else if (res1.next())
-            {             			      		
-            		cal.setTime(res.getTime("start_time"));
-            		Date startTime = cal.getTime();
-            		cal.setTime(res.getTime("end_time"));
-            		Date endTime = cal.getTime();
-            	
-            		CareProgramme cp = careProgrammeDMO.getById(res.getInt("care_programme_id"));
-                
-            		return new CareManagementAppointment(startTime, endTime, cp);
-            } 
-            		else System.err.println("EMPTY SET");       
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -249,40 +242,45 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
 	
 	@Override
 	public List<CalendarAppointment> getAllByProperties(SQLBuilder query) throws EmptyResultSetException
-	{ // returns a Set with all the CalendarAppointment objects
+	{ // returns a List with all the CalendarAppointment objects
 		  List<CalendarAppointment> calendarAppointments = new ArrayList<>(); // create a new HashSet with all the Calendar Appointments
+		  String sql = this.tableName 
+					+ " LEFT OUTER JOIN " + tblRoutine + " ON "
+					+ this.tableName + ".id = " + tblRoutine + ".ca_id"
+					+ " LEFT OUTER JOIN " + tblCareManagement + " ON "
+					+ this.tableName + ".id = " + tblCareManagement + ".ca_id"
+					+ " LEFT OUTER JOIN Patient ON " + tblRoutine + ".patient_id = Patient.id"
+					+ " LEFT OUTER JOIN PermanentPatient ON Patient.id = PermanentPatient.patient_id"
+					+ " LEFT OUTER JOIN StaffMember ON " + tblRoutine + ".staff_member_id = StaffMember.id"
+					+ " LEFT OUTER JOIN TempStaffMember ON StaffMember.id = TempStaffMember.staff_member_id"
+					+ " LEFT OUTER JOIN CareProgramme ON " + tblCareManagement + ".care_programme_id = CareProgramme.id";
           try {
-            ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName + " JOIN " + tblRoutine + " ON " + this.tableName + ".id = " + tblRoutine + ".ca_id");                                  
-            while(res.next()) { // if found, create a CalendarAppointment object  
-            	// return all Routine Appointments
-          		Date startTime; 
-          		cal.setTime(res.getTimestamp("start_time"));
-          		startTime = cal.getTime();
-          		cal.add(Calendar.MINUTE, 15);
-          		Date endTime = cal.getTime();
-          		
-          		Patient p = patientDMO.getById(res.getInt("patient_id"));
-          		StaffMember sm = staffMemberDMO.getById(res.getInt("staff_member_id"));
-          		
-          		calendarAppointments.add(new RoutineAppointment(res.getInt("id"),startTime, endTime, p, sm, res.getString("summary")));
-            }
-           
-            ResultSet res1 = GPSISDataMapper.getResultSet(query, 
-            									this.tableName + " JOIN " + tblCareManagement + 
-            													" ON " + this.tableName + ".id = " + tblCareManagement + ".ca_id" +
-            													" JOIN " + tblCareProgramme +
-            													" ON " + tblCareManagement + ".care_programme_id = " + tblCareProgramme + ".id");
-            while(res1.next()) { 
-          		
-          		cal.setTime(res1.getTimestamp("start_time"));
-          		Date startTime = cal.getTime();
-          		cal.setTime(res1.getTimestamp("end_time"));
-          		Date endTime = cal.getTime();
-          	
-          	    CareProgramme cp = careProgrammeDMO.getById(res1.getInt("care_programme_id"));
-              
-          		calendarAppointments.add(new CareManagementAppointment(res1.getInt("id"), startTime, endTime, cp));
-          	} 
+        	  
+        	ResultSet res = GPSISDataMapper.getResultSet(query, sql);
+        	while(res.next()) {
+	          	if ((res.getInt("care_programme_id") == 0) && res.getInt("patient_id") != 0) { // Routine Appointment
+	          		Date startTime; 
+	          		cal.setTime(res.getTimestamp("start_time"));
+	          		startTime = cal.getTime();
+	          		cal.add(Calendar.MINUTE, 15);
+	          		Date endTime = cal.getTime();
+	          		
+	          		Patient p = patientDMO.buildPermanentPatient(res);
+	          		StaffMember sm = staffMemberDMO.buildStaffMember(res);
+	          		
+	          		calendarAppointments.add(new RoutineAppointment(res.getInt("id"),startTime, endTime, p, sm, res.getString("summary")));
+	          	} else if (res.getInt("care_programme_id") != 0) { // Care Management Appointment
+				      		
+			    		cal.setTime(res.getTime("start_time"));
+			    		Date startTime = cal.getTime();
+			    		cal.setTime(res.getTime("end_time"));
+			    		Date endTime = cal.getTime();
+			    	
+			    		CareProgramme cp = careProgrammeDMO.getById(res.getInt("care_programme_id"));
+			        
+			    		calendarAppointments.add(new CareManagementAppointment(startTime, endTime, cp));
+	          	}
+        	}
         	
         } catch (SQLException e) {
             e.printStackTrace();
@@ -290,7 +288,7 @@ public class CalendarAppointmentDMO extends GPSISDataMapper<CalendarAppointment>
           if(calendarAppointments.isEmpty())
         	  throw new EmptyResultSetException();
           else
-        	  return calendarAppointments;//To change body of generated methods, choose Tools | Templates.
+        	  return calendarAppointments;
 	}
 
 

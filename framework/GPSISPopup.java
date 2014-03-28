@@ -29,7 +29,7 @@ public class GPSISPopup extends JDialog {
 	public GPSISPopup(String title)
 	{
 		super(new JFrame(),title+ " - " + GPSISFramework.APPTITLE);
-		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
+		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.gif"));
 		this.setIconImage((icon.getImage()));
 	}
 }

@@ -26,7 +26,7 @@ import object.StaffMember;
  */
 public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
     
-    private final String tblMedPresc = "Join_PrescriptionMedicines";
+    private final String tblMedPresc = "PrescriptionMedicine";
     
     
     private PrescriptionDMO(String tableName)
@@ -66,14 +66,12 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
                                  res.getInt("d_id"), 
                                  res.getDate("startDate"),
                                  res.getDate("end_date"),
-                                new ArrayList(),
+                                new ArrayList<Medicine>(),
                                 res.getInt("frequency"),
                                 res.getString("pay_or_free"),
                                 res.getString("medical_condition"));
                 
                 
-            } else {
-                System.err.println("EMPTY SET");
             }
 
         } catch (SQLException e) {
@@ -192,14 +190,12 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
                                  res.getInt("d_id"), 
                                  res.getDate("startDate"),
                                  res.getDate("end_date"),
-                                new ArrayList(),
+                                new ArrayList<Medicine>(),
                                 res.getInt("frequency"),
                                 res.getString("pay_or_free"),
                                 res.getString("medical_condition"));
                 
                 
-            } else {
-                System.err.println("EMPTY SET");
             }
 
         } catch (SQLException e) {
@@ -225,7 +221,7 @@ public class PrescriptionDMO extends GPSISDataMapper<Prescription> {
                                  res.getInt("d_id"), 
                                  res.getDate("startDate"),
                                  res.getDate("end_date"),
-                                new ArrayList(),
+                                new ArrayList<Medicine>(),
                                 res.getInt("frequency"),
                                 res.getString("pay_or_free"),
                                 res.getString("medical_condition")));

@@ -41,10 +41,8 @@ public class ReferralDMO extends GPSISDataMapper<ReferralObject>{
             ResultSet res = GPSISDataMapper.getResultSet(query, this.tableName);            
             if (res.next()) // if found, create a the Referral object 
             {
-                System.out.println("Res isnt null");
             	return this.buildReferral(res);
             }
-            System.out.println("Res is NULL!");
         } 
         catch (SQLException e) 
         {

@@ -325,7 +325,7 @@ public class ViewStaffMember extends GPSISPopup implements ActionListener {
 		}
 		s.add(absencesVal, new CC().wrap());
 
-		// Holidays Stats
+		// TrainingDay Stats
 		JButton holidaysBtn = new JButton("Availabilities");
 		holidaysBtn.addActionListener(this);
 		holidaysBtn.setActionCommand("View Availabilities");

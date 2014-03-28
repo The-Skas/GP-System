@@ -149,7 +149,6 @@ public class SlotPicker extends GPSISPopup implements ActionListener, ListSelect
 			
 			return cAT;
 		} catch (EmptyResultSetException e) {
-			System.out.println("EMPTY SET");
 			return null;
 		}
 		

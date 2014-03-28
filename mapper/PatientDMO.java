@@ -50,9 +50,9 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     public PermanentPatient buildPermanentPatient(ResultSet res) throws SQLException, EmptyResultSetException
     {
         PermanentPatient permPatient;
-        permPatient = new PermanentPatient( res.getInt("id"), 
-                                    res.getString("first_name"), 
-                                    res.getString("last_name"),
+        permPatient = new PermanentPatient( res.getInt("Patient.id"), 
+                                    res.getString("Patient.first_name"), 
+                                    res.getString("Patient.last_name"),
                                     res.getString("sex").charAt(0),
                                     res.getString("postcode"), 
                                     res.getString("address"),
@@ -68,9 +68,9 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     public Patient buildPatient(ResultSet res) throws SQLException
     {
         Patient patient;
-        patient = new Patient(  res.getInt("id"), 
-                                res.getString("first_name"), 
-                                res.getString("last_name"),
+        patient = new Patient(  res.getInt("Patient.id"), 
+                                res.getString("Patient.first_name"), 
+                                res.getString("Patient.last_name"),
                                 res.getString("sex").charAt(0),
                                 res.getString("postcode"), 
                                 res.getString("address"),
@@ -98,7 +98,6 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                                     .AND("mother_id","!=", "0")
                                     .AND("mother_id", "!=", ""+p.getId())
                                     .AND("id", "!=", ""+p.getId());
-        System.out.println("Get siblings!: "+ sql);
         try {
             return this.getAllByProperties(sql);
         } catch (EmptyResultSetException ex) {
@@ -253,7 +252,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             }
         }catch(Exception e)
         {
-            System.out.println(e);
+           e.printStackTrace();
         }
         return null;
     }
@@ -266,7 +265,6 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 (
                         new SQLBuilder("patient_id","=",""+patient.getId()),this.tblPermenant
                 );
-        System.out.println("Here in getPermanent/orPatient");
         //Returns a PermanentPatient if found
         if(rs.next())
         {
@@ -279,7 +277,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                     );
         }
         }catch(Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         //Otherwise returns the Patient passed in;
         return patient;
@@ -319,8 +317,6 @@ public class PatientDMO extends GPSISDataMapper<Patient>
                 
                 ///patient = PatientDMO.getPermenantPatientById(int id);
                 
-            } else {
-                System.err.println("EMPTY SET");
             }
 
         } catch (SQLException e) {
@@ -341,7 +337,6 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             ResultSet res = GPSISDataMapper.getResultSet(query, joinTbl);
             while(res.next()) 
             { // if found, create a the patient object
-                System.out.println("Heres patient id: "+res.getInt("id"));
                 //Before I add it, surely I would want a refrence to set
                 //its NHS Number for the permenant Patients.
                 res.getInt("NHS_number");
@@ -352,7 +347,7 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             }
 
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return patients;
         
@@ -372,7 +367,6 @@ public class PatientDMO extends GPSISDataMapper<Patient>
     public void putPermanentPatient(PermanentPatient pP)
     {
         this.put(pP);
-        System.out.println(pP.getId());
         SQLBuilder sql = new SQLBuilder("patient_id","=",""+pP.getId())
                         .SET("doctor_id", "=", ""+pP.getDoctor().getId())
                         .SET("NHS_number", "=", ""+pP.getNHSNumber());
@@ -404,109 +398,5 @@ public class PatientDMO extends GPSISDataMapper<Patient>
             Logger.getLogger(StaffMemberDMO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-      
-    
-    public static void main(String [] args) throws SQLException, EmptyResultSetException
-    {/*
-        GPSISDataMapper.connectToDatabase();
-        PatientDMO tbl = PatientDMO.getInstance();
-        
-        Patient patient = null;
-        //Should return Patient whos ID is one.
-//        Patient patient = tbl.getById(1);
-        if(patient instanceof PermanentPatient)
-        {
-            System.out.println("Is permanent");
-            System.out.println("Doctors id "+ ((PermanentPatient)patient).getDoctor().getId());
-        }
-        
-        
-        List<PermanentPatient> patients;
-		try {
-			patients = tbl.getAllPermanentPatientsByDoctorId(30);
-		} catch (EmptyResultSetException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-        
-        ArrayList<String> mc = new ArrayList<>();
-        
-        mc.add("Warts");
-        mc.add("Sleep Apnea");
-        
-        ArrayList<String> mcE = new ArrayList<>();
-        
-        mcE.add("Scars");
-        mcE.add("AIDZZ");
-        
-        try {
-            System.out.println("**Printing all Permanent Patients**");
-            for(PermanentPatient p : patients)
-            {
-                System.out.println(p.getFirstName());
-                System.out.println(p.getAgeGroup());
-            }
-        }catch(Exception e) {
-            patient = new Patient(11,"jeezus", "beans", 'm', "n123fx", "London", "0737231313", new Date(1,3,4),6,9);
-
-            tbl.put(patient);
-
-            System.out.println(patient.getId());
-        }
-        
-        StaffMember vJ = null;
-        try {
-            //Should create new Permanent Patient, and assigns an id.
-            
-            vJ= StaffMemberDMO.getInstance().getById(1);
-            System.out.println("Should print out 'VJ' -> " +vJ.getFirstName());
-//        tbl.putPermanentPatient(new PermanentPatient());
-        } catch (EmptyResultSetException ex) {
-            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        System.out.println("Should be able to store VJ in PermanentPatient");
-        
-        
-        
-        //Create getByFirstName, getByLastName;
-        Patient patientFamily =null;
-        try {
-            patientFamily = tbl.getById(19);
-        } catch (EmptyResultSetException ex) {
-            Logger.getLogger(PatientDMO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        System.out.println("Add illness");
-        
-        //Testing Family
-        
-        System.out.println("**Checking If Patient "+patientFamily.getFirstName()+" has siblings**");
-        
-        System.out.println();System.out.println();
-       
-        System.out.println(patientFamily.getSiblings());
-        
-        System.out.println("**Checking If Patient "+patientFamily.getFirstName()+" has Children**");
-        
-        System.out.println();System.out.println();
-       
-        System.out.println(patientFamily.getChildren());
-        */
-        System.out.println();System.out.println();
-        
-        System.out.println("Testing Medical conditions");
-        
-//        Patient patientWithMC = tbl.getById(2);
-//        
-//        System.out.println(patientWithMC.getFirstName()+"'s MC's are: "+
-//                patientWithMC.getMedicalConditions()
-//        );
-    }
-
-   
-
- 
-
-    
+          
 }

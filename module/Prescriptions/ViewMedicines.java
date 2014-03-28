@@ -4,8 +4,8 @@
  * and open the template in the editor.
  */
 
-package module.Patient;
-import module.Broadcastable;
+package module.Prescriptions;
+
 import framework.GPSISDataMapper;
 import framework.GPSISPopup;
 
@@ -41,8 +41,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableRowSorter;
 
+import mapper.MedicineDMO;
 import mapper.PatientDMO;
+import module.Broadcastable;
 import module.Patient.AddPatient;
+import module.Prescriptions.AddNewPrescription;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -50,44 +53,48 @@ import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
-import object.MedicalCondition;
+import object.Medicine;
 
 /**
  *
  * @author skas
  */
-public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
+public class ViewMedicines extends GPSISPopup implements ActionListener{
     //it seems default values for static variables are initialised even before 
     //running the main program. this means anything that would depend on DB 
     //connections cant be intialised in default values.
-    private static MedicalCondition [] medConds;
+    private static Medicine [] meds;
     
-    private JList<Object> list;
-    private DefaultListModel<Object> listModel;
+    private JList list;
+    private DefaultListModel listModel;
     private JButton addButtonFld;
     private JButton delButtonFld;
     
     //Used a linkedHashSet to make sure no duplicate entries are added.
-    private LinkedHashSet<MedicalCondition> medicalConditions;
+    private LinkedHashSet<Medicine> medicinesHashSet;
     private Broadcastable parent;
     private int selectedRow;
-    private JComboBox<?> comboBox;
+    private JComboBox comboBox;
     /*
      * This constructor takes in a Broadcastable object, this allows the class
      * to be able to communicate with the parent container that intialised it.
     */
-    private ViewMedicalCondition _this;
-    public ViewMedicalCondition(final Broadcastable parent,ArrayList<MedicalCondition> medConditions) 
+    private ViewMedicines _this;
+    public ViewMedicines(final Broadcastable parent,List<Medicine> medsList) 
     {
         //Should be an edit/ and for adding
         super("Medical Conditions");
         //assigning value to _this to be used in anonymous functions
         //Look up javascript 101 ;)
         _this = this;
-        if(medConds == null)
-        {
-            medConds = MedicalCondition.getAllArray();
-        }
+       
+        List <Medicine> tempMedicines;
+        tempMedicines = MedicineDMO.getInstance().getAll();
+        System.out.println(tempMedicines);
+        meds = new Medicine[tempMedicines.size()];
+        tempMedicines.toArray(meds);
+        for(int i = 0; i < meds.length; i ++)
+            System.out.println(meds[i]);
         //TODO: Why not add shortcuts for add/delete?
         
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -95,18 +102,18 @@ public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
         this.setBackground(new Color(240, 240, 240));
         this.setAlwaysOnTop(true);
         
-        //Get MedicalConditions and add them to listModel
-        this.listModel = new DefaultListModel<Object>();
-        this.medicalConditions = new LinkedHashSet<>();
-        if(medConditions != null)
+        //Get Medicines and add them to listModel
+        this.listModel = new DefaultListModel();
+        this.medicinesHashSet = new LinkedHashSet<>();
+        if(medsList != null)
         {
-            this.medicalConditions.addAll(medConditions);
-            for(MedicalCondition MC : this.medicalConditions)
+            this.medicinesHashSet.addAll(medsList);
+            for(Medicine MC : this.medicinesHashSet)
             {
                 listModel.addElement(MC);
             }
         }
-        list = new JList<Object>(listModel);
+        list = new JList(listModel);
 		
         JPanel medView = new JPanel(new MigLayout(new LC().fill(), new AC().grow(), new AC().grow()));
         medView.add(new JScrollPane(list), new CC().growX().wrap());
@@ -122,7 +129,7 @@ public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
         
         
         //Add ComboBox
-        this.comboBox = new JComboBox<Object>(medConds);
+        this.comboBox = new JComboBox(meds);
         AutoCompleteDecorator.decorate(this.comboBox);
         
         medView.add(this.comboBox,  new CC().growX());
@@ -148,6 +155,7 @@ public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
                     System.out.println("Clicking the list");
                     System.out.println(list.getSelectedIndex());
                 }
+                
          });
         
         this.addWindowListener(new WindowAdapter()
@@ -157,7 +165,6 @@ public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
             {
                 System.out.println("Closing window");
                 //send a message to the PareitnContainer.
-                
                 //Skas says:
                 //refer to variable _this, since 'this' in this scope, refers
                 //to the anonymous function. Got a strange compiler error.
@@ -177,10 +184,10 @@ public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
         this.setVisible(true);
     }
    
-    public ArrayList<MedicalCondition> getMedicalConditions()
+    public ArrayList<Medicine> getMedicines()
     {
-        ArrayList<MedicalCondition> listPatMedConds = new ArrayList<>();
-        listPatMedConds.addAll(this.medicalConditions);
+        ArrayList<Medicine> listPatMedConds = new ArrayList<>();
+        listPatMedConds.addAll(this.medicinesHashSet);
         return listPatMedConds;
     }
     @Override
@@ -194,18 +201,17 @@ public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
                 if(!this.listModel.contains(comboBox.getSelectedItem()))
                 {
                     this.listModel.addElement(comboBox.getSelectedItem());
-                    this.medicalConditions.add((MedicalCondition)comboBox.getSelectedItem());
-                    System.out.println("After add: "+ this.medicalConditions);
-
+                    this.medicinesHashSet.add((Medicine)comboBox.getSelectedItem());
+                    System.out.println("After add: "+ this.medicinesHashSet);
                 }
             break;
             case "Del":
                 int selectedInd = list.getSelectedIndex();
                 if(selectedInd != -1)
                 {
-                    this.medicalConditions.remove(list.getSelectedValue());
+                    this.medicinesHashSet.remove(list.getSelectedValue());
                     this.listModel.remove(list.getSelectedIndex());
-                    System.out.println("After remove: "+ this.medicalConditions);
+                    System.out.println("After remove: "+ this.medicinesHashSet);
                 }
             break;
         }
@@ -226,10 +232,10 @@ public class ViewMedicalCondition extends GPSISPopup implements ActionListener{
              break;
      }
 }
-       public static void main(String [] args)
+    public static void main(String [] args)
     {
         GPSISDataMapper.connectToDatabase();
-        ArrayList<MedicalCondition> mC = new ArrayList<>();
-        new ViewMedicalCondition(new AddPatient(),mC); 
+        ArrayList<Medicine> mC = new ArrayList<>();
+        new ViewMedicines(new AddNewPrescription(),mC); 
     }
 }

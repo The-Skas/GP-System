@@ -54,7 +54,7 @@ public class LoginModule extends GPSISFramework implements ActionListener {
 				if (!isHoliday(new Date()))
 					staffMemberDMO.register(user);
 				else
-					splashWindow.addText("\nToday's a Holiday!");
+					splashWindow.addText("\nToday's a Holiday/Training Day!");
 
 				this.dialog.dispose();		
 
@@ -79,13 +79,12 @@ public class LoginModule extends GPSISFramework implements ActionListener {
         dialog.setLayout(new MigLayout());
         dialog.setBackground(new Color(240, 240, 240));
 
-		ImageIcon icon = new ImageIcon(this.getClass().getResource("/image/favicon.jpg"));
-        dialog.setIconImage(icon.getImage());
-        dialog.setTitle("Login");
+        dialog.setIconImage(getGPSISLogo().getImage());
+        dialog.setTitle(APPTITLE + " Login");
         
         JPanel h = new JPanel(new MigLayout());
 	        JLabel hTitle = new JLabel("Login");
-			hTitle.setFont(fonts.get("Ubuntu").deriveFont(24f));
+			hTitle.setFont(fonts.get("OpenSans").deriveFont(24f));
 		h.add(hTitle);
 		dialog.add(h, new CC().wrap().alignX("center"));
         

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="GPSIS" default="Main" basedir=".">
+<project name="GP-SIS" default="Main" basedir=".">
 	<!-- Sets variables which can later be used. -->
 	<!-- The value of a property is accessed via ${} -->
 	<property name="src.dir" location="" />
@@ -35,11 +35,12 @@
 
  	<!--Creates the deployable jar file  -->
 	<target name="jar" depends="compile">
-		<jar destfile="${dist.dir}\GPSIS.jar" basedir="${build.dir}">
+		<jar destfile="${dist.dir}\GP-SIS.jar" basedir="${build.dir}">
 			<zipgroupfileset includes="*.jar" dir="${src.dir}/library"/>
 			<fileset dir="${src.dir}">
 				<include name="font/*.ttf" />
 				<include name="image/*.jpg" />
+				<include name="image/*.gif" />
 			</fileset>	
   			<manifest>
 				<attribute name="Main-Class" value="framework.GPSIS" />
@@ -49,7 +50,7 @@
  	 </target>
 
   	<target name="Main" depends="jar">
-		<description>GPSIS</description>
+		<description>General Practioner's Surgery Information System</description>
   	</target>
 
 </project> 

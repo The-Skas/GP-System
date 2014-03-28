@@ -49,7 +49,7 @@ public class CalendarAppointmentATM extends AbstractTableModel{
         	case 1:
         		return cA.getType();
         	case 2:
-        		if(cA.isRoutine())  
+        		if(cA instanceof RoutineAppointment)  
         			return ((RoutineAppointment) cA).getDoctor();  
         		else
         			return (((CareManagementAppointment) cA).getCareProgramme().getDoctor());
@@ -57,11 +57,11 @@ public class CalendarAppointmentATM extends AbstractTableModel{
         		return new SimpleDateFormat("EEE MMM dd HH:mm yyyy").format(cA.getStartTime());
         	case 4:
         		return new SimpleDateFormat("EEE MMM dd HH:mm yyyy").format(cA.getEndTime());
-//        	case 5:
-//        		if(cA.isRoutine())
-//        			return ((RoutineAppointment) cA).getPatient();
-//        		else
-//        			return null;
+        	case 5:
+        		if(cA instanceof RoutineAppointment)
+        			return ((RoutineAppointment) cA).getPatient();
+        		else
+        			return "See in Care Programme Module";
         		
         }
         return null;

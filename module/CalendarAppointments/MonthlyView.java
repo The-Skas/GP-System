@@ -96,7 +96,7 @@ import object.StaffMember;
                                          		//System.out.println("appString is: "+appString);
                                                         counterHoliday++;
                                          		if(GPSISFramework.getInstance().isHoliday(appDate))
-                                         			new HolidayPanel(appDateString);
+                                         			new TrainingDayPanel(appDateString);
                                          		else if(appString.equals("Sat"))
                                          			new DailyViewSaturday(doc, appDateString);
                                          		else if(appString.equals("Sun"))
